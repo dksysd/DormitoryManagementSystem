@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class RoomAssignmentDto {
     private int id;
     private SelectionScheduleDto selectionScheduleDto;

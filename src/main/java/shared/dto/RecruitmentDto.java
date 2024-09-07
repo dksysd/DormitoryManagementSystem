@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class RecruitmentDto {
     private SelectionScheduleDto selectionScheduleDto;
     private RoomTypeDto roomTypeDto;

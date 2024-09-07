@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class AddressDto {
     private int id;
     private String address;

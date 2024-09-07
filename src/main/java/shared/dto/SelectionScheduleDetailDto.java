@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class SelectionScheduleDetailDto {
     private SelectionScheduleDto selectionScheduleDto;
     private String schedule;

@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class RefundDetailDto {
     private DormitoryMoveOutApply dormitoryMoveOutApply;
     private int amount;
