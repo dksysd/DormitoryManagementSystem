@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserTypeDto {
+public class SubjectDto {
     private int id;
-    private String type;
+    private String name;
 }

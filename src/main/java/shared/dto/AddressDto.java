@@ -9,7 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserTypeDto {
+public class AddressDto {
     private int id;
-    private String type;
+    private String address;
+    private float distance;
 }

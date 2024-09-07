@@ -9,7 +9,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserTypeDto {
-    private int id;
-    private String type;
+public class RecruitmentDto {
+    private SelectionScheduleDto selectionScheduleDto;
+    private RoomTypeDto roomTypeDto;
+    private int maxPerson;
 }
