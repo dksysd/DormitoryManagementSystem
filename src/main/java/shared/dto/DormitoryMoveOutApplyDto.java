@@ -11,7 +11,8 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DormitoryMoveOutApply {
+@ToString
+public class DormitoryMoveOutApplyDto {
     private int id;
     private RoomAssignmentDto roomAssignmentDto;
     private LocalDate date;

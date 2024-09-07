@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString
 public class RefundDetailDto {
-    private DormitoryMoveOutApply dormitoryMoveOutApply;
+    private DormitoryMoveOutApplyDto dormitoryMoveOutApply;
     private int amount;
     private LocalDate date;
 }
