@@ -15,6 +15,7 @@ dependencies {
     implementation("org.mybatis:mybatis:3.5.16")
     implementation("com.mysql:mysql-connector-j:9.0.0")
     compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
 }
 
 tasks.test {
