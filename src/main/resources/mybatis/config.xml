@@ -4,6 +4,9 @@
     <!--mapper에서 매칭할 parmeter Type 별칭 설정-->
     <typeAliases>
         <typeAlias type="shared.dto.AddressDto" alias="AddressDto"/>
+        <typeAlias type="shared.dto.UserTypeDto" alias="UserTypeDto"/>
+        <typeAlias type="shared.dto.LoginInfoDto" alias="LoginInfoDto"/>
+        <typeAlias type="shared.dto.UserDto" alias="UserDto"/>
     </typeAliases>
 
 
@@ -24,7 +27,8 @@
 
     <mappers>
         <mapper resource="mybatis/mapper/AddressMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserTypeMapper.xml"/>
+        <mapper resource="mybatis/mapper/LoginInfoMapper.xml"/>
+        <mapper resource="mybatis/mapper/UserMapper.xml"/>
     </mappers>
-
-
 </configuration>
