@@ -22,6 +22,13 @@ public class Subject implements Model{
 
     @Override
     public DTO toDTO() {
-        return new SubjectDTO(id,subject_name,description,credit,createdAt,updatedAt,professorId);
+        return (DTO) SubjectDTO.builder()
+                .id(id)
+                .subject_name(subject_name)
+                .description(description)
+                .credit(credit)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .professorId(professorId);
     }
 }

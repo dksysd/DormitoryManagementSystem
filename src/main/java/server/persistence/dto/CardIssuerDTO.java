@@ -2,7 +2,7 @@ package server.persistence.dto;
 
 import lombok.*;
 import server.persistence.model.Model;
-import server.persistence.model.GradeLevel;
+import server.persistence.model.CardIssuer;
 
 import java.time.LocalDateTime;
 
@@ -11,16 +11,16 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GradeLevelDTO implements DTO {
+public class CardIssuerDTO implements DTO {
     private Integer id;
-    private String levelName;
-    private Float scaledScore;
+    private String issuerName;
+    private String issuerCode;
 
     @Override
     public Model toModel() {
-        return (Model) GradeLevel.builder()
+        return (Model) CardIssuer.builder()
                 .id(id)
-                .levelName(levelName)
-                .scaledScore(scaledScore);
+                .issuerName(issuerName)
+                .issuerCode(issuerCode);
     }
 }

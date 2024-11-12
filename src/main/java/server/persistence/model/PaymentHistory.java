@@ -10,16 +10,17 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GradeLevel implements Model {
+public class PaymentHistory implements Model {
     private Integer id;
-    private String levelName;
-    private Float scaledScore;
+
+    private UserDTO userDTO;
+    private PaymentDTO paymentDTO;
 
     @Override
     public DTO toDTO() {
-        return (DTO) GradeLevelDTO.builder()
+        return (DTO) PaymentHistoryDTO.builder()
                 .id(id)
-                .levelName(levelName)
-                .scaledScore(scaledScore);
+                .userDTO(userDTO)
+                .paymentDTO(paymentDTO);
     }
 }

@@ -26,6 +26,16 @@ public class UserDTO implements DTO {
 
     @Override
     public Model toModel() {
-        return new User(id, uid, loginId, userName, phoneNumber, createdAt, updatedAt, userTypeDTO, genderCodeDTO, addressDTO);
+        return (Model) User.builder()
+                .id(id)
+                .uid(uid)
+                .loginId(loginId)
+                .userName(userName)
+                .phoneNumber(phoneNumber)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .userTypeDTO(userTypeDTO)
+                .genderCodeDTO(genderCodeDTO)
+                .addressDTO(addressDTO);
     }
 }

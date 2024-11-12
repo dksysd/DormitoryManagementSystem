@@ -16,6 +16,9 @@ public class GenderCode implements Model{
 
     @Override
     public DTO toDTO() {
-        return new GenderCodeDTO(id, codeName, description);
+        return (DTO) GenderCodeDTO.builder()
+                .id(id)
+                .codeName(codeName)
+                .description(description);
     }
 }

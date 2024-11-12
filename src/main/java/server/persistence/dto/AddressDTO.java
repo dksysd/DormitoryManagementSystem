@@ -21,6 +21,12 @@ public class AddressDTO implements DTO {
 
     @Override
     public Model toModel() {
-        return new Address(id, postalCode, _do, si, detailAddress, createdAt);
+        return (Model) Address.builder()
+                .id(id)
+                .postalCode(postalCode)
+                ._do(_do)
+                .si(si)
+                .detailAddress(detailAddress)
+                .createdAt(createdAt);
     }
 }
