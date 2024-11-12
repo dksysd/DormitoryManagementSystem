@@ -10,22 +10,21 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Grade implements Model{
+public class DemeritPoint implements Model {
     private Integer id;
+    private String description;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    private SubjectDTO subjectDTO;
     private UserDTO userDTO;
-    private GradeLevelDTO gradeLevelDTO;
+    private RoomAssignmentDTO roomAssignmentDTO;
 
+    @Override
     public DTO toDTO() {
-        return (DTO) GradeDTO.builder()
+        return (DTO) DemeritPointDTO.builder()
                 .id(id)
+                .description(description)
                 .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .subjectDTO(subjectDTO)
                 .userDTO(userDTO)
-                .gradeLevelDTO(gradeLevelDTO);
+                .roomAssignmentDTO(roomAssignmentDTO);
     }
 }

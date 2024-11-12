@@ -19,6 +19,7 @@ public class User implements Model {
     private String phoneNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
     private UserTypeDTO userTypeDTO;
     private GenderCodeDTO genderCodeDTO;
     private AddressDTO addressDTO;

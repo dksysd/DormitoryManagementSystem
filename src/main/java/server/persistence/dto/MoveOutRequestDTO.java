@@ -2,7 +2,7 @@ package server.persistence.dto;
 
 import lombok.*;
 import server.persistence.model.Model;
-import server.persistence.model.BankTransferPayment;
+import server.persistence.model.MoveOutRequest;
 
 import java.time.LocalDateTime;
 
@@ -11,23 +11,27 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BankTransferPaymentDTO implements DTO {
+public class MoveOutRequestDTO implements DTO {
     private Integer id;
+    private LocalDateTime checkoutAt;
     private String accountNumber;
-    private String accountHolderName;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    private PaymentDTO paymentDTO;
+    private MoveOutRequestStatusDTO moveOutRequestStatusDTO;
+    private SelectionDTO selectionDTO;
     private BankDTO bankDTO;
 
     @Override
     public Model toModel() {
-        return (Model) BankTransferPayment.builder()
+        return (Model) MoveOutRequest.builder()
                 .id(id)
+                .checkoutAt(checkoutAt)
                 .accountNumber(accountNumber)
-                .accountHolderName(accountHolderName)
                 .createdAt(createdAt)
-                .paymentDTO(paymentDTO)
+                .updatedAt(updatedAt)
+                .moveOutRequestStatusDTO(moveOutRequestStatusDTO)
+                .selectionDTO(selectionDTO)
                 .bankDTO(bankDTO);
     }
 }

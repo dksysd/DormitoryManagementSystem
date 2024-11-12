@@ -8,16 +8,16 @@ import server.persistence.dto.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Bank implements Model {
+public class MealPlanType implements Model {
     private Integer id;
-    private String bankName;
-    private String bankCode;
+    private String typeName;
+    private String description;
 
     @Override
     public DTO toDTO() {
-        return (DTO) BankDTO.builder()
+        return (DTO) MealPlanTypeDTO.builder()
                 .id(id)
-                .bankName(bankName)
-                .bankCode(bankCode);
+                .typeName(typeName)
+                .description(description);
     }
 }
