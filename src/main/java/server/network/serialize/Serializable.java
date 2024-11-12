@@ -1,4 +1,4 @@
-package server.network;
+package server.network.serialize;
 
 import java.nio.charset.StandardCharsets;
 

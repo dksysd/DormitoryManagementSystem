@@ -1,4 +1,4 @@
-package server.network;
+package server.network.serialize;
 
 public class JsonParser {
     private final String json;
