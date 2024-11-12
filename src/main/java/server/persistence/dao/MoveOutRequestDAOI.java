@@ -1,0 +1,9 @@
+package server.persistence.dao;
+
+import server.persistence.dto.MoveOutRequestDTO;
+
+import java.sql.SQLException;
+
+public interface MoveOutRequestDAOI {
+    MoveOutRequestDTO findById(Integer id) throws SQLException;
+}
