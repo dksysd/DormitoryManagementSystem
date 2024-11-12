@@ -4,7 +4,6 @@ import lombok.*;
 import server.persistence.model.Model;
 import server.persistence.model.CardIssuer;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

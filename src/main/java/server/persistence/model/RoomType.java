@@ -8,16 +8,18 @@ import server.persistence.dto.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentCode implements Model {
+public class RoomType implements Model {
     private Integer id;
-    private String paymentCode;
+    private String typeName;
     private String description;
+    private Integer maxPerson;
 
     @Override
     public DTO toDTO() {
-        return (DTO) PaymentCodeDTO.builder()
+        return (DTO) RoomTypeDTO.builder()
                 .id(id)
-                .paymentCode(paymentCode)
-                .description(description);
+                .typeName(typeName)
+                .description(description)
+                .maxPerson(maxPerson);
     }
 }

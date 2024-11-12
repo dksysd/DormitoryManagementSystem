@@ -2,7 +2,7 @@ package server.persistence.dto;
 
 import lombok.*;
 import server.persistence.model.Model;
-import server.persistence.model.Grade;
+import server.persistence.model.DormitoryRoomType;
 
 import java.time.LocalDateTime;
 
@@ -11,22 +11,23 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GradeDTO implements DTO{
+public class DormitoryRoomTypeDTO implements DTO {
     private Integer id;
+    private Integer price;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private SubjectDTO subjectDTO;
-    private UserDTO userDTO;
-    private GradeLevelDTO gradeLevelDTO;
+    private RoomTypeDTO roomTypeDTO;
+    private DormitoryDTO dormitoryDTO;
 
+    @Override
     public Model toModel() {
-        return (Model) Grade.builder()
+        return (Model) DormitoryRoomType.builder()
                 .id(id)
+                .price(price)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .subjectDTO(subjectDTO)
-                .userDTO(userDTO)
-                .gradeLevelDTO(gradeLevelDTO);
+                .roomTypeDTO(roomTypeDTO)
+                .dormitoryDTO(dormitoryDTO);
     }
 }

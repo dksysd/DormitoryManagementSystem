@@ -4,8 +4,6 @@ import lombok.*;
 import server.persistence.model.Model;
 import server.persistence.model.PaymentHistory;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder

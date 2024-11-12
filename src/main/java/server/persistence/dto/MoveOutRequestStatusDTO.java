@@ -2,23 +2,23 @@ package server.persistence.dto;
 
 import lombok.*;
 import server.persistence.model.Model;
-import server.persistence.model.PaymentCode;
+import server.persistence.model.MoveOutRequestStatus;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentCodeDTO implements DTO {
+public class MoveOutRequestStatusDTO implements DTO {
     private Integer id;
-    private String paymentCode;
+    private String statusName;
     private String description;
 
     @Override
     public Model toModel() {
-        return (Model) PaymentCode.builder()
+        return (Model) MoveOutRequestStatus.builder()
                 .id(id)
-                .paymentCode(paymentCode)
+                .statusName(statusName)
                 .description(description);
     }
 }
