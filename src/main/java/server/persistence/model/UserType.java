@@ -16,6 +16,9 @@ public class UserType implements Model {
 
     @Override
     public DTO toDTO() {
-        return new UserTypeDTO(id, typeName, description);
+        return (DTO) UserTypeDTO.builder()
+                .id(id)
+                .typeName(typeName)
+                .description(description);
     }
 }

@@ -18,6 +18,9 @@ public class GradeLevelDTO implements DTO {
 
     @Override
     public Model toModel() {
-        return new GradeLevel(id, levelName, scaledScore);
+        return (Model) GradeLevel.builder()
+                .id(id)
+                .levelName(levelName)
+                .scaledScore(scaledScore);
     }
 }

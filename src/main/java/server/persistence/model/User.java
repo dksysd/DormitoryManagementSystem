@@ -25,6 +25,16 @@ public class User implements Model {
 
     @Override
     public DTO toDTO() {
-        return new UserDTO(id, uid, loginId, userName, phoneNumber, createdAt, updatedAt, userTypeDTO, genderCodeDTO, addressDTO);
+        return (DTO) UserDTO.builder()
+                .id(id)
+                .uid(uid)
+                .loginId(loginId)
+                .userName(userName)
+                .phoneNumber(phoneNumber)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .userTypeDTO(userTypeDTO)
+                .genderCodeDTO(genderCodeDTO)
+                .addressDTO(addressDTO);
     }
 }

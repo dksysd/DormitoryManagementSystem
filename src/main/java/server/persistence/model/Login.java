@@ -15,6 +15,8 @@ public class Login implements Model{
 
     @Override
     public DTO toDTO() {
-        return new LoginDTO(id, password);
+        return (DTO) LoginDTO.builder()
+                .id(id)
+                .password(password);
     }
 }

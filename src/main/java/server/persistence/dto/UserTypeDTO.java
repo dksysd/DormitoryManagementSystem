@@ -17,6 +17,9 @@ public class UserTypeDTO implements DTO {
 
     @Override
     public Model toModel() {
-        return new UserType(id, typeName, description);
+        return (Model) UserType.builder()
+                .id(id)
+                .typeName(typeName)
+                .description(description);
     }
 }

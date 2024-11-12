@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GradeDTO implements DTO{
-    private int id;
+    private Integer id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private SubjectDTO subjectDTO;
@@ -20,6 +20,12 @@ public class GradeDTO implements DTO{
     private GradeLevelDTO gradeLevelDTO;
 
     public Model toModel() {
-        return new Grade(id, createdAt, updatedAt, subjectDTO, userDTO, gradeLevelDTO);
+        return (Model) Grade.builder()
+                .id(id)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .subjectDTO(subjectDTO)
+                .userDTO(userDTO)
+                .gradeLevelDTO(gradeLevelDTO);
     }
 }
