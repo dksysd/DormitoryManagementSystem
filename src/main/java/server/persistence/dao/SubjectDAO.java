@@ -1,6 +1,5 @@
-package server.persistence.dao.impl;
+package server.persistence.dao;
 
-import server.persistence.dao.SubjectDAOI;
 import server.persistence.dto.SubjectDTO;
 import server.config.DatabaseConnectionPool;
 
