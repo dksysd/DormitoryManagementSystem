@@ -16,9 +16,9 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
         String query = "SELECT btp.id, btp.account_number, btp.account_holder_name, btp.created_at, " +
                 "p.id AS payment_id, p.payment_amount, p.created_at AS payment_created_at, " +
                 "b.id AS bank_id, b.bank_name, b.bank_code " +
-                "FROM bank_transfer_payment btp " +
-                "LEFT JOIN payment p ON btp.payment_id = p.id " +
-                "LEFT JOIN bank b ON btp.bank_id = b.id " +
+                "FROM bank_transfer_payments btp " +
+                "LEFT JOIN payments p ON btp.payment_id = p.id " +
+                "LEFT JOIN banks b ON btp.bank_id = b.id " +
                 "WHERE btp.id = ?";
 
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -40,9 +40,9 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
         String query = "SELECT btp.id, btp.account_number, btp.account_holder_name, btp.created_at, " +
                 "p.id AS payment_id, p.payment_amount, p.created_at AS payment_created_at, " +
                 "b.id AS bank_id, b.bank_name, b.bank_code " +
-                "FROM bank_transfer_payment btp " +
-                "LEFT JOIN payment p ON btp.payment_id = p.id " +
-                "LEFT JOIN bank b ON btp.bank_id = b.id";
+                "FROM bank_transfer_payments btp " +
+                "LEFT JOIN payments p ON btp.payment_id = p.id " +
+                "LEFT JOIN banks b ON btp.bank_id = b.id";
 
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -57,7 +57,7 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
 
     @Override
     public void save(BankTransferPaymentDTO paymentDTO) throws SQLException {
-        String query = "INSERT INTO bank_transfer_payment (account_number, account_holder_name, created_at, payment_id, bank_id) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO bank_transfer_payments (account_number, account_holder_name, created_at, payment_id, bank_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -72,7 +72,7 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
 
     @Override
     public void update(BankTransferPaymentDTO paymentDTO) throws SQLException {
-        String query = "UPDATE bank_transfer_payment SET account_number = ?, account_holder_name = ?, created_at = ?, payment_id = ?, bank_id = ? WHERE id = ?";
+        String query = "UPDATE bank_transfer_payments SET account_number = ?, account_holder_name = ?, created_at = ?, payment_id = ?, bank_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -88,7 +88,7 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String query = "DELETE FROM bank_transfer_payment WHERE id = ?";
+        String query = "DELETE FROM bank_transfer_payments WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 

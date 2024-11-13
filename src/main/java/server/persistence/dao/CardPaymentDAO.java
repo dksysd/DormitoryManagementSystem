@@ -1,53 +1,104 @@
 package server.persistence.dao;
 
-import server.config.DatabaseConnectionPool;
 import server.persistence.dto.CardPaymentDTO;
+import server.config.DatabaseConnectionPool;
 
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CardPaymentDAO implements CardPaymentDAOI {
+
     @Override
     public CardPaymentDTO findById(Integer id) throws SQLException {
-        String query = "SELECT * FROM card_payments WHERE id = ?";
-        Connection conn = DatabaseConnectionPool.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setInt(1, id);
-        ResultSet rs = stmt.executeQuery();
-        if (!rs.next()) {
-            return null;
+        String query = "SELECT id, card_number, created_at, card_issuer_id, payment_id FROM card_payments WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToCardPaymentDTO(resultSet);
+            }
         }
-
-        Integer cardPaymentId = rs.getInt("id");
-        String cardNumber = rs.getString("card_number");
-        LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
-
-        return CardPaymentDTO.builder()
-                .id(cardPaymentId)
-                .cardNumber(cardNumber)
-                .createdAt(createdAt)
-                .build();
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
     @Override
-    public CardPaymentDTO findByNumber(String number) throws SQLException {
-        String query = "SELECT * FROM card_payments WHERE number = ?";
-        Connection conn = DatabaseConnectionPool.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1, number);
-        ResultSet rs = stmt.executeQuery();
-        if (!rs.next()) {
-            return null;
+    public CardPaymentDTO findByCardNumber(String cardNumber) throws SQLException {
+        String query = "SELECT id, card_number, created_at, card_issuer_id, payment_id FROM card_payments WHERE card_number = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, cardNumber);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToCardPaymentDTO(resultSet);
+            }
         }
+        return null;
+    }
 
-        Integer cardPaymentId = rs.getInt("id");
-        String cardNumber = rs.getString("card_number");
-        LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
+    @Override
+    public List<CardPaymentDTO> findAll() throws SQLException {
+        List<CardPaymentDTO> payments = new ArrayList<>();
+        String query = "SELECT id, card_number, created_at, card_issuer_id, payment_id FROM card_payments";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-        return
+            while (resultSet.next()) {
+                payments.add(mapRowToCardPaymentDTO(resultSet));
+            }
+        }
+        return payments; // 모든 카드 결제 정보 반환
+    }
+
+    @Override
+    public void save(CardPaymentDTO cardPaymentDTO) throws SQLException {
+        String query = "INSERT INTO card_payments (card_number, created_at, card_issuer_id, payment_id) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, cardPaymentDTO.getCardNumber());
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(cardPaymentDTO.getCreatedAt()));
+            preparedStatement.setInt(3, cardPaymentDTO.getCardIssuerDTO() != null ? cardPaymentDTO.getCardIssuerDTO().getId() : null);
+            preparedStatement.setInt(4, cardPaymentDTO.getPaymentDTO() != null ? cardPaymentDTO.getPaymentDTO().getId() : null);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void update(CardPaymentDTO cardPaymentDTO) throws SQLException {
+        String query = "UPDATE card_payments SET card_number = ?, created_at = ?, card_issuer_id = ?, payment_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, cardPaymentDTO.getCardNumber());
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(cardPaymentDTO.getCreatedAt()));
+            preparedStatement.setInt(3, cardPaymentDTO.getCardIssuerDTO() != null ? cardPaymentDTO.getCardIssuerDTO().getId() : null);
+            preparedStatement.setInt(4, cardPaymentDTO.getPaymentDTO() != null ? cardPaymentDTO.getPaymentDTO().getId() : null);
+            preparedStatement.setInt(5, cardPaymentDTO.getId());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void delete(Integer id) throws SQLException {
+        String query = "DELETE FROM card_payments WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    private CardPaymentDTO mapRowToCardPaymentDTO(ResultSet resultSet) throws SQLException {
+        return CardPaymentDTO.builder()
+                .id(resultSet.getInt("id"))
+                .cardNumber(resultSet.getString("card_number"))
+                .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .build();
     }
 }
