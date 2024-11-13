@@ -9,8 +9,10 @@ import server.network.serialize.Serializable;
 @Setter
 @AllArgsConstructor
 public class Header implements Serializable {
-    public enum ContentType {
 
+    public enum ContentType {
+        APPLICATION_JSON,
+        MULTIPART_FORM_DATA,
     }
 
     private String host;

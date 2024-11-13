@@ -17,6 +17,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:6.0.0")
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
+    implementation("org.json:json:20231013")
 }
 
 tasks.test {
