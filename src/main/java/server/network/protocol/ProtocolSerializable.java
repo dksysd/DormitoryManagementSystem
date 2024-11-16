@@ -8,11 +8,16 @@ import java.util.StringTokenizer;
 
 public interface ProtocolSerializable extends Serializable {
     static byte[] serialize(Protocol protocol) throws Exception {
+        byte[] bodyData = Serializable.serialize(protocol.getBody());
+
         StringBuilder stringBuilder = new StringBuilder();
         switch (protocol) {
             case RequestProtocol requestProtocol ->
                     stringBuilder.append(requestProtocol.getMethod()).append(" ").append(requestProtocol.getUrl());
-            case ResponseProtocol responseProtocol -> stringBuilder.append(responseProtocol.getStatus());
+            case ResponseProtocol responseProtocol -> {
+                stringBuilder.append(responseProtocol.getStatus());
+                protocol.getHeader().setBodyLength(bodyData.length);
+            }
             default -> throw new IllegalArgumentException("Unknown protocol");
         }
         stringBuilder.append(Protocol.Delimiter);
@@ -20,7 +25,6 @@ public interface ProtocolSerializable extends Serializable {
         stringBuilder.append(Protocol.Delimiter);
 
         byte[] otherData = stringBuilder.toString().getBytes(StandardCharsets.UTF_8);
-        byte[] bodyData = Serializable.serialize(protocol.getBody());
         byte[] data = new byte[otherData.length + bodyData.length];
         System.arraycopy(otherData, 0, data, 0, otherData.length);
         System.arraycopy(bodyData, 0, data, otherData.length, bodyData.length);
