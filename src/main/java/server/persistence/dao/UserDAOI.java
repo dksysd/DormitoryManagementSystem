@@ -4,6 +4,7 @@ import server.persistence.dto.UserDTO;
 
 import java.sql.SQLException;
 import java.util.List;
+// TODO : WORK THIS
 
 public interface UserDAOI {
     UserDTO findById(Integer id) throws SQLException;
