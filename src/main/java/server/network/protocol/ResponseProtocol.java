@@ -37,7 +37,12 @@ public class ResponseProtocol extends Protocol {
 
     private Status status;
 
-    public ResponseProtocol(Header header, Body body) {
+    public ResponseProtocol() {
+        super();
+    }
+
+    public ResponseProtocol(Status status, Header header, Body body) {
         super(header, body);
+        this.status = status;
     }
 }

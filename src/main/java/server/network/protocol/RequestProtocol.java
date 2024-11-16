@@ -7,7 +7,10 @@ import lombok.Setter;
 @Setter
 public class RequestProtocol extends Protocol {
     public enum Method {
-
+        POST,
+        GET,
+        UPDATE,
+        DELETE,
     }
 
     private Method method;
