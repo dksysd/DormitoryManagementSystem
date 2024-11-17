@@ -31,6 +31,7 @@ public class SubjectDTO implements DTO {
                 .credit(credit)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .professorId(professorId);
+                .professorId(professorId)
+                .build();
     }
 }

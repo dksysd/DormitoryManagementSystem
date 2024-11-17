@@ -25,6 +25,7 @@ public class ImageDTO implements DTO {
                 .data(data)
                 .width(width)
                 .height(height)
-                .extension(extension);
+                .extension(extension)
+                .build();
     }
 }

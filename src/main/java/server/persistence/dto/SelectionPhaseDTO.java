@@ -32,6 +32,7 @@ public class SelectionPhaseDTO implements DTO {
                 .endAt(endAt)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .selectionScheduleDTO(selectionScheduleDTO);
+                .selectionScheduleDTO(selectionScheduleDTO)
+                .build();
     }
 }

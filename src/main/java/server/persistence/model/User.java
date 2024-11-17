@@ -36,6 +36,7 @@ public class User implements Model {
                 .updatedAt(updatedAt)
                 .userTypeDTO(userTypeDTO)
                 .genderCodeDTO(genderCodeDTO)
-                .addressDTO(addressDTO);
+                .addressDTO(addressDTO)
+                .build();
     }
 }

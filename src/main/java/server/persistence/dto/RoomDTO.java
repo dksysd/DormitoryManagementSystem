@@ -22,6 +22,7 @@ public class RoomDTO implements DTO {
                 .id(id)
                 .roomNumber(roomNumber)
                 .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
-                .dormitoryDTO(dormitoryDTO);
+                .dormitoryDTO(dormitoryDTO)
+                .build();
     }
 }

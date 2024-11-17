@@ -26,6 +26,7 @@ public class CardPaymentDTO implements DTO {
                 .cardNumber(cardNumber)
                 .createdAt(createdAt)
                 .cardIssuerDTO(cardIssuerDTO)
-                .paymentDTO(paymentDTO);
+                .paymentDTO(paymentDTO)
+                .build();
     }
 }

@@ -29,6 +29,7 @@ public class RoomAssignment implements Model {
                 .moveOutAt(moveOutAt)
                 .createdAt(createdAt)
                 .selectionDTO(selectionDTO)
-                .roomDTO(roomDTO);
+                .roomDTO(roomDTO)
+                .build();
     }
 }

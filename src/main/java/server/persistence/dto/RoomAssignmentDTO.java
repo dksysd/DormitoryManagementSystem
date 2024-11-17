@@ -30,6 +30,7 @@ public class RoomAssignmentDTO implements DTO {
                 .moveOutAt(moveOutAt)
                 .createdAt(createdAt)
                 .selectionDTO(selectionDTO)
-                .roomDTO(roomDTO);
+                .roomDTO(roomDTO)
+                .build();
     }
 }

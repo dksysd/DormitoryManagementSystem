@@ -18,6 +18,7 @@ public class CardIssuer implements Model {
         return (DTO) CardIssuerDTO.builder()
                 .id(id)
                 .issuerName(issuerName)
-                .issuerCode(issuerCode);
+                .issuerCode(issuerCode)
+                .build();
     }
 }

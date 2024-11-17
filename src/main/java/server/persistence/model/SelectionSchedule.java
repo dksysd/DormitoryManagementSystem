@@ -20,6 +20,7 @@ public class SelectionSchedule implements Model {
         return (DTO) SelectionScheduleDTO.builder()
                 .id(id)
                 .title(title)
-                .createdAt(createdAt);
+                .createdAt(createdAt)
+                .build();
     }
 }

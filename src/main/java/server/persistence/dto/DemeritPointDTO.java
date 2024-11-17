@@ -26,6 +26,7 @@ public class DemeritPointDTO implements DTO {
                 .description(description)
                 .createdAt(createdAt)
                 .userDTO(userDTO)
-                .roomAssignmentDTO(roomAssignmentDTO);
+                .roomAssignmentDTO(roomAssignmentDTO)
+                .build();
     }
 }

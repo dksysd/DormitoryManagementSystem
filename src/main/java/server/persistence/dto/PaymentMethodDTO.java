@@ -19,6 +19,7 @@ public class PaymentMethodDTO implements DTO {
         return (Model) PaymentMethod.builder()
                 .id(id)
                 .methodName(methodName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

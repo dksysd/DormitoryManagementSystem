@@ -40,6 +40,7 @@ public class SelectionApplicationDTO implements DTO {
                 .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
                 .mealPlanDTO(mealPlanDTO)
                 .roommateUserDTO(roommateUserDTO)
-                .userDTO(userDTO);
+                .userDTO(userDTO)
+                .build();
     }
 }

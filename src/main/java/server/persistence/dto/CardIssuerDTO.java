@@ -20,6 +20,7 @@ public class CardIssuerDTO implements DTO {
         return (Model) CardIssuer.builder()
                 .id(id)
                 .issuerName(issuerName)
-                .issuerCode(issuerCode);
+                .issuerCode(issuerCode)
+                .build();
     }
 }

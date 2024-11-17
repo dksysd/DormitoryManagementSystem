@@ -19,6 +19,7 @@ public class GenderCodeDTO implements DTO {
         return (Model) GenderCode.builder()
                 .id(id)
                 .codeName(codeName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

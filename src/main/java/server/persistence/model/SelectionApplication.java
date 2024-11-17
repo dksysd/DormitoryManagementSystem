@@ -39,6 +39,7 @@ public class SelectionApplication implements Model {
                 .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
                 .mealPlanDTO(mealPlanDTO)
                 .roommateUserDTO(roommateUserDTO)
-                .userDTO(userDTO);
+                .userDTO(userDTO)
+                .build();
     }
 }

@@ -20,6 +20,7 @@ public class RoomType implements Model {
                 .id(id)
                 .typeName(typeName)
                 .description(description)
-                .maxPerson(maxPerson);
+                .maxPerson(maxPerson)
+                .build();
     }
 }

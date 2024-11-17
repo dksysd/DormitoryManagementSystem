@@ -36,6 +36,7 @@ public class UserDTO implements DTO {
                 .updatedAt(updatedAt)
                 .userTypeDTO(userTypeDTO)
                 .genderCodeDTO(genderCodeDTO)
-                .addressDTO(addressDTO);
+                .addressDTO(addressDTO)
+                .build();
     }
 }

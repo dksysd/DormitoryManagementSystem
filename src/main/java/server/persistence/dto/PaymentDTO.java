@@ -28,6 +28,7 @@ public class PaymentDTO implements DTO {
                 .createdAt(createdAt)
                 .paymentCodeDTO(paymentCodeDTO)
                 .paymentStatusDTO(paymentStatusDTO)
-                .paymentMethodDTO(paymentMethodDTO);
+                .paymentMethodDTO(paymentMethodDTO)
+                .build();
     }
 }

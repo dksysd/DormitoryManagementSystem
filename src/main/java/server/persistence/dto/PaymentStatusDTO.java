@@ -19,6 +19,7 @@ public class PaymentStatusDTO implements DTO {
         return (Model) PaymentStatus.builder()
                 .id(id)
                 .statusName(statusName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

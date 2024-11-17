@@ -29,6 +29,7 @@ public class Subject implements Model{
                 .credit(credit)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .professorId(professorId);
+                .professorId(professorId)
+                .build();
     }
 }

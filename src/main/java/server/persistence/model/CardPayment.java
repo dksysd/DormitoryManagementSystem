@@ -25,6 +25,7 @@ public class CardPayment implements Model {
                 .cardNumber(cardNumber)
                 .createdAt(createdAt)
                 .cardIssuerDTO(cardIssuerDTO)
-                .paymentDTO(paymentDTO);
+                .paymentDTO(paymentDTO)
+                .build();
     }
 }

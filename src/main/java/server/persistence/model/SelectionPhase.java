@@ -31,6 +31,7 @@ public class SelectionPhase implements Model {
                 .endAt(endAt)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .selectionScheduleDTO(selectionScheduleDTO);
+                .selectionScheduleDTO(selectionScheduleDTO)
+                .build();
     }
 }

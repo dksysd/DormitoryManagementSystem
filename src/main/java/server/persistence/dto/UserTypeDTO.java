@@ -20,6 +20,7 @@ public class UserTypeDTO implements DTO {
         return (Model) UserType.builder()
                 .id(id)
                 .typeName(typeName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

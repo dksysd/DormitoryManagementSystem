@@ -17,6 +17,7 @@ public class Login implements Model{
     public DTO toDTO() {
         return (DTO) LoginDTO.builder()
                 .id(id)
-                .password(password);
+                .password(password)
+                .build();
     }
 }

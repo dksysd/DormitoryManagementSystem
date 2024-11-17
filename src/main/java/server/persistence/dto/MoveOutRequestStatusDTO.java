@@ -19,6 +19,7 @@ public class MoveOutRequestStatusDTO implements DTO {
         return (Model) MoveOutRequestStatus.builder()
                 .id(id)
                 .statusName(statusName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

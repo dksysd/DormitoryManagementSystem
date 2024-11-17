@@ -20,6 +20,7 @@ public class PaymentHistoryDTO implements DTO {
         return (Model) PaymentHistory.builder()
                 .id(id)
                 .userDTO(userDTO)
-                .paymentDTO(paymentDTO);
+                .paymentDTO(paymentDTO)
+                .build();
     }
 }

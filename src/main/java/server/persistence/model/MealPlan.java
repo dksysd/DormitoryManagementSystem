@@ -21,6 +21,7 @@ public class MealPlan implements Model {
                 .id(id)
                 .price(price)
                 .mealPlanTypeDTO(mealPlanTypeDTO)
-                .dormitoryDTO(dormitoryDTO);
+                .dormitoryDTO(dormitoryDTO)
+                .build();
     }
 }

@@ -18,6 +18,7 @@ public class PaymentCode implements Model {
         return (DTO) PaymentCodeDTO.builder()
                 .id(id)
                 .paymentCode(paymentCode)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

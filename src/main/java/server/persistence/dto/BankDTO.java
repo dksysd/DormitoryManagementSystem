@@ -19,6 +19,7 @@ public class BankDTO implements DTO {
         return (Model) Bank.builder()
                 .id(id)
                 .bankName(bankName)
-                .bankCode(bankCode);
+                .bankCode(bankCode)
+                .build();
     }
 }

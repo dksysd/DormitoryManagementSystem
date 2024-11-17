@@ -26,6 +26,7 @@ public class Grade implements Model{
                 .updatedAt(updatedAt)
                 .subjectDTO(subjectDTO)
                 .userDTO(userDTO)
-                .gradeLevelDTO(gradeLevelDTO);
+                .gradeLevelDTO(gradeLevelDTO)
+                .build();
     }
 }

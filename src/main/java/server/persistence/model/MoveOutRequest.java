@@ -31,6 +31,7 @@ public class MoveOutRequest implements Model {
                 .updatedAt(updatedAt)
                 .moveOutRequestStatusDTO(moveOutRequestStatusDTO)
                 .selectionDTO(selectionDTO)
-                .bankDTO(bankDTO);
+                .bankDTO(bankDTO)
+                .build();
     }
 }

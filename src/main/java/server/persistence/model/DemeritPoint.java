@@ -25,6 +25,7 @@ public class DemeritPoint implements Model {
                 .description(description)
                 .createdAt(createdAt)
                 .userDTO(userDTO)
-                .roomAssignmentDTO(roomAssignmentDTO);
+                .roomAssignmentDTO(roomAssignmentDTO)
+                .build();
     }
 }

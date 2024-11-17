@@ -19,6 +19,7 @@ public class SelectionPayment implements Model {
         return (DTO) SelectionPaymentDTO.builder()
                 .id(id)
                 .selectionDTO(selectionDTO)
-                .paymentDTO(paymentDTO);
+                .paymentDTO(paymentDTO)
+                .build();
     }
 }

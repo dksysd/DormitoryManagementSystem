@@ -27,6 +27,7 @@ public class DormitoryRoomType implements Model {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .roomTypeDTO(roomTypeDTO)
-                .dormitoryDTO(dormitoryDTO);
+                .dormitoryDTO(dormitoryDTO)
+                .build();
     }
 }

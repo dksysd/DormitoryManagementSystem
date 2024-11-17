@@ -18,6 +18,7 @@ public class GradeLevel implements Model {
         return (DTO) GradeLevelDTO.builder()
                 .id(id)
                 .levelName(levelName)
-                .scaledScore(scaledScore);
+                .scaledScore(scaledScore)
+                .build();
     }
 }

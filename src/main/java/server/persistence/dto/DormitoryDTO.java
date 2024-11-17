@@ -19,6 +19,7 @@ public class DormitoryDTO implements DTO {
         return (Model) Dormitory.builder()
                 .id(id)
                 .name(name)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

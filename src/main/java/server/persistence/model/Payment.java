@@ -27,6 +27,7 @@ public class Payment implements Model {
                 .createdAt(createdAt)
                 .paymentCodeDTO(paymentCodeDTO)
                 .paymentStatusDTO(paymentStatusDTO)
-                .paymentMethodDTO(paymentMethodDTO);
+                .paymentMethodDTO(paymentMethodDTO)
+                .build();
     }
 }

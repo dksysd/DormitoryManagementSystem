@@ -27,6 +27,7 @@ public class BankTransferPayment implements Model {
                 .accountHolderName(accountHolderName)
                 .createdAt(createdAt)
                 .paymentDTO(paymentDTO)
-                .bankDTO(bankDTO);
+                .bankDTO(bankDTO)
+                .build();
     }
 }

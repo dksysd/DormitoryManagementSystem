@@ -27,6 +27,7 @@ public class AddressDTO implements DTO {
                 ._do(_do)
                 .si(si)
                 .detailAddress(detailAddress)
-                .createdAt(createdAt);
+                .createdAt(createdAt)
+                .build();
     }
 }

@@ -22,6 +22,7 @@ public class MealPlanDTO implements DTO {
                 .id(id)
                 .price(price)
                 .mealPlanTypeDTO(mealPlanTypeDTO)
-                .dormitoryDTO(dormitoryDTO);
+                .dormitoryDTO(dormitoryDTO)
+                .build();
     }
 }

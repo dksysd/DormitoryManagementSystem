@@ -29,6 +29,7 @@ public class PaymentRefund implements Model {
                 .accountHolderName(accountHolderName)
                 .createdAt(createdAt)
                 .bankDTO(bankDTO)
-                .paymentDTO(paymentDTO);
+                .paymentDTO(paymentDTO)
+                .build();
     }
 }

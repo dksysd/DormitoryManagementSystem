@@ -19,6 +19,7 @@ public class UserType implements Model {
         return (DTO) UserTypeDTO.builder()
                 .id(id)
                 .typeName(typeName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

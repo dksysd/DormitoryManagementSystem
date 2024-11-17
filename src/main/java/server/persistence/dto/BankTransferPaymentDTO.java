@@ -28,6 +28,7 @@ public class BankTransferPaymentDTO implements DTO {
                 .accountHolderName(accountHolderName)
                 .createdAt(createdAt)
                 .paymentDTO(paymentDTO)
-                .bankDTO(bankDTO);
+                .bankDTO(bankDTO)
+                .build();
     }
 }

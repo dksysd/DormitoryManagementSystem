@@ -27,6 +27,7 @@ public class GradeDTO implements DTO{
                 .updatedAt(updatedAt)
                 .subjectDTO(subjectDTO)
                 .userDTO(userDTO)
-                .gradeLevelDTO(gradeLevelDTO);
+                .gradeLevelDTO(gradeLevelDTO)
+                .build();
     }
 }

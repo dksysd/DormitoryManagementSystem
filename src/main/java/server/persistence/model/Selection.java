@@ -28,6 +28,7 @@ public class Selection implements Model {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .selectionApplicationStatusDTO(selectionApplicationStatusDTO)
-                .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO);
+                .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO)
+                .build();
     }
 }

@@ -19,6 +19,7 @@ public class MealPlanTypeDTO implements DTO {
         return (Model) MealPlanType.builder()
                 .id(id)
                 .typeName(typeName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

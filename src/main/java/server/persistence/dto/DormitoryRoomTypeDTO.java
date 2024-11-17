@@ -28,6 +28,7 @@ public class DormitoryRoomTypeDTO implements DTO {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .roomTypeDTO(roomTypeDTO)
-                .dormitoryDTO(dormitoryDTO);
+                .dormitoryDTO(dormitoryDTO)
+                .build();
     }
 }

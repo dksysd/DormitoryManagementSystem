@@ -30,6 +30,7 @@ public class PaymentRefundDTO implements DTO {
                 .accountHolderName(accountHolderName)
                 .createdAt(createdAt)
                 .bankDTO(bankDTO)
-                .paymentDTO(paymentDTO);
+                .paymentDTO(paymentDTO)
+                .build();
     }
 }

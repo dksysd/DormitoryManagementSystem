@@ -24,6 +24,7 @@ public class Image implements Model {
                 .data(data)
                 .width(width)
                 .height(height)
-                .extension(extension);
+                .extension(extension)
+                .build();
     }
 }

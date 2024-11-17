@@ -29,6 +29,7 @@ public class SelectionDTO implements DTO {
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .selectionApplicationStatusDTO(selectionApplicationStatusDTO)
-                .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO);
+                .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO)
+                .build();
     }
 }

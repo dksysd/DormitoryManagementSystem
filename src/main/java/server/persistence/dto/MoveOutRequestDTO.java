@@ -32,6 +32,7 @@ public class MoveOutRequestDTO implements DTO {
                 .updatedAt(updatedAt)
                 .moveOutRequestStatusDTO(moveOutRequestStatusDTO)
                 .selectionDTO(selectionDTO)
-                .bankDTO(bankDTO);
+                .bankDTO(bankDTO)
+                .build();
     }
 }

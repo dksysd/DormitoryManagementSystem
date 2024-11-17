@@ -21,6 +21,7 @@ public class SelectionScheduleDTO implements DTO {
         return (Model) SelectionSchedule.builder()
                 .id(id)
                 .title(title)
-                .createdAt(createdAt);
+                .createdAt(createdAt)
+                .build();
     }
 }

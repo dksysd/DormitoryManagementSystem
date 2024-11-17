@@ -19,6 +19,7 @@ public class SelectionApplicationStatusDTO implements DTO {
         return (Model) SelectionApplicationStatus.builder()
                 .id(id)
                 .statusName(statusName)
-                .description(description);
+                .description(description)
+                .build();
     }
 }

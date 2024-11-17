@@ -22,6 +22,7 @@ public class SelectionQuotaDTO implements DTO {
                 .id(id)
                 .quota(quota)
                 .selectionScheduleDTO(selectionScheduleDTO)
-                .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO);
+                .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
+                .build();
     }
 }

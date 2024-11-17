@@ -23,6 +23,7 @@ public class Room implements Model {
                 .id(id)
                 .roomNumber(roomNumber)
                 .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
-                .dormitoryDTO(dormitoryDTO);
+                .dormitoryDTO(dormitoryDTO)
+                .build();
     }
 }
