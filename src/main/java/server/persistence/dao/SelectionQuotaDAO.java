@@ -1,7 +1,9 @@
 package server.persistence.dao;
 
+import server.persistence.dto.DormitoryRoomTypeDTO;
 import server.persistence.dto.SelectionQuotaDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.SelectionScheduleDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +13,9 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
 
     @Override
     public SelectionQuotaDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, quota, selection_schedule_id, dormitory_room_type_id FROM selection_quotas WHERE id = ?";
+        String query = "SELECT s.id, s.quota, s.selection_schedule_id, s.dormitory_room_type_id"+
+                " FROM selection_quotas s"+
+                "WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -78,11 +82,19 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
     }
 
     private SelectionQuotaDTO mapRowToSelectionQuotaDTO(ResultSet resultSet) throws SQLException {
+        SelectionScheduleDTO scheduleDTO = SelectionScheduleDTO.builder()
+                .id(resultSet.getInt("selection_schedule_id"))
+                .build();
+
+        DormitoryRoomTypeDTO dormitoryRoomTypeDTO = DormitoryRoomTypeDTO.builder()
+                .id(resultSet.getInt("dormitory_room_type_id"))
+                .build();
+
         return SelectionQuotaDTO.builder()
                 .id(resultSet.getInt("id"))
                 .quota(resultSet.getInt("quota"))
-                .selectionScheduleDTO(new SelectionScheduleDTO(resultSet.getInt("selection_schedule_id"))) // ID만 세팅
-                .dormitoryRoomTypeDTO(new DormitoryRoomTypeDTO(resultSet.getInt("dormitory_room_type_id"))) // ID만 세팅
+                .selectionScheduleDTO(scheduleDTO) // ID만 세팅
+                .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO) // ID만 세팅
                 .build();
     }
 }

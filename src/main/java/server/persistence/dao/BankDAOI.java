@@ -10,8 +10,8 @@ public interface BankDAOI {
     BankDTO findById(Integer id) throws SQLException;
     BankDTO findByName(String name) throws SQLException;
     BankDTO findByCode(String code) throws SQLException;
-    public List<BankDTO> findAll() throws SQLException;
-    public void save(BankDTO bankDTO) throws SQLException;
-    public void update(BankDTO bankDTO) throws SQLException;
-    public void delete(Integer id) throws SQLException;
+    List<BankDTO> findAll() throws SQLException;
+    void save(BankDTO bankDTO) throws SQLException;
+    void update(BankDTO bankDTO) throws SQLException;
+    void delete(Integer id) throws SQLException;
 }

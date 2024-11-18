@@ -2,6 +2,7 @@ package server.persistence.dao;
 
 import server.persistence.dto.SelectionPhaseDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.SelectionScheduleDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -99,6 +100,10 @@ public class SelectionPhaseDAO implements SelectionPhaseDAOI {
     }
 
     private SelectionPhaseDTO mapRowToSelectionPhaseDTO(ResultSet resultSet) throws SQLException {
+        SelectionScheduleDTO selectionScheduleDTO = SelectionScheduleDTO.builder()
+                .id(resultSet.getInt("selection_schedule_id"))
+                .build();
+
         return SelectionPhaseDTO.builder()
                 .id(resultSet.getInt("id"))
                 .phaseName(resultSet.getString("phase_name"))
@@ -107,7 +112,7 @@ public class SelectionPhaseDAO implements SelectionPhaseDAOI {
                 .endAt(resultSet.getTimestamp("end_at").toLocalDateTime())
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
-                .selectionScheduleDTO(new SelectionScheduleDTO(resultSet.getInt("selection_schedule_id"))) // ID만 세팅
+                .selectionScheduleDTO(selectionScheduleDTO) // ID만 세팅
                 .build();
     }
 }

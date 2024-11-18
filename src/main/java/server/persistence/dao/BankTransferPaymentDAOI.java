@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface BankTransferPaymentDAOI {
     BankTransferPaymentDTO findById(Integer id) throws SQLException;
-    public List<BankTransferPaymentDTO> findAll() throws SQLException;
-    public void save(BankTransferPaymentDTO bankTransferPaymentDTO) throws SQLException;
-    public void update(BankTransferPaymentDTO bankTransferPaymentDTO) throws SQLException;
-    public void delete(Integer id) throws SQLException;
+    List<BankTransferPaymentDTO> findAll() throws SQLException;
+    void save(BankTransferPaymentDTO bankTransferPaymentDTO) throws SQLException;
+    void update(BankTransferPaymentDTO bankTransferPaymentDTO) throws SQLException;
+    void delete(Integer id) throws SQLException;
 }

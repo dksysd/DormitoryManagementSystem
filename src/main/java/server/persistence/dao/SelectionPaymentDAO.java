@@ -1,6 +1,5 @@
-package server.persistence.dao.impl;
+package server.persistence.dao;
 
-import server.persistence.dao.SelectionPaymentDAOI;
 import server.persistence.dto.SelectionPaymentDTO;
 import server.persistence.dto.SelectionDTO;
 import server.persistence.dto.PaymentDTO;

@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface AddressDAOI {
     AddressDTO findById(Integer id) throws SQLException;
-    public List<AddressDTO> findAll() throws SQLException;
-    public void save(AddressDTO addressDTO) throws SQLException;
-    public void update(AddressDTO addressDTO) throws SQLException;
-    public void delete(Integer id) throws SQLException;
+    List<AddressDTO> findAll() throws SQLException;
+    void save(AddressDTO addressDTO) throws SQLException;
+    void update(AddressDTO addressDTO) throws SQLException;
+    void delete(Integer id) throws SQLException;
 }
