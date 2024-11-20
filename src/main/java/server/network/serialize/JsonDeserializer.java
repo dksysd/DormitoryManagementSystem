@@ -1,10 +1,7 @@
 package server.network.serialize;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JsonDeserializer {
     private static final ThreadLocal<Map<Integer, Object>> objectMap = new ThreadLocal<>();
@@ -30,7 +27,7 @@ public class JsonDeserializer {
 
         switch (current) {
             case '{':
-                return parseObject(parser, type);
+                return isMapType(type) ? parseMap(parser, type) : parseObject(parser, type);
             case '[':
                 return parseArray(parser, type);
             case 't':
@@ -49,14 +46,64 @@ public class JsonDeserializer {
         }
     }
 
+    private static boolean isMapType(Type type) {
+        if (type instanceof ParameterizedType parameterizedType) {
+            Type rawType = parameterizedType.getRawType(); // 원시 타입 추출
+            return rawType instanceof Class<?> && Map.class.isAssignableFrom((Class<?>) rawType);
+        }
+        return type instanceof Class<?> && Map.class.isAssignableFrom((Class<?>) type);
+    }
+
+    private static Map<?, ?> parseMap(JsonParser parser, Type type) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        parser.expect('{');
+
+        Map map = null;
+        if (type instanceof ParameterizedType parameterizedType) {
+            Type rawType = parameterizedType.getRawType();
+            if (rawType instanceof Class<?> clazz) {
+                if (clazz == Map.class) {
+                    map = new HashMap();
+                } else {
+                    map = (Map) clazz.getDeclaredConstructor().newInstance();
+                }
+            }
+        }
+
+        if (map == null) {
+            throw new IllegalArgumentException("Unrecognized type: " + type);
+        }
+
+        while (true) {
+            if (parser.peek() == '}') {
+                parser.next();
+                break;
+            }
+
+//            String keyString = parser.parseString();
+            Object key = parseValue(parser, type);
+
+            parser.expect(':');
+//            String valueString = parser.parseString();
+            Object value = parseValue(parser, type);
+
+            map.put(key, value);
+
+            parser.skipWhitespace();
+            if (parser.peek() == ',') {
+                parser.next();
+            }
+        }
+
+        return map;
+    }
+
     private static Object parseObject(JsonParser parser, Type type) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         parser.expect('{');
 
-        if (!(type instanceof Class<?>)) {
+        if (!(type instanceof Class<?> clazz)) {
             throw new IllegalArgumentException("Unrecognized object type: " + type);
         }
 
-        Class<?> clazz = (Class<?>) type;
         Constructor<?> constructor = clazz.getDeclaredConstructor();
         constructor.setAccessible(true);
 
@@ -67,7 +114,7 @@ public class JsonDeserializer {
         parser.expect(':');
 
         Integer id;
-        if(fieldName.equals("$ref")) {
+        if (fieldName.equals("$ref")) {
             Map<Integer, Object> objectHashMap = objectMap.get();
             instance = objectHashMap.get((Integer) parseValue(parser, Integer.TYPE));
             parser.skipWhitespace();
@@ -75,7 +122,7 @@ public class JsonDeserializer {
                 parser.next();
             }
             return instance;
-        } else if(fieldName.equals("$id")) {
+        } else if (fieldName.equals("$id")) {
             id = (Integer) parseValue(parser, Integer.TYPE);
         } else {
             throw new IllegalArgumentException("Object must has rer or id field");
@@ -104,6 +151,7 @@ public class JsonDeserializer {
 
             Field field = fields.get(fieldName);
             if (field == null) {
+                // todo parseValue의 값을 사용하지 않음
                 parseValue(parser, Object.class);
             } else {
                 Object value = parseValue(parser, field.getGenericType());

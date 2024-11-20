@@ -83,9 +83,8 @@ public class JsonSerializer {
             }
             first = false;
 
-            json.append("\"")
-                    .append(entry.getKey().toString())
-                    .append("\":")
+            json.append(objectToJson(entry.getKey()))
+                    .append(":")
                     .append(objectToJson(entry.getValue()));
         }
 
