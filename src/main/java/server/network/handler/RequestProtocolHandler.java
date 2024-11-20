@@ -18,8 +18,8 @@ public class RequestProtocolHandler implements Handler {
 
     private void handleProtocol(Protocol protocol) {
         int startLineDelimiterIndex = findDelimiter(data, 0);
-        int requestHeaderDelimiterIndex = findDelimiter(data, startLineDelimiterIndex + 1);
-        int actualBodyLength = data.length - requestHeaderDelimiterIndex;
+        int requestHeaderDelimiterIndex = findDelimiter(data, startLineDelimiterIndex + Protocol.DelimiterBytes.length);
+        int actualBodyLength = data.length - requestHeaderDelimiterIndex - Protocol.DelimiterBytes.length;
         if (protocol.getHeader().getBodyLength() != actualBodyLength) {
             throw new IllegalArgumentException("Request body length does not match actual body length");
         }
