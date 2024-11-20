@@ -12,8 +12,11 @@ public interface ProtocolSerializable extends Serializable {
 
         StringBuilder stringBuilder = new StringBuilder();
         switch (protocol) {
-            case RequestProtocol requestProtocol ->
-                    stringBuilder.append(requestProtocol.getMethod()).append(" ").append(requestProtocol.getUrl());
+            case RequestProtocol requestProtocol -> {
+                stringBuilder.append(requestProtocol.getMethod()).append(" ").append(requestProtocol.getUrl());
+                protocol.getHeader().setBodyLength(bodyData.length);
+            }
+
             case ResponseProtocol responseProtocol -> {
                 stringBuilder.append(responseProtocol.getStatus());
                 protocol.getHeader().setBodyLength(bodyData.length);
