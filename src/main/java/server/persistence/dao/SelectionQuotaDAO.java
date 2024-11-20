@@ -13,9 +13,7 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
 
     @Override
     public SelectionQuotaDTO findById(Integer id) throws SQLException {
-        String query = "SELECT s.id, s.quota, s.selection_schedule_id, s.dormitory_room_type_id"+
-                " FROM selection_quotas s"+
-                "WHERE id = ?";
+        String query = "SELECT s.id, s.quota, s.selection_schedule_id, s.dormitory_room_type_id FROM selection_quotas s WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
