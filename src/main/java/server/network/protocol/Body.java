@@ -2,6 +2,7 @@ package server.network.protocol;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import server.network.serialize.Serializable;
 
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@ToString
 public class Body implements Serializable {
     private final Map<String, Object> data;
 

@@ -3,7 +3,6 @@ package server.network.protocol;
 import lombok.*;
 
 @Getter
-@Builder
 @AllArgsConstructor
 public abstract class Protocol {
     public static final String Delimiter = "\r\n\r\n";
@@ -15,5 +14,13 @@ public abstract class Protocol {
     public Protocol() {
         header = new Header();
         body = new Body();
+    }
+
+    @Override
+    public String toString() {
+        return "Protocol{" +
+                "header=" + header +
+                ", body=" + body +
+                '}';
     }
 }

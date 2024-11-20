@@ -45,4 +45,12 @@ public class ResponseProtocol extends Protocol {
         super(header, body);
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        String str = super.toString();
+        return "ResponseProtocol{" +
+                "status=" + status + "," + str +
+                '}';
+    }
 }

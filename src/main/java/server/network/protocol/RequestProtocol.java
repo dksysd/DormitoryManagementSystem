@@ -2,6 +2,7 @@ package server.network.protocol;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -21,5 +22,14 @@ public class RequestProtocol extends Protocol {
         super(header, body);
         this.method = method;
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        String str = super.toString();
+        return "RequestProtocol{" +
+                "method=" + method +
+                ", url='" + url + "\'," + str +
+                '}';
     }
 }
