@@ -15,11 +15,13 @@ public class SocketHandler implements Runnable, Handler {
     private final BufferedOutputStream out;
     private boolean isRunning = true;
     private final AtomicInteger connections;
+    private final String host;
 
     public SocketHandler(Socket socket, AtomicInteger connections) throws IOException {
         in = new BufferedInputStream(socket.getInputStream());
         out = new BufferedOutputStream(socket.getOutputStream());
         this.connections = connections;
+        this.host = socket.getInetAddress().getHostAddress();
     }
 
     @Override
@@ -29,7 +31,7 @@ public class SocketHandler implements Runnable, Handler {
                 handle();
             }
         } catch (SocketException e) {
-            System.out.println(e.getMessage());
+            System.out.println("(" + host + ") " + e.getMessage());
             isRunning = false;
             connections.decrementAndGet();
             System.out.println("Client disconnected. [Connections : " + connections.get() + "]");
@@ -41,17 +43,26 @@ public class SocketHandler implements Runnable, Handler {
 
     @Override
     public void handle() throws Exception {
+        StringBuilder requestInfo = new StringBuilder();
+        long startTime = System.currentTimeMillis();
+        requestInfo.append("(").append(host).append(") ");
+
         ResponseProtocol responseProtocol = new ResponseProtocol();
 
         try {
             byte[] requestData = readData();
             RequestProtocol requestProtocol = ProtocolSerializable.deserialize(requestData, RequestProtocol.class);
+
+            requestInfo.append(requestProtocol.getMethod().toString()).append(" - ").append(requestProtocol.getUrl());
+
             RequestProtocolHandler requestProtocolHandler = new RequestProtocolHandler(requestData, requestProtocol);
             requestProtocolHandler.handle();
 
             RouterHandler routerHandler = new RouterHandler(requestProtocol, responseProtocol);
             routerHandler.handle();
         } catch (Exception e) {
+            requestInfo.append("ERROR - ").append(e.getMessage());
+
             responseProtocol = new ResponseProtocol();
             responseProtocol.setStatus(ResponseProtocol.Status.InternalServerError);
             responseProtocol.getHeader().setContentType(Header.ContentType.APPLICATION_JSON);
@@ -61,6 +72,8 @@ public class SocketHandler implements Runnable, Handler {
         byte[] responseData = ProtocolSerializable.serialize(responseProtocol);
         out.write(responseData);
         out.flush();
+
+        System.out.println(requestInfo + " [" + (System.currentTimeMillis() - startTime) + "ms]");
     }
 
     private byte[] readData() throws IOException {
