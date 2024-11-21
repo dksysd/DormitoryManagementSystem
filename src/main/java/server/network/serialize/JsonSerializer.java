@@ -46,6 +46,8 @@ public class JsonSerializer {
         objectMap.get().put(object, counterValue++);
         counter.set(counterValue);
 
+        json.append(",\"$type\":\"").append(object.getClass().getName()).append("\"");
+
         Field[] fields = object.getClass().getDeclaredFields();
 
         for (Field field : fields) {

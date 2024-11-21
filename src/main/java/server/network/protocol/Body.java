@@ -3,7 +3,7 @@ package server.network.protocol;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import server.network.serialize.Serializable;
+import server.network.serialize.JsonSerializable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public class Body implements Serializable {
+public class Body implements JsonSerializable {
     private final Map<String, Object> data;
 
     public Body() {

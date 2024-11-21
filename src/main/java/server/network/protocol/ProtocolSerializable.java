@@ -1,14 +1,14 @@
 package server.network.protocol;
 
-import server.network.serialize.Serializable;
+import server.network.serialize.JsonSerializable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-public interface ProtocolSerializable extends Serializable {
+public interface ProtocolSerializable {
     static byte[] serialize(Protocol protocol) throws Exception {
-        byte[] bodyData = Serializable.serialize(protocol.getBody());
+        byte[] bodyData = JsonSerializable.serialize(protocol.getBody());
 
         StringBuilder stringBuilder = new StringBuilder();
         switch (protocol) {
@@ -47,7 +47,7 @@ public interface ProtocolSerializable extends Serializable {
         StringTokenizer startLineTokenizer = new StringTokenizer(stringTokenizer.nextToken());
         StringTokenizer headerTokenizer = new StringTokenizer(stringTokenizer.nextToken());
         Header header = new Header(headerTokenizer.nextToken(), Header.ContentType.valueOf(headerTokenizer.nextToken()), Integer.parseInt(headerTokenizer.nextToken()));
-        Body body = Serializable.deserialize(stringTokenizer.nextToken().getBytes(StandardCharsets.UTF_8), Body.class);
+        Body body = JsonSerializable.deserialize(stringTokenizer.nextToken().getBytes(StandardCharsets.UTF_8), Body.class);
 
         String firstWord = startLineTokenizer.nextToken();
         if (Arrays.stream(RequestProtocol.Method.values()).anyMatch(m -> m.name().equals(firstWord))) {
