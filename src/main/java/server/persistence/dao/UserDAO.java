@@ -1,9 +1,6 @@
 package server.persistence.dao;
 
-import server.persistence.dto.UserDTO;
-import server.persistence.dto.UserTypeDTO;
-import server.persistence.dto.GenderCodeDTO;
-import server.persistence.dto.AddressDTO;
+import server.persistence.dto.*;
 import server.config.DatabaseConnectionPool;
 
 import java.sql.*;
@@ -15,12 +12,13 @@ public class UserDAO implements UserDAOI {
     @Override
     public UserDTO findById(Integer id) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, " +
+                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, a.address AS user_address " +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
                 "LEFT JOIN addresses a ON u.address_id = a.id " +
+                "LEFT JOIN images i ON u.profile_image = i.id" +
                 "WHERE u.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -37,12 +35,13 @@ public class UserDAO implements UserDAOI {
     @Override
     public UserDTO findByUid(String uid) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, " +
+                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image" +
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, a.address AS user_address " +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
                 "LEFT JOIN addresses a ON u.address_id = a.id " +
+                "LEFT JOIN images i ON u.profile_image = i.id" +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -75,12 +74,13 @@ public class UserDAO implements UserDAOI {
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, " +
+                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image" +
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, a.address AS user_address " +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
-                "LEFT JOIN addresses a ON u.address_id = a.id";
+                "LEFT JOIN addresses a ON u.address_id = a.id" +
+                "LEFT JOIN images i ON u.profile_image = i.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -94,7 +94,7 @@ public class UserDAO implements UserDAOI {
 
     @Override
     public void save(UserDTO userDTO) throws SQLException {
-        String query = "INSERT INTO users (uid, login_id, user_name, phone_number, created_at, updated_at, user_type_id, gender_code_id, address_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (uid, login_id, user_name, phone_number, created_at, updated_at, user_type_id, gender_code_id, address_id, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -107,13 +107,14 @@ public class UserDAO implements UserDAOI {
             preparedStatement.setInt(7, userDTO.getUserTypeDTO() != null ? userDTO.getUserTypeDTO().getId() : null);
             preparedStatement.setInt(8, userDTO.getGenderCodeDTO() != null ? userDTO.getGenderCodeDTO().getId() : null);
             preparedStatement.setInt(9, userDTO.getAddressDTO() != null ? userDTO.getAddressDTO().getId() : null);
+            preparedStatement.setInt(10, userDTO.getImageDTO() != null ? userDTO.getImageDTO().getId() : null);
             preparedStatement.executeUpdate();
         }
     }
 
     @Override
     public void update(UserDTO userDTO) throws SQLException {
-        String query = "UPDATE users SET uid = ?, login_id = ?, user_name = ?, phone_number = ?, created_at = ?, updated_at = ?, user_type_id = ?, gender_code_id = ?, address_id = ? WHERE id = ?";
+        String query = "UPDATE users SET uid = ?, login_id = ?, user_name = ?, phone_number = ?, created_at = ?, updated_at = ?, user_type_id = ?, gender_code_id = ?, address_id = ?,profile_image = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -127,6 +128,7 @@ public class UserDAO implements UserDAOI {
             preparedStatement.setInt(8, userDTO.getGenderCodeDTO() != null ? userDTO.getGenderCodeDTO().getId() : null);
             preparedStatement.setInt(9, userDTO.getAddressDTO() != null ? userDTO.getAddressDTO().getId() : null);
             preparedStatement.setInt(10, userDTO.getId());
+            preparedStatement.setInt(11,userDTO.getImageDTO()!= null ? userDTO.getImageDTO().getId() : null);
             preparedStatement.executeUpdate();
         }
     }
@@ -161,6 +163,12 @@ public class UserDAO implements UserDAOI {
                 .detailAddress(resultSet.getString("detail_address"))
                 .build();
 
+        ImageDTO imageDTO = ImageDTO.builder()
+                .id(resultSet.getInt("profile_image"))
+                .name(resultSet.getString("name"))
+                .extension(resultSet.getString("extension"))
+                .build();
+
         return UserDTO.builder()
                 .id(resultSet.getInt("id"))
                 .uid(resultSet.getString("uid"))
@@ -171,7 +179,8 @@ public class UserDAO implements UserDAOI {
                 .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
                 .userTypeDTO(userTypeDTO) // 사용자 유형 DTO 추가
                 .genderCodeDTO(genderCodeDTO) // 성별 코드 DTO 추가
-                .addressDTO(addressDTO) // 주소 DTO 추가
+                .addressDTO(addressDTO)
+                .imageDTO(imageDTO)// 주소 DTO 추가
                 .build();
     }
 
