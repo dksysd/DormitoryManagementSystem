@@ -13,7 +13,9 @@ public class UserDAO implements UserDAOI {
     public UserDTO findById(Integer id) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
                 "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
-                "ut.type_name AS user_type_name, gc.gender_code AS gender_code, a.address AS user_address " +
+                "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
+                "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
+                "i.name AS image_name, i.extension AS extension" +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
@@ -35,8 +37,10 @@ public class UserDAO implements UserDAOI {
     @Override
     public UserDTO findByUid(String uid) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image" +
-                "ut.type_name AS user_type_name, gc.gender_code AS gender_code, a.address AS user_address " +
+                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
+                "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
+                "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
+                "i.name AS image_name, i.extension AS extension" +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
@@ -74,8 +78,10 @@ public class UserDAO implements UserDAOI {
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image" +
-                "ut.type_name AS user_type_name, gc.gender_code AS gender_code, a.address AS user_address " +
+                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
+                "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
+                "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
+                "i.name AS image_name, i.extension AS extension" +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
@@ -158,15 +164,15 @@ public class UserDAO implements UserDAOI {
         AddressDTO addressDTO = AddressDTO.builder()
                 .id(resultSet.getInt("address_id"))
                 .postalCode(resultSet.getString("postal_code")) // 주소 추가
-                ._do(resultSet.getString("do"))
-                .si(resultSet.getString("si"))
+                ._do(resultSet.getString("address_do"))
+                .si(resultSet.getString("address_si"))
                 .detailAddress(resultSet.getString("detail_address"))
                 .build();
 
         ImageDTO imageDTO = ImageDTO.builder()
                 .id(resultSet.getInt("profile_image"))
-                .name(resultSet.getString("name"))
-                .extension(resultSet.getString("extension"))
+                .name(resultSet.getString("image_name"))
+                .extension(resultSet.getString("image_extension"))
                 .build();
 
         return UserDTO.builder()
