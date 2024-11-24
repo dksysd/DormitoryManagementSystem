@@ -1,3 +1,15 @@
+# create image storage
+create table if not exists images
+(
+    id        int primary key auto_increment,
+    name      varchar(200) not null,
+    data      mediumblob   not null,
+    width     int          not null,
+    height    int          not null,
+    extension varchar(5)   not null,
+    check ( width > 0 and height > 0 )
+);
+
 # create user management system
 create table if not exists user_types
 (
@@ -37,9 +49,11 @@ create table if not exists users
     user_type_id   int          not null,
     gender_code_id int          not null,
     address_id     int          not null,
+    profile_image  int,
     foreign key (user_type_id) references user_types (id) on delete restrict,
     foreign key (gender_code_id) references gender_codes (id) on delete restrict,
     foreign key (address_id) references address (id) on delete restrict,
+    foreign key (profile_image) references images (id) on delete set null,
     index (phone_number)
 );
 
@@ -292,17 +306,6 @@ create table if not exists selection_applications
     unique key (selection_schedule_id, preference, user_id),
     unique key (selection_schedule_id, dormitory_room_type_id, user_id),
     check ( preference > 0 )
-);
-
-create table if not exists images
-(
-    id        int primary key auto_increment,
-    name      varchar(200) not null,
-    data      mediumblob   not null,
-    width     int          not null,
-    height    int          not null,
-    extension varchar(5)   not null,
-    check ( width > 0 and height > 0 )
 );
 
 create table if not exists selections
