@@ -44,12 +44,13 @@ public class SocketHandler implements Runnable, Handler {
     @Override
     public void handle() throws Exception {
         StringBuilder requestInfo = new StringBuilder();
-        long startTime = System.currentTimeMillis();
+        long startTime = 0;
         requestInfo.append("(").append(host).append(") ");
 
         ResponseProtocol responseProtocol = new ResponseProtocol();
 
         try {
+            startTime = System.currentTimeMillis();
             byte[] requestData = readData();
             RequestProtocol requestProtocol = ProtocolSerializable.deserialize(requestData, RequestProtocol.class);
 
