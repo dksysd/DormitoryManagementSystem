@@ -15,5 +15,6 @@ public class Header {
 
     private String host;
     private ContentType contentType;
+    private String sessionId;
     private int bodyLength;
 }
