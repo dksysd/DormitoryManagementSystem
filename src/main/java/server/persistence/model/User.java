@@ -23,6 +23,7 @@ public class User implements Model {
     private UserTypeDTO userTypeDTO;
     private GenderCodeDTO genderCodeDTO;
     private AddressDTO addressDTO;
+    private ImageDTO imageDTO;
 
     @Override
     public DTO toDTO() {
@@ -37,6 +38,7 @@ public class User implements Model {
                 .userTypeDTO(userTypeDTO)
                 .genderCodeDTO(genderCodeDTO)
                 .addressDTO(addressDTO)
+                .imageDTO(imageDTO)
                 .build();
     }
 }
