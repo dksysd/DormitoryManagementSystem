@@ -9,10 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 public class OptimizedServer {
     private final int port;
@@ -20,6 +17,7 @@ public class OptimizedServer {
     private final ExecutorService workExecutor;
     private final BlockingQueue<WorkItem> workQueue;
     private final Router router;
+    private final SessionManger sessionManger;
 
     public OptimizedServer() {
         System.out.println("Initializing Optimized Server");
@@ -27,6 +25,7 @@ public class OptimizedServer {
         Config config = Config.getInstance();
         port = Integer.parseInt(config.get("PORT").replaceAll("_", ""));
         workerThreads = Integer.parseInt(config.get("WORKER_THREADS").replaceAll("_", ""));
+        sessionManger = SessionManger.getInstance();
 
         System.out.println("Initializing WorkerThreads...");
         workExecutor = Executors.newFixedThreadPool(workerThreads);
@@ -60,6 +59,7 @@ public class OptimizedServer {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
                     handleClient(client);
                 }
 
@@ -137,6 +137,11 @@ public class OptimizedServer {
             return;
         }
 
+        if (requestProtocol.getHeader().getSessionId().equals("null")) {
+            String sessionId = sessionManger.createSession();
+            requestProtocol.getHeader().setSessionId(sessionId);
+        }
+
         ResponseProtocol responseProtocol;
         try {
             isValidProtocolData(workItem.data, requestProtocol);
@@ -153,6 +158,12 @@ public class OptimizedServer {
             responseProtocol.getHeader().setContentType(Header.ContentType.APPLICATION_JSON);
         }
 
+        responseProtocol.getHeader().setSessionId(requestProtocol.getHeader().getSessionId());
+        try {
+            responseProtocol.getHeader().setHost(workItem.client.getLocalAddress().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         response(workItem, requestProtocol, responseProtocol);
     }
 
@@ -164,7 +175,7 @@ public class OptimizedServer {
 
                 @Override
                 public void completed(Integer result, Void attachment) {
-                    if(responseBuffer.hasRemaining()) {
+                    if (responseBuffer.hasRemaining()) {
                         workItem.client.write(responseBuffer, null, this);
                     } else {
                         StringBuilder log = new StringBuilder();
@@ -175,7 +186,7 @@ public class OptimizedServer {
                             address = "UNKNOWN";
                         }
 
-                        log.append("(").append(address).append(") ").append(requestProtocol.getMethod()).append(" - ").append("\"").append(requestProtocol.getUrl()).append("\"").append("[").append(System.currentTimeMillis() - workItem.timestamp).append("ms]");
+                        log.append("(").append(address).append(") ").append(requestProtocol.getMethod()).append(":").append("\"").append(requestProtocol.getUrl()).append("\" -> ").append(responseProtocol.getStatus()).append(" [").append(System.currentTimeMillis() - workItem.timestamp).append("ms]");
                         System.out.println(log);
                     }
                 }
