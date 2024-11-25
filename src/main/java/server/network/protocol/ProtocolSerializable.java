@@ -37,6 +37,7 @@ public interface ProtocolSerializable {
     private static void headerToString(Header header, StringBuilder stringBuilder) {
         stringBuilder.append(header.getHost()).append(" ");
         stringBuilder.append(header.getContentType()).append(" ");
+        stringBuilder.append(header.getSessionId()).append(" ");
         stringBuilder.append(header.getBodyLength()).append(" ");
     }
 
@@ -46,7 +47,7 @@ public interface ProtocolSerializable {
         StringTokenizer stringTokenizer = new StringTokenizer(string, Protocol.Delimiter);
         StringTokenizer startLineTokenizer = new StringTokenizer(stringTokenizer.nextToken());
         StringTokenizer headerTokenizer = new StringTokenizer(stringTokenizer.nextToken());
-        Header header = new Header(headerTokenizer.nextToken(), Header.ContentType.valueOf(headerTokenizer.nextToken()), Integer.parseInt(headerTokenizer.nextToken()));
+        Header header = new Header(headerTokenizer.nextToken(), Header.ContentType.valueOf(headerTokenizer.nextToken()), headerTokenizer.nextToken(), Integer.parseInt(headerTokenizer.nextToken()));
         Body body = JsonSerializable.deserialize(stringTokenizer.nextToken().getBytes(StandardCharsets.UTF_8), Body.class);
 
         String firstWord = startLineTokenizer.nextToken();
