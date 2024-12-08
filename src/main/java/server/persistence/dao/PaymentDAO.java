@@ -40,11 +40,11 @@ public class PaymentDAO implements PaymentDAOI {
     }
 
     @Override
-    public Integer getPaymentAmountById(Integer id) throws SQLException {
-        String query = "SELECT payment_amount FROM payments WHERE id = ?";
+    public Integer getPaymentAmountByUid(String uid) throws SQLException {
+        String query = "SELECT payment_amount FROM payments WHERE uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setString(1, uid);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return resultSet.getInt(1);
