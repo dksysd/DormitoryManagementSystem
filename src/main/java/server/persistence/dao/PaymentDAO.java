@@ -15,7 +15,7 @@ public class PaymentDAO implements PaymentDAOI {
     @Override
     public PaymentDTO findById(Integer id) throws SQLException {
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
-                "ps.status_name AS payment_status, pc.payment_code AS code" +
+                "ps.status_name AS payment_status, pc.payment_code" +
                 "pm.method_name AS method" +
                 " FROM payments p " +
                 "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
@@ -38,8 +38,8 @@ public class PaymentDAO implements PaymentDAOI {
     public PaymentDTO findByUid(String uid) throws SQLException {
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
                 "ps.status_name AS payment_status, pc.payment_code AS code" +
-                "pm.method_name AS method" +
-                " FROM payments p " +
+                "pm.method_name AS method " +
+                "FROM payments p " +
                 "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
                 "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
                 "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id" +
@@ -47,7 +47,7 @@ public class PaymentDAO implements PaymentDAOI {
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.setInt(1, uid);
+            preparedStatement.setString(1, uid);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return mapRowToPaymentDTO(resultSet);
@@ -116,7 +116,7 @@ public class PaymentDAO implements PaymentDAOI {
     private PaymentDTO mapRowToPaymentDTO(ResultSet resultSet) throws SQLException {
         PaymentCodeDTO paymentCodeDTO = PaymentCodeDTO.builder()
                 .id(resultSet.getInt("payment_code_id"))
-                .paymentCode(resultSet.getString("code"))
+                .paymentCode(resultSet.getString("payment_code"))
                 .build();
         PaymentStatusDTO paymentStatusDTO = PaymentStatusDTO.builder()
                 .id(resultSet.getInt("payment_status_id"))
