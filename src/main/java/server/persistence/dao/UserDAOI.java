@@ -4,7 +4,7 @@ import server.persistence.dto.UserDTO;
 
 import java.sql.SQLException;
 import java.util.List;
-
+//todo getUserInfoById 만들어주세요
 public interface UserDAOI {
     UserDTO findById(Integer id) throws SQLException;
     UserDTO findByUid(String uid) throws SQLException;

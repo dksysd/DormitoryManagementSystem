@@ -1,5 +1,5 @@
 package server.persistence.dao;
-
+//todo id로 내가 내야하는 금액 뱉는 메서드 만들어주세요
 import server.persistence.dto.PaymentDTO;
 
 import java.sql.SQLException;
