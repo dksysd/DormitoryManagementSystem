@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO implements UserDAOI {
-
     @Override
     public UserDTO findById(Integer id) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
@@ -57,21 +56,6 @@ public class UserDAO implements UserDAOI {
                 return mapRowToUserDTO(resultSet);
             }
         }
-        return null;
-    }
-
-    public String getPasswordByUid(String uid) throws SQLException {
-        String query = "SELECT login_password FROM users WHERE uid = ?";
-        try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setString(1, uid);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString(1);
-            }
-        }
-
         return null;
     }
 

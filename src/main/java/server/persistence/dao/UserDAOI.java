@@ -8,7 +8,6 @@ import java.util.List;
 public interface UserDAOI {
     UserDTO findById(Integer id) throws SQLException;
     UserDTO findByUid(String uid) throws SQLException;
-    String  getPasswordByUid(String uid) throws SQLException;
     List<UserDTO> findAll() throws SQLException;
     void save(UserDTO userDTO) throws SQLException;
     void update(UserDTO userDTO) throws SQLException;
