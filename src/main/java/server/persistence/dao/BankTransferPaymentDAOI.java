@@ -10,5 +10,6 @@ public interface BankTransferPaymentDAOI {
     List<BankTransferPaymentDTO> findAll() throws SQLException;
     void save(BankTransferPaymentDTO bankTransferPaymentDTO) throws SQLException;
     void update(BankTransferPaymentDTO bankTransferPaymentDTO) throws SQLException;
+    void update(String uid, String accountNumber, String accountHolderName, String bankName) throws SQLException;
     void delete(Integer id) throws SQLException;
 }
