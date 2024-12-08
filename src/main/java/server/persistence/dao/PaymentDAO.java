@@ -1,7 +1,10 @@
 package server.persistence.dao;
 
+import server.persistence.dto.PaymentCodeDTO;
 import server.persistence.dto.PaymentDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.PaymentMethodDTO;
+import server.persistence.dto.PaymentStatusDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,11 +14,40 @@ public class PaymentDAO implements PaymentDAOI {
 
     @Override
     public PaymentDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, payment_amount, created_at, payment_code_id, payment_status_id, payment_method_id FROM payments WHERE id = ?";
+        String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
+                "ps.status_name AS payment_status, pc.payment_code AS code" +
+                "pm.method_name AS method" +
+                " FROM payments p " +
+                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
+                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
+                "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id" +
+                "WHERE p.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToPaymentDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+    @Override
+    public PaymentDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
+                "ps.status_name AS payment_status, pc.payment_code AS code" +
+                "pm.method_name AS method" +
+                " FROM payments p " +
+                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
+                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
+                "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id" +
+                "WHERE p.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, uid);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 return mapRowToPaymentDTO(resultSet);
@@ -39,19 +71,6 @@ public class PaymentDAO implements PaymentDAOI {
         return payments; // 모든 결제 정보 반환
     }
 
-    @Override
-    public Integer getPaymentAmountByUid(String uid) throws SQLException {
-        String query = "SELECT payment_amount FROM payments WHERE uid = ?";
-        try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, uid);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            }
-        }
-        return null;
-    }
     @Override
     public void save(PaymentDTO paymentDTO) throws SQLException {
         String query = "INSERT INTO payments (payment_amount, created_at, payment_code_id, payment_status_id, payment_method_id) VALUES (?, ?, ?, ?, ?)";
@@ -95,6 +114,18 @@ public class PaymentDAO implements PaymentDAOI {
     }
 
     private PaymentDTO mapRowToPaymentDTO(ResultSet resultSet) throws SQLException {
+        PaymentCodeDTO paymentCodeDTO = PaymentCodeDTO.builder()
+                .id(resultSet.getInt("payment_code_id"))
+                .paymentCode(resultSet.getString("code"))
+                .build();
+        PaymentStatusDTO paymentStatusDTO = PaymentStatusDTO.builder()
+                .id(resultSet.getInt("payment_status_id"))
+                .statusName(resultSet.getString("payment_status"))
+                .build();
+        PaymentMethodDTO paymentMethodDTO = PaymentMethodDTO.builder()
+                .id(resultSet.getInt("payment_method_id"))
+                .methodName(resultSet.getString("method_name"))
+                .build();
         return PaymentDTO.builder()
                 .id(resultSet.getInt("id"))
                 .paymentAmount(resultSet.getInt("payment_amount"))

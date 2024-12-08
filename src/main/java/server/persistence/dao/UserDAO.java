@@ -6,10 +6,8 @@ import server.config.DatabaseConnectionPool;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-//todo getUserInfoByUid() 학번 넣으면 이름 전화번호 생성일시 주소 반환 Map이면 좋겠는데 List가 편하면 그걸로 반환 부탁드려용
 
 public class UserDAO implements UserDAOI {
-
     @Override
     public UserDTO findById(Integer id) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
@@ -57,21 +55,6 @@ public class UserDAO implements UserDAOI {
                 return mapRowToUserDTO(resultSet);
             }
         }
-        return null;
-    }
-
-    public String getPasswordByUid(String uid) throws SQLException {
-        String query = "SELECT login_password FROM users WHERE uid = ?";
-        try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setString(1, uid);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString(1);
-            }
-        }
-
         return null;
     }
 
