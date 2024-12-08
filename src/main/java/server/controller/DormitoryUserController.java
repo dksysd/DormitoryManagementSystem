@@ -170,7 +170,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getFirst().getData();
         if (verifySessionId(id)) {
-            dao.updateMealPlan(id,(String) protocol.getChildren().get(1).getData());
+            dao.updateRoomType(id,(String) protocol.getChildren().get(1).getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
