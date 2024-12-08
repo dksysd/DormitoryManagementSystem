@@ -6,7 +6,6 @@ import server.network.protocol.RequestProtocol;
 import server.network.protocol.ResponseProtocol;
 import server.persistence.dao.UserDAO;
 import server.persistence.dao.UserDAOI;
-import server.persistence.dto.LoginDTO;
 import server.persistence.dto.UserDTO;
 
 import java.sql.SQLException;
