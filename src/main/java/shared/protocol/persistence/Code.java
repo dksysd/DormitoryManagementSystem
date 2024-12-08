@@ -10,10 +10,10 @@ public interface Code extends HeaderElement {
     }
 
     enum ErrorCode implements Code {
-
+        INTERNAL_SERVER_ERROR, INVALID_REQUEST
     }
 
     enum ValueCode implements Code {
-        ID, PASSWORD
+        ID, PASSWORD, MESSAGE
     }
 }

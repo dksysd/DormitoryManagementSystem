@@ -11,7 +11,6 @@ import java.util.Objects;
 public class Header {
     public static final byte BYTES = 7;
 
-
     private Type type;
     private DataType dataType;
     private Code code;

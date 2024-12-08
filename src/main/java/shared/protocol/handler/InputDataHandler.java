@@ -2,26 +2,23 @@ package shared.protocol.handler;
 
 import lombok.AllArgsConstructor;
 import server.exception.IllegalBufferSizeException;
+import server.util.RemoteAddressResolver;
 import shared.protocol.persistence.*;
 import shared.protocol.util.ProtocolParser;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class InputDataHandler implements CompletionHandler<Integer, ByteBuffer> {
-    private final AsynchronousSocketChannel client;
-    private final Consumer<AsynchronousSocketChannel> closeClientConsumer;
-    private final BiConsumer<AsynchronousSocketChannel,Protocol<?>> completeConsumer;
     private final Header header;
+    private final ByteBuffer headerBuffer;
+    private final InputHeaderHandler inputHeaderHandler;
 
     @Override
     public void completed(Integer result, ByteBuffer buffer) {
         if (result == -1) {
-            closeClientConsumer.accept(client);
+            inputHeaderHandler.getCloseClientConsumer().accept(inputHeaderHandler.getClient());
             return;
         }
 
@@ -29,9 +26,14 @@ public class InputDataHandler implements CompletionHandler<Integer, ByteBuffer> 
             throw new IllegalBufferSizeException("Invalid data size (expected : " + header.getDataLength() + ", value : " + result + ")");
         }
 
+        System.out.println("Read data from " + RemoteAddressResolver.getRemoteAddress(inputHeaderHandler.getClient()));
+
         buffer.flip();
         Protocol<?> protocol = ProtocolParser.parseProtocol(header, buffer);
-        completeConsumer.accept(client, protocol);
+        inputHeaderHandler.getCompleteConsumer().accept(inputHeaderHandler.getClient(), protocol);
+
+        headerBuffer.clear();
+        inputHeaderHandler.getClient().read(headerBuffer, headerBuffer, inputHeaderHandler);
     }
 
     @Override
