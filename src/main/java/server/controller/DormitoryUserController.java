@@ -112,7 +112,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String sessionId = (String) protocol.getChildren().getFirst().getData();
         String id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
-        Integer preference = (Integer) protocol.getChildren().get(2).getData();
+        Integer preference = (Integer) protocol.getChildren().get(1).getData();
 
         if (verifySessionId(sessionId)) {
             dao.updatePreference(id, preference);
@@ -128,11 +128,14 @@ public class DormitoryUserController {
 
     public static Protocol<?> applyRoommate(Protocol<?> protocol) throws SQLException {
         Header header = protocol.getHeader();
-        RoomTypeDAO dao = new RoomTypeDAO();
+        UserDAO dao = new UserDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getFirst().getData();
         if (verifySessionId(id)) {
+            dao.updateRoommate(getIdByIdBySessionId(id), (Integer) protocol.getChildren().get(1).getData());
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
 
         } else {
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
