@@ -152,7 +152,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public void updatePreference(String uid, Integer preference) throws SQLException {
-        String query = "SELECT u.id FROM users u " +
+        String query = "SELECT s.id FROM users u " +
                 "INNER JOIN selection_applications s ON u.id = s.user_id " +
                 "WHERE u.uid = ?";
         int id;
@@ -171,6 +171,71 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, preference);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateMealPlan(String uid, String mealPlanName) throws SQLException {
+        String query = "SELECT s.id FROM selection_applications s" +
+                "LEFT JOIN users u ON u.uid = ?";
+        int user_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            user_id = resultSet.getInt(1);
+        }
+
+        query = "SELECT m.id FROM meal_plans m " +
+                "INNER JOIN meal_plan_types mpt ON mpt.type_name = ?";
+        int meal_plan_id;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,mealPlanName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            meal_plan_id = resultSet.getInt(1);
+        }
+
+        query = "UPDATE selection_applications SET meal_plan_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, meal_plan_id);
+            preparedStatement.setInt(2, user_id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateRoomType(String uid, String roomTypeName) throws SQLException {
+        String query = "SELECT s.id FROM selection_applications s" +
+                "LEFT JOIN users u ON u.uid = ?";
+        int user_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            user_id = resultSet.getInt(1);
+        }
+
+        query = "SELECT drt.id FROM dormitory_room_types drt" +
+                "INNER JOIN room_types rt ON rt.type_name = ?";
+        int drt_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,roomTypeName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            drt_id = resultSet.getInt(1);
+        }
+
+        query = "UPDATE  selection_applications SET dormitory_room_type_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, drt_id);
+            preparedStatement.setInt(2, user_id);
             preparedStatement.executeUpdate();
         }
     }

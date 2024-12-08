@@ -127,7 +127,7 @@ public class DormitoryUserController {
     }
 
     public static Protocol<?> applyRoommate(Protocol<?> protocol) throws SQLException {
-        Header header = protocol.getHeader();
+        Header header = new Header();
         UserDAO dao = new UserDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -137,6 +137,42 @@ public class DormitoryUserController {
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
 
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> applyMeal(Protocol<?> protocol) throws SQLException {
+        Header header = new Header();
+        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
+        if (verifySessionId(id)) {
+            dao.updateMealPlan(id, (String) protocol.getChildren().get(1).getData());
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> applyRoom(Protocol<?> protocol) throws SQLException {
+        Header header = new Header();
+        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
+        if (verifySessionId(id)) {
+            dao.updateMealPlan(id,(String) protocol.getChildren().get(1).getData());
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
         } else {
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
