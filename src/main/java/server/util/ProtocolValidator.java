@@ -1,9 +1,6 @@
 package server.util;
 
-import server.network.protocol.Header;
-import server.network.protocol.TLV.Code;
-import server.network.protocol.TLV.Protocol;
-import server.network.protocol.TLV.Type;
+import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 
