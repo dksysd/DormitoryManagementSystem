@@ -20,6 +20,7 @@ public class PaymentController {
      */
     public static Protocol getPaymentStatus(Protocol protocol) {
 Header header = protocol.getHeader();
+header.
 
 if(SessionIdController.verifySessionId(header.getSessionId())){
 
