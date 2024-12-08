@@ -119,6 +119,31 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     }
 
     @Override
+    public void updatePreference(String uid, Integer preference) throws SQLException {
+        String query = "SELECT u.id FROM users u " +
+                "INNER JOIN selection_applications s ON u.id = s.user_id " +
+                "WHERE u.uid = ?";
+        int id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            id = resultSet.getInt(1);
+        }
+
+        query = "UPDATE selection_applications SET preference = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, preference);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM selection_applications WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
