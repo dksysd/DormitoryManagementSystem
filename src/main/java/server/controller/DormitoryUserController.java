@@ -81,7 +81,6 @@ public class DormitoryUserController {
         String id = (String) protocol.getChildren().getFirst().getData();
 
         if (verifySessionId(id)) {
-            // TODO : List<String> findALL 기능
             List<String> list = dao.findAllIntoString();
 
             for (String s : list) {
