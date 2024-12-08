@@ -44,22 +44,54 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     }
 
     @Override
-    public List<SelectionApplicationDTO> findAll() throws SQLException {
-        List<SelectionApplicationDTO> selectionApplications = new ArrayList<>();
+    public SelectionApplicationDTO findByUid(String uid) throws SQLException {
         String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
                 "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
-                "sa.roommate_user_id, sa.user_id, " +
+                "sa.roommate_user_id AS rommate_user_id, sa.user_id, " +
                 "sas.id AS status_id, sas.status_name, " +
                 "ss.id AS schedule_id, ss.schedule_name, " +
                 "drt.id AS room_type_id, drt.room_type_name, " +
                 "mp.id AS meal_plan_id, mp.meal_plan_name, " +
-                "u.id AS user_id, u.user_name " +
+                "u.id AS user_id, ru.user_name AS roommate_user_name " +
                 "FROM selection_applications sa " +
                 "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
                 "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
                 "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
                 "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
-                "LEFT JOIN users u ON sa.roommate_user_id = u.id";
+                "LEFT JOIN users ru ON sa.roommate_user_id = u.id " +
+                "LEFT JOIN users u ON sa.user_id = u.id " +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToSelectionApplicationDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+
+    @Override
+    public List<SelectionApplicationDTO> findAll() throws SQLException {
+        List<SelectionApplicationDTO> selectionApplications = new ArrayList<>();
+        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
+                "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
+                "sa.roommate_user_id, sa.user_id AS user_id, " +
+                "sas.id AS status_id, sas.status_name, " +
+                "ss.id AS schedule_id, ss.schedule_name, " +
+                "drt.id AS room_type_id, drt.room_type_name, " +
+                "mp.id AS meal_plan_id, mp.meal_plan_name, " +
+                "u.id AS user_id, u.user_name AS user_name " +
+                "FROM selection_applications sa " +
+                "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
+                "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
+                "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
+                "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
+                "LEFT JOIN users ru ON sa.roommate_user_id = u.id " +
+                "LEFT JOIN users u ON sa.user_id = u.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -177,7 +209,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
         UserDTO roommateUserDTO = UserDTO.builder()
                 .id(resultSet.getInt("roommate_user_id"))
-                .userName(resultSet.getString("user_name"))
+                .userName(resultSet.getString("roommate_user_name"))
                 .build();
 
         UserDTO userDTO = UserDTO.builder()

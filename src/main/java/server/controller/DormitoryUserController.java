@@ -1,9 +1,8 @@
 package server.controller;
 
-import server.persistence.dao.DormitoryRoomTypeDAO;
-import server.persistence.dao.SelectionScheduleDAO;
+import server.persistence.dao.*;
+import server.persistence.dto.SelectionApplicationDTO;
 import shared.protocol.persistence.*;
-import server.persistence.dao.MealPlanDAO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,11 +14,10 @@ public class DormitoryUserController {
         SelectionScheduleDAO dao = new SelectionScheduleDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = result.getHeader();
-        String id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        String id = (String) protocol.getChildren().getFirst().getData();
 
         if (verifySessionId(id)) {
-            // TODO : List<String> findAll 기능
-            List<String> list = dao.findAllIntoString();
+            List<String> list = dao.findAllTitleIntoString();
 
             for (String s : list) {
                 Protocol<String> child = new Protocol<>();
@@ -46,20 +44,20 @@ public class DormitoryUserController {
         Header header = protocol.getHeader();
         MealPlanDAO dao = new MealPlanDAO();
         Protocol<?> result = new Protocol<>();
-        Header resultHeader = result.getHeader();
-        String id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
 
         if (verifySessionId(id)) {
-            // TODO : List<String> findALL 기능
-            List<String> list = dao.findAllIntoString();
+            List<String> list = dao.findAllMealTypeIntoString();
 
             for (String s : list) {
                 Protocol<String> child = new Protocol<>();
-                Header childHeader = child.getHeader();
+                Header childHeader = new Header();
                 childHeader.setType(Type.VALUE);
                 childHeader.setDataType(DataType.STRING);
                 childHeader.setCode(Code.ResponseCode.ValueCode.MEAL_PLAN);
                 child.setData(s);
+                child.setHeader(childHeader);
 
                 result.addChild(child);
             }
@@ -71,15 +69,16 @@ public class DormitoryUserController {
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
+        result.setHeader(resultHeader);
         return result;
     }
 
     public static Protocol<?> getDormitoryRooms(Protocol <?> protocol) throws SQLException {
         Header header = protocol.getHeader();
-        DormitoryRoomTypeDAO dao = new DormitoryRoomTypeDAO();
+        RoomTypeDAO dao = new RoomTypeDAO();
         Protocol<?> result = new Protocol<>();
-        Header resultHeader = result.getHeader();
-        String id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
 
         if (verifySessionId(id)) {
             // TODO : List<String> findALL 기능
@@ -103,8 +102,114 @@ public class DormitoryUserController {
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
+        result.setHeader(resultHeader);
         return result;
     }
 
+    public static Protocol<?> selectPriorityApplication(Protocol<?> protocol) throws SQLException {
+        Header header = protocol.getHeader();
+        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String sessionId = (String) protocol.getChildren().getFirst().getData();
+        String id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        Integer preference = (Integer) protocol.getChildren().get(2).getData();
 
+        if (verifySessionId(sessionId)) {
+            dao.updatePreference(id, preference);
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> applyRoommate(Protocol<?> protocol) throws SQLException {
+        Header header = protocol.getHeader();
+        RoomTypeDAO dao = new RoomTypeDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
+        if (verifySessionId(id)) {
+
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> getSelectionResult(Protocol<?> protocol) throws SQLException {
+        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
+        String uid = getIdByIdBySessionId(id);
+        if (verifySessionId(id)) {
+            String statusName = dao.findByUid(uid).getSelectionApplicationStatusDTO().getStatusName();
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setDataType(DataType.TLV);
+
+            Protocol<String> child = new Protocol<>();
+            Header childHeader = new Header();
+            childHeader.setType(Type.VALUE);
+            childHeader.setDataType(DataType.STRING);
+            childHeader.setCode(Code.ResponseCode.ValueCode.SELECTION_STATUS);
+            child.setHeader(childHeader);
+            child.setData(statusName);
+            result.addChild(child);
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> getMeritAndDemeritPoints(Protocol<?> protocol) throws SQLException {
+        DemeritPointDAO dao = new DemeritPointDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
+        if (verifySessionId(id)) {
+            List<Integer> list = dao.findAllPointIntoInt();
+
+            // FIXME : list? SUM?
+            for (Integer i : list) {
+                Protocol<Integer> child = new Protocol<>();
+                Header childHeader = new Header();
+                childHeader.setType(Type.VALUE);
+                childHeader.setDataType(DataType.INTEGER);
+                child.setHeader(childHeader);
+                child.setData(i);
+                result.addChild(child);
+            }
+
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setDataType(DataType.TLV);
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> getFileForProof (Protocol<?> protocol) throws SQLException {
+        UserDAO dao = new UserDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getFirst().getData();
+        if (verifySessionId(id)) {
+            //TODO : File 어케 받아와요?
+        }
+
+        return result;
+    }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface SelectionApplicationDAOI {
     SelectionApplicationDTO findById(Integer id) throws SQLException;
+    SelectionApplicationDTO findByUid(String uid) throws SQLException;
     List<SelectionApplicationDTO> findAll() throws SQLException;
     void save(SelectionApplicationDTO selectionApplicationDTO) throws SQLException;
     void update(SelectionApplicationDTO selectionApplicationDTO) throws SQLException;
