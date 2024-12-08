@@ -6,6 +6,7 @@ import server.config.DatabaseConnectionPool;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+//todo getUserInfoByUid() 학번 넣으면 이름 전화번호 생성일시 주소 반환 Map이면 좋겠는데 List가 편하면 그걸로 반환 부탁드려용
 
 public class UserDAO implements UserDAOI {
 
