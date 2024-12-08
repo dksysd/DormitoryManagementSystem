@@ -40,7 +40,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
     }
 
     @Override
-    public List<Integer> findAllPointIntoInt throws SQLException {
+    public List<Integer> findAllPointIntoInt() throws SQLException {
         List<Integer> demeritPoints = new ArrayList<>();
         String query = "SELECT point FROM demerit_points";
         try(Connection connection = DatabaseConnectionPool.getConnection();
