@@ -45,6 +45,31 @@ public class AdminPage {
 
     public static void registerSelectionInfo(){
 
+        int selection = 0;
+        for( ; ; ){
+            System.out.println("어떤 선발의 일정을 등록하시겠습니까?");
+            System.out.print("(1. 우선선발 일정 등록 / 2. 일반선발 일정 등록 / 3. 추가선발 일정등록 / 4. 등록종료) : ");
+            selection = sc.nextInt();
+
+            if(selection > 3 || selection < 1){
+                break;
+            }
+
+            System.out.println("선발 일정을 입력하세요.");
+            System.out.println("ex : yyyy년 mm월 dd일 부터 8일동안 - (yyyymmdd 8)");
+            //입력 형식을 몰라서 이만큼만..!
+            String day = sc.next();
+            int dayLast = sc.nextInt();
+
+            //각 선발별로 메시지 보내기
+            switch (selection){
+                case 1 :
+                case 2 :
+                case 3 :
+            }
+
+        }
+
     }
 
     public static void displayApplicants(){
