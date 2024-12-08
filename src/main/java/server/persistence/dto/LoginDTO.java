@@ -3,7 +3,7 @@ package server.persistence.dto;
 import lombok.*;
 import server.persistence.model.Model;
 
-//TODO : 채우기
+@Deprecated
 @Getter
 @Setter
 @Builder
