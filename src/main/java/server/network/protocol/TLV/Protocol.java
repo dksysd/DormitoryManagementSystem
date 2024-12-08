@@ -1,6 +1,7 @@
 package server.network.protocol.TLV;
 
 public record Protocol(byte type, byte code, int dataLength, byte[] data) {
+
     /*
     type : 1 byte
     code : 1 byte
@@ -45,4 +46,5 @@ public record Protocol(byte type, byte code, int dataLength, byte[] data) {
 
     Object getValue(RequestValue);
      */
+
 }

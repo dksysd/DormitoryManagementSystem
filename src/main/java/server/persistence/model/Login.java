@@ -4,6 +4,7 @@ import lombok.*;
 import server.persistence.dto.DTO;
 import server.persistence.dto.LoginDTO;
 
+@Deprecated
 @Getter
 @Setter
 @Builder

@@ -3,6 +3,7 @@ package server.persistence.dto;
 import lombok.*;
 import server.persistence.model.Model;
 
+@Deprecated
 @Getter
 @Setter
 @Builder
