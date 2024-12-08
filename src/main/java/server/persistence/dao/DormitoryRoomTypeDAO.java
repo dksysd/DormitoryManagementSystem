@@ -1,7 +1,9 @@
 package server.persistence.dao;
 
+import server.persistence.dto.DormitoryDTO;
 import server.persistence.dto.DormitoryRoomTypeDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.RoomTypeDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +13,13 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
 
     @Override
     public DormitoryRoomTypeDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, price, created_at, updated_at, room_type_id, dormitory_id FROM dormitory_room_types WHERE id = ?";
+        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
+                "rt.type_name AS typeName, rt.maxPerson" +
+                "d.name AS dormitoryName " +
+                "FROM dormitory_room_types drt " +
+                "LEFT JOIN room_types rt " +
+                "LEFT JOIN dormitories d" +
+                "WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,7 +35,13 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     @Override
     public List<DormitoryRoomTypeDTO> findAll() throws SQLException {
         List<DormitoryRoomTypeDTO> roomTypes = new ArrayList<>();
-        String query = "SELECT id, price, created_at, updated_at, room_type_id, dormitory_id FROM dormitory_room_types";
+        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
+                "rt.type_name AS typeName, rt.maxPerson" +
+                "d.name AS dormitoryName " +
+                "FROM dormitory_room_types drt " +
+                "LEFT JOIN room_types rt " +
+                "LEFT JOIN dormitories d" +
+                "WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -82,11 +96,22 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     }
 
     private DormitoryRoomTypeDTO mapRowToDormitoryRoomTypeDTO(ResultSet resultSet) throws SQLException {
+        RoomTypeDTO roomTypeDTO = RoomTypeDTO.builder()
+                .typeName(resultSet.getString("typeName"))
+                .maxPerson(resultSet.getInt("maxPerson"))
+                .build();
+
+        DormitoryDTO dormitoryDTO = DormitoryDTO.builder()
+                .name("dormitoryName")
+                .build();
+
         return DormitoryRoomTypeDTO.builder()
-                .id(resultSet.getInt("id"))
+                .id(resultSet.getInt("dormitory_room_type_id"))
                 .price(resultSet.getInt("price"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
+                .roomTypeDTO(roomTypeDTO)
+                .dormitoryDTO(dormitoryDTO)
                 .build();
     }
 }

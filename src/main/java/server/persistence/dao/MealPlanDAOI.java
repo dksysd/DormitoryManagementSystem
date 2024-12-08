@@ -8,6 +8,7 @@ import java.util.List;
 public interface MealPlanDAOI {
     MealPlanDTO findById(Integer id) throws SQLException;
     List<MealPlanDTO> findAll() throws SQLException;
+    List<String> findAllMealTypeIntoString() throws SQLException;
     void save(MealPlanDTO mealPlanDTO) throws SQLException;
     void update(MealPlanDTO mealPlanDTO) throws SQLException;
     void delete(Integer id) throws SQLException;
