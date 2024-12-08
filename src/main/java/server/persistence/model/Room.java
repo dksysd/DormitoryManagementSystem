@@ -2,8 +2,10 @@ package server.persistence.model;
 
 import lombok.*;
 import server.persistence.dto.*;
-
-import java.time.LocalDateTime;
+import server.persistence.dto.DTO;
+import server.persistence.dto.DormitoryDTO;
+import server.persistence.dto.DormitoryRoomTypeDTO;
+import server.persistence.dto.RoomDTO;
 
 @Getter
 @Setter

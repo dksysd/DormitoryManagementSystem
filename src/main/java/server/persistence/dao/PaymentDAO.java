@@ -40,19 +40,6 @@ public class PaymentDAO implements PaymentDAOI {
     }
 
     @Override
-    public Integer getPaymentAmountByUid(String uid) throws SQLException {
-        String query = "SELECT payment_amount FROM payments WHERE uid = ?";
-        try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, uid);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            }
-        }
-        return null;
-    }
-    @Override
     public void save(PaymentDTO paymentDTO) throws SQLException {
         String query = "INSERT INTO payments (payment_amount, created_at, payment_code_id, payment_status_id, payment_method_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();

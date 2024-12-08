@@ -2,7 +2,6 @@ package server.persistence.dao;
 
 import server.config.DatabaseConnectionPool;
 import server.persistence.dto.BankDTO;
-import server.persistence.model.Bank;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

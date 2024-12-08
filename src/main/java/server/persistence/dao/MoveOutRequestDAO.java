@@ -1,6 +1,5 @@
 package server.persistence.dao;
 
-import server.persistence.dao.MoveOutRequestDAOI;
 import server.persistence.dto.MoveOutRequestDTO;
 import server.config.DatabaseConnectionPool;
 

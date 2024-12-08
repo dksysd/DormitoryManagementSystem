@@ -2,7 +2,6 @@ package server.persistence.dao;
 
 import server.persistence.dto.GenderCodeDTO;
 import server.config.DatabaseConnectionPool;
-import server.persistence.model.GenderCode;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -2,6 +2,10 @@ package server.persistence.model;
 
 import lombok.*;
 import server.persistence.dto.*;
+import server.persistence.dto.DTO;
+import server.persistence.dto.ImageDTO;
+import server.persistence.dto.SelectionApplicationStatusDTO;
+import server.persistence.dto.SelectionDTO;
 
 import java.time.LocalDateTime;
 

@@ -2,6 +2,10 @@ package server.persistence.model;
 
 import lombok.*;
 import server.persistence.dto.*;
+import server.persistence.dto.DTO;
+import server.persistence.dto.DormitoryDTO;
+import server.persistence.dto.MealPlanDTO;
+import server.persistence.dto.MealPlanTypeDTO;
 
 @Getter
 @Setter

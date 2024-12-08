@@ -1,25 +1,25 @@
+/*
 package server.controller;
 
-import server.network.protocol.Body;
-import server.network.protocol.Header;
-import server.network.protocol.RequestProtocol;
-import server.network.protocol.ResponseProtocol;
 import server.persistence.dao.UserDAO;
+import server.persistence.dao.UserDAOI;
 import server.persistence.dto.LoginDTO;
 import server.persistence.dto.UserDTO;
+
 import java.sql.SQLException;
 import java.util.Objects;
 
 public class AuthController implements Controller {
-    /**
+    */
+/**
      * id : 숫자 8자리 제한, password: 8~20자리, 영어, 특수문자, 숫자 포함
      *
-     * @param requestProtocol RequestProtocol 내에 id,pw 등의 정보를 loginDTO 객체로 전송 요망
+     * @param requestProtocol loginDTO 객체로 전송 요망
      * @param response        header(contentType: APPLICATION_JSON)
-     */
+     *//*
+
     public static void login(RequestProtocol requestProtocol, ResponseProtocol response) {
         try {
-
             Header header = response.getHeader();
             header.setContentType(Header.ContentType.APPLICATION_JSON);
             Body responseBody = response.getBody();
@@ -38,21 +38,6 @@ public class AuthController implements Controller {
 
         } catch (Exception e) {
             response.setStatus(ResponseProtocol.Status.InternalServerError);
-        }
-    }
-    public static void logout(RequestProtocol requestProtocol, ResponseProtocol response) {
-        try {
-            Header header = response.getHeader();
-            header.setContentType(Header.ContentType.APPLICATION_JSON);
-            Body responseBody = response.getBody();
-
-            // 로그아웃 성공 응답 설정
-            response.setStatus(ResponseProtocol.Status.OK);
-            responseBody.addData("message", "Logout successful");
-
-        } catch (Exception e) {
-            response.setStatus(ResponseProtocol.Status.InternalServerError);
-            response.getBody().addData("error", "Failed to process logout");
         }
     }
 
@@ -138,7 +123,7 @@ public class AuthController implements Controller {
     }
 
     private static boolean authenticateUser(LoginDTO loginDTO, Body responseBody) throws SQLException {
-        UserDAO userDAO = new UserDAO() {
+        UserDAOI userDAO = new UserDAO() {
         };
         String id = loginDTO.getId();
         UserDTO userDTO = userDAO.findByUid(id);
@@ -152,4 +137,4 @@ public class AuthController implements Controller {
         }
         return true;
     }
-}
+}*/

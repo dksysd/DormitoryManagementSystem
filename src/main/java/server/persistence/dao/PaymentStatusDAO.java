@@ -6,7 +6,7 @@ import server.config.DatabaseConnectionPool;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-//todo userid 넣으면 딱 paymentStatus만 뱉는 거 만들어주세요
+
 public class PaymentStatusDAO implements PaymentStatusDAOI {
 
     @Override

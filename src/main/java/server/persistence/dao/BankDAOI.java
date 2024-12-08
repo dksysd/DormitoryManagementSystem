@@ -1,6 +1,5 @@
 package server.persistence.dao;
 
-import server.persistence.dto.AddressDTO;
 import server.persistence.dto.BankDTO;
 
 import java.sql.SQLException;

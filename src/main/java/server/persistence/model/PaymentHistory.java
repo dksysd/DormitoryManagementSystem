@@ -2,6 +2,10 @@ package server.persistence.model;
 
 import lombok.*;
 import server.persistence.dto.*;
+import server.persistence.dto.DTO;
+import server.persistence.dto.PaymentDTO;
+import server.persistence.dto.PaymentHistoryDTO;
+import server.persistence.dto.UserDTO;
 
 @Getter
 @Setter
