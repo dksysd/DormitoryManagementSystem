@@ -146,10 +146,12 @@ public static Protocol<?> payByBankTransfer(Protocol<?> protocol) {
 public static Protocol<?> payByCard(Protocol<?> protocol) {
     Header header = protocol.getHeader();
     CardPaymentDAO CMpaymentDAO = new CardPaymentDAO();
-    CardPaymentDAO BTpaymentDTO = new CardPaymentDAO();
+
     PaymentDTO paymentDTO = new PaymentDTO();
     CardIssuerDTO cardIssuerDTO = new CardIssuerDTO();
-
+/**todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
+ *
+ */
 }
 
 
