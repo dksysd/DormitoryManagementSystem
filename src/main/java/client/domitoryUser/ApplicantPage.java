@@ -188,7 +188,6 @@ public class ApplicantPage {
         protocol.addChild(tlv);
 
         Protocol resultProtocol;
-        Type childresType;
         Type resType;
 
         try {
@@ -202,8 +201,8 @@ public class ApplicantPage {
         if(resType == Type.RESPONSE){
 
             List<Protocol<?>> list = resultProtocol.getChildren();
-            resultProtocol = list.getFirst();
-            int value = (int) resultProtocol.getData();
+            Protocol childProtocol = list.getFirst();
+            int value = (int) childProtocol.getData();
             System.out.println("납부해야할 금액 : " + value + "원입니다.");
 
         } else{
