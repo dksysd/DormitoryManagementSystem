@@ -2,7 +2,7 @@ package client.domitoryUser;
 import server.controller.PaymentController;
 import shared.protocol.persistence.*;
 
-import java.sql.SQLException;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -62,7 +62,7 @@ public class ApplicantPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
         // 성별 받아오기 -> getUser Info 참조하시면 됨.
@@ -122,7 +122,7 @@ public class ApplicantPage {
             Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.CHECK_MOVE_OUT,0);
             Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
             Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-            Protocol<?> protocol = new Protocol();
+            Protocol<?> protocol = new Protocol<>();
             protocol.setHeader(header);
             protocol.addChild(tlv);
 
@@ -138,7 +138,7 @@ public class ApplicantPage {
                 Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.MOVE_OUT,0);
                 Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
                 Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-                Protocol<?> protocol = new Protocol();
+                Protocol<?> protocol = new Protocol<>();
                 protocol.setHeader(header);
                 protocol.addChild(tlv);
 
@@ -153,7 +153,7 @@ public class ApplicantPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_RESULT,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
@@ -166,7 +166,7 @@ public class ApplicantPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MERIT_AND_DEMERIT_POINTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
@@ -183,16 +183,15 @@ public class ApplicantPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BILL,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        Protocol resultProtocol;
+        Protocol<?> resultProtocol;
         Type resType;
 
         try {
             resultProtocol = PaymentController.getPaymentAmount(protocol);
-
             resType = resultProtocol.getHeader().getType();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -201,7 +200,7 @@ public class ApplicantPage {
         if(resType == Type.RESPONSE){
 
             List<Protocol<?>> list = resultProtocol.getChildren();
-            Protocol childProtocol = list.getFirst();
+            Protocol<?> childProtocol = list.getFirst();
             int value = (int) childProtocol.getData();
             System.out.println("납부해야할 금액 : " + value + "원입니다.");
 
@@ -215,7 +214,7 @@ public class ApplicantPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_RECEIPT,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
@@ -236,10 +235,10 @@ public class ApplicantPage {
             String text = sc.next();
             if(text.trim().equals("납부")){
                 // 납부 상태 변경 요청
-                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT,0);
+                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_AMOUNT,0);
                 Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
                 Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-                Protocol<?> protocol = new Protocol();
+                Protocol<?> protocol = new Protocol<>();
                 protocol.setHeader(header);
                 protocol.addChild(tlv);
 
@@ -253,7 +252,7 @@ public class ApplicantPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_CHECK,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
         //
