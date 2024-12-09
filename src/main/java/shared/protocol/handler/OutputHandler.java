@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 public class OutputHandler implements CompletionHandler<Integer, ByteBuffer> {
-    private final AsynchronousSocketChannel client;
-    private final Consumer<AsynchronousSocketChannel> closeClientConsumer;
+    protected final AsynchronousSocketChannel client;
+    protected final Consumer<AsynchronousSocketChannel> closeClientConsumer;
 
     @Override
     public void completed(Integer result, ByteBuffer buffer) {
