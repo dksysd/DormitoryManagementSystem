@@ -4,9 +4,10 @@ import lombok.Getter;
 import server.config.Config;
 import server.config.RequestHandlerInitializer;
 import server.core.handler.AcceptHandler;
+import server.core.handler.OutputHandler;
 import server.core.handler.RequestHandler;
+import server.core.persistence.WorkItem;
 import server.util.RemoteAddressResolver;
-import shared.protocol.handler.OutputHandler;
 import shared.protocol.persistence.*;
 import shared.protocol.util.ProtocolSerializer;
 
@@ -43,7 +44,7 @@ public class Server {
         RequestHandlerInitializer.init(this.requestHandler);
 
         try (AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(port))) {
-            server.accept(server, new AcceptHandler(this::closeClient, this::addWorkItem));
+            server.accept(server, new AcceptHandler(this::closeClient, workQueue));
             Thread.currentThread().join();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -73,11 +74,7 @@ public class Server {
         workItem.setResponseProtocol(protocol);
         ByteBuffer buffer = ProtocolSerializer.serialize(protocol);
         buffer.flip();
-        workItem.getClient().write(buffer, buffer, new OutputHandler(workItem, this::closeClient, this::endResponse));
-    }
-
-    private void endResponse(WorkItem workItem) {
-        System.out.printf("(%s) %s -> %s [%dms]\n", RemoteAddressResolver.getRemoteAddress(workItem.getClient()), workItem.getResponseProtocol().toString(), workItem.getResponseProtocol().toString(), System.currentTimeMillis() - workItem.getTimestamp());
+        workItem.getClient().write(buffer, buffer, new OutputHandler(workItem, this::closeClient));
     }
 
     private void closeClient(AsynchronousSocketChannel client) {
@@ -86,12 +83,6 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void addWorkItem(AsynchronousSocketChannel client, Protocol<?> protocol) {
-        System.out.println("Data received from " + RemoteAddressResolver.getRemoteAddress(client) + " : " + protocol);
-        WorkItem workItem = new WorkItem(client, protocol, System.currentTimeMillis());
-        workQueue.add(workItem);
     }
 
     public static void main(String[] args) {

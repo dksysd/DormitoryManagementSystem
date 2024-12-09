@@ -1,10 +1,10 @@
-package server.core;
+package server.core.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
+import server.util.RemoteAddressResolver;
 import shared.protocol.persistence.Protocol;
 
-import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public class WorkItem {
     @Override
     public String toString() {
         return "WorkItem{" +
-                "client=" + client +
+                "client=" + RemoteAddressResolver.getRemoteAddress(client) +
                 ", requestProtocol=" + requestProtocol +
                 ", responseProtocol=" + responseProtocol +
                 ", timestamp=" + timestamp +
