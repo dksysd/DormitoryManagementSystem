@@ -11,5 +11,6 @@ public interface CardPaymentDAOI {
     List<CardPaymentDTO> findAll() throws SQLException;
     void save(CardPaymentDTO cardPaymentDTO) throws SQLException;
     void update(CardPaymentDTO cardPaymentDTO) throws SQLException;
+    void update(String uid, String cardNumber, String cardIssuerName, String paymentStatus) throws SQLException;
     void delete(Integer id) throws SQLException;
 }
