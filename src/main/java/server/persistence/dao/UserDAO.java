@@ -11,7 +11,7 @@ import java.util.List;
 public class UserDAO implements UserDAOI {
     @Override
     public UserDTO findById(Integer id) throws SQLException {
-        String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
+        String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
                 "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
                 "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
@@ -36,7 +36,7 @@ public class UserDAO implements UserDAOI {
 
     @Override
     public UserDTO findByUid(String uid) throws SQLException {
-        String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
+        String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
                 "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
                 "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
@@ -62,7 +62,7 @@ public class UserDAO implements UserDAOI {
     @Override
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
-        String query = "SELECT u.id, u.uid, u.login_id, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
+        String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
                 "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image " +
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
                 "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
@@ -85,12 +85,12 @@ public class UserDAO implements UserDAOI {
 
     @Override
     public void save(UserDTO userDTO) throws SQLException {
-        String query = "INSERT INTO users (uid, login_id, user_name, phone_number, created_at, updated_at, user_type_id, gender_code_id, address_id, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO users (uid, login_password, user_name, phone_number, created_at, updated_at, user_type_id, gender_code_id, address_id, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, userDTO.getUid());
-            preparedStatement.setString(2, userDTO.getLoginId());
+            preparedStatement.setString(2, userDTO.getLoginPassword());
             preparedStatement.setString(3, userDTO.getUserName());
             preparedStatement.setString(4, userDTO.getPhoneNumber());
             preparedStatement.setTimestamp(5, Timestamp.valueOf(userDTO.getCreatedAt()));
@@ -105,12 +105,12 @@ public class UserDAO implements UserDAOI {
 
     @Override
     public void update(UserDTO userDTO) throws SQLException {
-        String query = "UPDATE users SET uid = ?, login_id = ?, user_name = ?, phone_number = ?, created_at = ?, updated_at = ?, user_type_id = ?, gender_code_id = ?, address_id = ?,profile_image = ? WHERE id = ?";
+        String query = "UPDATE users SET uid = ?, login_password = ?, user_name = ?, phone_number = ?, created_at = ?, updated_at = ?, user_type_id = ?, gender_code_id = ?, address_id = ?,profile_image = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, userDTO.getUid());
-            preparedStatement.setString(2, userDTO.getLoginId());
+            preparedStatement.setString(2, userDTO.getLoginPassword());
             preparedStatement.setString(3, userDTO.getUserName());
             preparedStatement.setString(4, userDTO.getPhoneNumber());
             preparedStatement.setTimestamp(5, Timestamp.valueOf(userDTO.getCreatedAt()));
@@ -198,7 +198,7 @@ public class UserDAO implements UserDAOI {
         return UserDTO.builder()
                 .id(resultSet.getInt("id"))
                 .uid(resultSet.getString("uid"))
-                .loginId(resultSet.getString("login_id"))
+                .loginPassword(resultSet.getString("login_password"))
                 .userName(resultSet.getString("user_name"))
                 .phoneNumber(resultSet.getString("phone_number"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())

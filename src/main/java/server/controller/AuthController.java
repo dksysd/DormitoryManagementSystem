@@ -134,7 +134,7 @@ public class AuthController implements Controller {
 
         // 사용자 존재 여부 및 비밀번호 확인
         return userDTO != null && Objects.equals(password, userDTO.getPassword());
-        //todo userDTO에 getPassword() 필요
+        //userDTO에 getPassword() -> getLoginPassword
         //+LoginDTO 지워도 됨
     }
 }

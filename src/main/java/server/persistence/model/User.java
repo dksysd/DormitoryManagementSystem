@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 public class User implements Model {
     private Integer id;
     private String uid;
-    private String loginId;
-    //    private String loginPassword;
+    private String loginPassword;
     private String userName;
     private String phoneNumber;
     private LocalDateTime createdAt;
@@ -31,7 +30,7 @@ public class User implements Model {
         return (DTO) UserDTO.builder()
                 .id(id)
                 .uid(uid)
-                .loginId(loginId)
+                .loginPassword(loginPassword)
                 .userName(userName)
                 .phoneNumber(phoneNumber)
                 .createdAt(createdAt)
