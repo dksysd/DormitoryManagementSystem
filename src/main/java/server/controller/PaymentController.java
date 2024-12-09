@@ -198,7 +198,7 @@ public class PaymentController {
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
                 RoomAssignmentDAO roomAssignmentDAO = new RoomAssignmentDAO();
                 MoveOutRequestDAO moveOutRequestDAO = new MoveOutRequestDAO();
-                //todo room_assignments 테이블에 퇴사예정일 추가해주세요(원래 퇴사일)
+                // room_assignments 테이블에 퇴사예정일 추가 : expect_checkout_at
                 RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
