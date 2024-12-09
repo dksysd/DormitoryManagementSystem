@@ -1,10 +1,7 @@
 package server.controller;
 
 import server.persistence.dao.*;
-import server.persistence.dto.CardIssuerDTO;
-import server.persistence.dto.MoveOutRequestDTO;
-import server.persistence.dto.PaymentDTO;
-import server.persistence.dto.RoomAssignmentDTO;
+import server.persistence.dto.*;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
@@ -16,7 +13,7 @@ import static server.util.ProtocolValidator.getIdBySessionId;
 public class PaymentController {
 
     /**
-     * @param protocol header(type:request, dataType: TLV, code: getPayment, dataLength:)
+     * @param protocol header(type:request, dataType: TLV, code: GET_PAYMENT_AMOUNT, dataLength:)
      *                 data:
      *                 children< header(type: value, dataType: string, code: sessionId, dataLength:)
      *                 data:세션아이디 >
@@ -57,7 +54,6 @@ public class PaymentController {
         resProtocol.setHeader(header);
         return resProtocol;
     }
-
 
 
     /**
@@ -104,7 +100,6 @@ public class PaymentController {
     }
 
 
-
     /**
      * @param protocol header(type:request, dataType: TLV, code: BANK_TRANSFER, dataLength:)
      *                 data:
@@ -131,14 +126,6 @@ public class PaymentController {
         String id;
         id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         if (id != null) {
-            /*
-             * NOTE : accountNumber, bankName은 BankTransferPaymentDAO에서 바꿀 수 있지만 나머지는 나머지에 해당하는 친구들을 update하는게
-             * 설계 상 이뻐보여요(자기가 갖고 있는걸 수정). 그렇게 수정함.
-             * accountNumber, accountHolderName, bankName : BTpaymentDAO.update(String uid, String accountNumber, String accountHolderName, String bankName)
-             * paymentStatusName : PaymentDAO.statusUpdate(String uid, String PaymentStatusName)
-             * uid 따로 따로 똑같은 값 입력해야한다는 단점이 있으나, 설계 깔끔함.
-             */
-
             BTpaymentDAO.update(id, (String) protocol.getChildren().get(1).getData(),
                     (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData());
             paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(4).getData());
@@ -165,12 +152,34 @@ public class PaymentController {
      */
     public static Protocol<?> payByCard(Protocol<?> protocol) {
         Protocol<?> resProtocol = new Protocol<>();
-        CardPaymentDAO CMpaymentDAO = new CardPaymentDAO();
-        PaymentDTO paymentDTO = new PaymentDTO();
-        CardIssuerDTO cardIssuerDTO = new CardIssuerDTO();
-        //todo update(uid) cardNumber, cardIssuerName, paymentStatus 완료
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
+
+        try {
+            String sessionId = (String) protocol.getChildren().getFirst().getData();
+            String id = getIdBySessionId(sessionId);
+
+            if (id == null) {
+                header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+                resProtocol.setHeader(header);
+                return resProtocol; // 즉시 반환
+            }
+            CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
+            cardPaymentDAO.update(
+                    id,
+                    (String) protocol.getChildren().get(1).getData(),
+                    (String) protocol.getChildren().get(2).getData(),
+                    (String) protocol.getChildren().get(3).getData()
+            );
+
+        } catch (SQLException e) {
+            // 데이터베이스 예외 처리
+            header.setCode(Code.ResponseCode.ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+        resProtocol.setHeader(header);
         return resProtocol;
     }
+
 
     /**
      * @param protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
@@ -187,18 +196,19 @@ public class PaymentController {
         if (id != null) {
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
-                RoomAssignmentDAO roomAssignmentDAO= new RoomAssignmentDAO();
+                RoomAssignmentDAO roomAssignmentDAO = new RoomAssignmentDAO();
                 MoveOutRequestDAO moveOutRequestDAO = new MoveOutRequestDAO();
                 //todo room_assignments 테이블에 퇴사예정일 추가해주세요(원래 퇴사일)
-               RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
+                RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
-              LocalDateTime start = roomAssignmentDTO.getMoveInAt();
-              LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
+                LocalDateTime start = roomAssignmentDTO.getMoveInAt();
+                LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
 
             }
         }
         return null;
     }
+
     /**
      * @param protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
      *                 data:
@@ -206,12 +216,11 @@ public class PaymentController {
      *                 header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
-     * @return header(type: response, dataType: TLV, code: OK, dataLength:)
-     *                 children<
-     *                 header(type: value, dataType: string, code: REFUND_STATUS,dataLength:)
-     *                 data: 환불 상태)
-     *                 >
-     *
+     * @return header(type : response, dataType : TLV, code : OK, dataLength :)
+     * children<
+     * header(type: value, dataType: string, code: REFUND_STATUS,dataLength:)
+     * data: 환불 상태)
+     * >
      */
     public static Protocol<?> getRefundStatus(Protocol<?> protocol) throws SQLException {
         String sessionId = (String) protocol.getChildren().getFirst().getData();
@@ -242,5 +251,22 @@ public class PaymentController {
         return resProtocol;
     }
 
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: REFUND_CONFIRM, dataLength:)
+     *                 data:
+     *                 children <
+     *                 header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : response, dataType : TLV, code : OK ( 오류면 에러코드), dataLength :)
+     * data:
+     * >
+     */
+    public static Protocol<?> confirmRefund(Protocol<?> protocol) throws SQLException {
+        String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        if (id != null) {
+//todo 저는 여기서 찾을거긴 해요 퇴사 신청자 리스트 깁미
+        }
+    }
 
 }
