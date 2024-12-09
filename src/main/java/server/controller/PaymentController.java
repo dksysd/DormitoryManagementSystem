@@ -2,6 +2,7 @@ package server.controller;
 
 import server.persistence.dao.*;
 import server.persistence.dto.*;
+import server.util.ProtocolValidator;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
@@ -26,11 +27,11 @@ public class PaymentController {
     public static Protocol<?> getPaymentAmount(Protocol<?> protocol) throws SQLException {
         Protocol<?> resProtocol = new Protocol<>();
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
-
         String sessionId = (String) protocol.getChildren().getFirst().getData();
         String id = getIdBySessionId(sessionId);
 
-        if (id != null) {
+        if (id != null && ProtocolValidator.isStudent(sessionId)) {
+
             PaymentDAO paymentDAO = new PaymentDAO();
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
 
@@ -45,8 +46,9 @@ public class PaymentController {
                 resProtocol.addChild(childProtocol);
             } else {
                 // 결제 정보가 없는 경우 처리
-                header.setCode(Code.ResponseCode.ErrorCode.INVALID_REQUEST);
+                header.setCode(Code.ResponseCode.ErrorCode.INVALID_VALUE);
             }
+
         } else {
             // 세션 ID가 유효하지 않은 경우
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
@@ -74,7 +76,7 @@ public class PaymentController {
         String sessionId = (String) protocol.getChildren().getFirst().getData();
         String id = getIdBySessionId(sessionId);
 
-        if (id != null) {
+        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
             PaymentDAO paymentDAO = new PaymentDAO();
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
 
@@ -125,8 +127,9 @@ public class PaymentController {
         BankTransferPaymentDAO BTPaymentDAO = new BankTransferPaymentDAO();
         PaymentDAO paymentDAO = new PaymentDAO();
         String id;
-        id = getIdBySessionId((String) protocol.getChildren().getLast().getData());
-        if (id != null) {
+        String sessionId = (String) protocol.getChildren().getLast().getData();
+        id = getIdBySessionId(sessionId);
+        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
             BTPaymentDAO.save(new BankTransferPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
                     (String) protocol.getChildren().get(1).getData(), LocalDateTime.now(), paymentDAO.findByUid(id),
                     new BankDTO(0, (String) protocol.getChildren().get(2).getData())));
@@ -160,21 +163,22 @@ public class PaymentController {
             String sessionId = (String) protocol.getChildren().getLast().getData();
             String id = getIdBySessionId(sessionId);
 
-            if (id == null) {
+            if (id == null && !ProtocolValidator.isStudent(sessionId)) {
                 header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
                 resProtocol.setHeader(header);
-                return resProtocol; // 즉시 반환
+                return resProtocol;
             }
-            PaymentDAO paymentDAO = new PaymentDAO();
-            CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
-            cardPaymentDAO.save(new CardPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
-                    LocalDateTime.now(),
-                    new CardIssuerDTO(0, protocol.getChildren().get(1).getData()),
-                    paymentDAO.findByUid(id)
-            ));
-            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(2).getData());
+                PaymentDAO paymentDAO = new PaymentDAO();
+                CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
+                cardPaymentDAO.save(new CardPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
+                        LocalDateTime.now(),
+                        new CardIssuerDTO(0, protocol.getChildren().get(1).getData()),
+                        paymentDAO.findByUid(id)
+                ));
+                paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(2).getData());
 
-        } catch (SQLException e) {
+
+        }catch (SQLException e) {
             // 데이터베이스 예외 처리
             header.setCode(Code.ResponseCode.ErrorCode.INTERNAL_SERVER_ERROR);
         }
@@ -206,11 +210,12 @@ public class PaymentController {
      * data: "환불금액" ),
      */
     public static Protocol<?> requestRefund(Protocol<?> protocol) throws SQLException {
-        String id = getIdBySessionId((String) protocol.getChildren().getLast().getData());
+        String sessionId = (String) protocol.getChildren().getLast().getData();
+        String id = getIdBySessionId(sessionId);
         PaymentDAO paymentDAO = new PaymentDAO();
         Protocol<?> respProtocol = new Protocol<>(new Header(Type.VALUE, DataType.TLV, Code.ResponseCode.OK, 0), "");
         //todo payment_refunds 테이블에서 환불 사유 지워주세요 & Banks 테이블에서 BankCode 지워주세요
-        if (id != null) {
+        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
                 RoomAssignmentDAO roomAssignmentDAO = new RoomAssignmentDAO();
@@ -219,7 +224,7 @@ public class PaymentController {
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
                 PaymentRefundDAO paymentRefundDAO = new PaymentRefundDAO();
                 PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0, protocol.getChildren().get(1).getData(), protocol.getChildren().get(2).getData(), LocalDateTime.now(),
-                        new BankDTO(0,(String) protocol.getChildren().get(3).getData()), paymentDTO);
+                        new BankDTO(0, (String) protocol.getChildren().get(3).getData()), paymentDTO);
                 paymentRefundDAO.save(paymentRefundDTO);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
                 LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
@@ -260,7 +265,7 @@ public class PaymentController {
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         Protocol<String> resProtocol = new Protocol<>();
 
-        if (id != null) {
+        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
             PaymentDAO paymentDAO = new PaymentDAO();
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
 
@@ -293,10 +298,15 @@ public class PaymentController {
      * data:
      * >
      */
-    public static Protocol<?> confirmRefund(Protocol<?> protocol) throws SQLException {
-        String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
-        if (id != null) {
-        }
-    }
+//    public static Protocol<?> confirmRefund(Protocol<?> protocol) throws SQLException {
+//        String sessionId = (String) protocol.getChildren().getFirst().getData();
+//        String id = getIdBySessionId(sessionId);
+//        if (id != null&&ProtocolValidator.isAdmin(sessionId)) {
+//
+//        }
+//    }
+
+
+
 
 }
