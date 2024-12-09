@@ -1,13 +1,14 @@
 package server.controller;
 
-import server.persistence.dao.BankTransferPaymentDAO;
-import server.persistence.dao.CardPaymentDAO;
-import server.persistence.dao.PaymentDAO;
+import server.persistence.dao.*;
 import server.persistence.dto.CardIssuerDTO;
+import server.persistence.dto.MoveOutRequestDTO;
 import server.persistence.dto.PaymentDTO;
+import server.persistence.dto.RoomAssignmentDTO;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static server.util.ProtocolValidator.getIdBySessionId;
@@ -186,7 +187,16 @@ public class PaymentController {
         if (id != null) {
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
-//계산..어케함
+                RoomAssignmentDAO roomAssignmentDAO= new RoomAssignmentDAO();
+                MoveOutRequestDAO moveOutRequestDAO = new MoveOutRequestDAO();
+                //todo roomAssignmentDAO.findByUid(String uid);
+                //todo moveOutRequestDAO.findByUid(String id);
+                //todo room_assignments 테이블에 퇴사예정일 추가해주세요(원래 퇴사일)
+               RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
+                MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
+              LocalDateTime start = roomAssignmentDTO.getMoveInAt();
+              LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
+
             }
         }
         return null;
