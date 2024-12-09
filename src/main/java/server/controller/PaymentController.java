@@ -168,7 +168,7 @@ public class PaymentController {
         CardPaymentDAO CMpaymentDAO = new CardPaymentDAO();
         PaymentDTO paymentDTO = new PaymentDTO();
         CardIssuerDTO cardIssuerDTO = new CardIssuerDTO();
-        //todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
+        //todo update(uid) cardNumber, cardIssuerName, paymentStatus 완료
         return resProtocol;
     }
 
