@@ -1,21 +1,18 @@
 package server.util;
 
 
+import server.core.SessionManager;
+
 public class ProtocolValidator {
 
 
-
     public static boolean verifySessionId(String sessionId) {
+        return SessionManager.getINSTANCE().hasSession(sessionId);
 
-        //기타 로직 차후 구현
-        return true;
     }
 
     public static String getIdBySessionId(String sessionId) {
-        String id = "";
-
-
-        return id;
+        return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("ID", String.class);
     }
 
 }

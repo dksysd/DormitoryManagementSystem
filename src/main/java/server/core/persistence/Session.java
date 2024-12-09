@@ -85,7 +85,7 @@ public class Session {
         return (currentTime - lastAccessedTime) > expirationTime;
     }
 
-    private void touch() {
+    public void touch() {
         this.lastAccessedTime = System.currentTimeMillis();
     }
 }
