@@ -2,6 +2,7 @@ package server.controller;
 
 import server.persistence.dao.*;
 import server.persistence.dto.SelectionApplicationDTO;
+import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
@@ -221,6 +222,7 @@ public class DormitoryUserController {
                 Protocol<Integer> child = new Protocol<>();
                 Header childHeader = new Header();
                 childHeader.setType(Type.VALUE);
+                childHeader.setCode(Code.ValueCode.DEMERIT_POINT);
                 childHeader.setDataType(DataType.INTEGER);
                 child.setHeader(childHeader);
                 child.setData(i);
@@ -244,7 +246,20 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getFirst().getData();
         if (verifySessionId(id)) {
-            //TODO : File 어케 받아와요?
+            UserDTO userDTO = dao.findByUid(getIdBySessionId(id));
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setDataType(DataType.TLV);
+
+            Header childHeader = new Header();
+            childHeader.setType(Type.VALUE);
+            childHeader.setDataType(DataType.RAW);
+            childHeader.setCode(Code.ValueCode.PROOF_FILE);
+            Protocol<Byte[]> child = new Protocol<>();
+            child.setHeader(childHeader);
+            child.setData(userDTO.getImageDTO().getData());
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
         return result;
