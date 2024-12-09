@@ -131,7 +131,7 @@ public class PaymentController {
         String id;
         id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         if (id != null) {
-            /* todo uid로 update를 만드시는데 accountNumber, bankName, accountHolderName,paymentStatusName 만 update하고싶어요
+            /*
              * NOTE : accountNumber, bankName은 BankTransferPaymentDAO에서 바꿀 수 있지만 나머지는 나머지에 해당하는 친구들을 update하는게
              * 설계 상 이뻐보여요(자기가 갖고 있는걸 수정). 그렇게 수정함.
              * accountNumber, accountHolderName, bankName : BTpaymentDAO.update(String uid, String accountNumber, String accountHolderName, String bankName)
@@ -189,8 +189,6 @@ public class PaymentController {
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
                 RoomAssignmentDAO roomAssignmentDAO= new RoomAssignmentDAO();
                 MoveOutRequestDAO moveOutRequestDAO = new MoveOutRequestDAO();
-                //todo roomAssignmentDAO.findByUid(String uid);
-                //todo moveOutRequestDAO.findByUid(String id);
                 //todo room_assignments 테이블에 퇴사예정일 추가해주세요(원래 퇴사일)
                RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);

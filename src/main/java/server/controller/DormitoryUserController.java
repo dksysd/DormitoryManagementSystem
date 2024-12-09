@@ -217,7 +217,6 @@ public class DormitoryUserController {
         if (verifySessionId(id)) {
             List<Integer> list = dao.findAllPointIntoInt();
 
-            // FIXME : list? SUM?
             for (Integer i : list) {
                 Protocol<Integer> child = new Protocol<>();
                 Header childHeader = new Header();

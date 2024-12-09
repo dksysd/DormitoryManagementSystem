@@ -25,6 +25,28 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
     }
 
     @Override
+    public MoveOutRequestDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT mor.id AS id, mor.checkout_at AS checkout_at, mor.account_number AS account_number, mor.created_at AS created_at, " +
+                "mor.updated_at AS updated_at , mor.move_out_request_status_id AS move_out_request_status_id" +
+                ", mor.selection_id AS selection_id, mor.bank_id AS bank_id" +
+                "FROM move_out_requests mor" +
+                "INNER JOIN selections s ON s.id = mor.selection_id" +
+                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id" +
+                "INNER JOIN user u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToMoveOutRequestDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+    @Override
     public List<MoveOutRequestDTO> findAll() throws SQLException {
         List<MoveOutRequestDTO> moveOutRequests = new ArrayList<>();
         String query = "SELECT id, checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests";
