@@ -37,6 +37,7 @@ public class ProtocolParser {
             }
             case TLV -> {
                 Protocol<Protocol<?>> protocol = new Protocol<>();
+                protocol.setHeader(header);
                 Header innerHeader = parseHeader(dataBuffer);
                 Protocol<?> innerProtocol = parseProtocol(innerHeader, dataBuffer);
                 protocol.addChild(innerProtocol);
