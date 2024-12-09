@@ -1,6 +1,9 @@
 package client.domitoryUser;
+import server.controller.PaymentController;
 import shared.protocol.persistence.*;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class ApplicantPage {
@@ -183,12 +186,29 @@ public class ApplicantPage {
         Protocol<?> protocol = new Protocol();
         protocol.setHeader(header);
         protocol.addChild(tlv);
-        //sendProtocol(Protocol protocol)해서 전송하면 readProtocol()해서 받아오세용 빨간줄 당연히 뜨는데 걍 무시해
-        //받은 결과 파싱해서 화면에 띄우기
-        //파싱은 이제... getHeader()...getData()..일케 하는거야 대충하고 나중에 안되면 고쳐
-        //그래서 받아왔다 치고 다음으로 연결해
-        String price = null;
-        System.out.println("납부해야할 금액 : " + price + "원입니다.");
+
+        Protocol resultProtocol;
+        Type childresType;
+        Type resType;
+
+        try {
+            resultProtocol = PaymentController.getPaymentAmount(protocol);
+
+            resType = resultProtocol.getHeader().getType();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resType == Type.RESPONSE){
+
+            List<Protocol<?>> list = resultProtocol.getChildren();
+            resultProtocol = list.getFirst();
+            int value = (int) resultProtocol.getData();
+            System.out.println("납부해야할 금액 : " + value + "원입니다.");
+
+        } else{
+            System.out.println("명세서 불러오기 오류!");
+        }
     }
 
     public void displayReceipt(){
