@@ -8,6 +8,8 @@ import server.persistence.dto.PaymentDTO;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
+import java.util.Objects;
+
 import static server.util.ProtocolValidator.getIdBySessionId;
 
 public class PaymentController {
@@ -24,30 +26,38 @@ public class PaymentController {
 
     public static Protocol<?> getPaymentAmount(Protocol<?> protocol) throws SQLException {
         Protocol<?> resProtocol = new Protocol<>();
-        Protocol<Integer> childProtocol = new Protocol<>();
-        Header header = new Header();
-        PaymentDAO paymentDAO = new PaymentDAO();
-        PaymentDTO paymentDTO;
-        String id;
-        int amount;
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
 
-        id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
-        header.setType(Type.RESPONSE);
-        header.setDataType(DataType.TLV);
+        String sessionId = (String) protocol.getChildren().getFirst().getData();
+        String id = getIdBySessionId(sessionId);
+
         if (id != null) {
-            paymentDTO = paymentDAO.findByUid(id);
-            amount = paymentDTO.getPaymentAmount();
-            header.setCode(Code.ResponseCode.OK);
-            Header childHeader = new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PAYMENT_AMOUNT, 0);
-            childProtocol.setHeader(childHeader);
-            childProtocol.setData(amount);
-            protocol.addChild(childProtocol);
+            PaymentDAO paymentDAO = new PaymentDAO();
+            PaymentDTO paymentDTO = paymentDAO.findByUid(id);
+
+            if (paymentDTO != null) {
+                int amount = paymentDTO.getPaymentAmount();
+
+                Protocol<Integer> childProtocol = new Protocol<>(
+                        new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PAYMENT_AMOUNT, 0),
+                        amount
+                );
+
+                resProtocol.addChild(childProtocol);
+            } else {
+                // 결제 정보가 없는 경우 처리
+                header.setCode(Code.ResponseCode.ErrorCode.INVALID_REQUEST);
+            }
         } else {
+            // 세션 ID가 유효하지 않은 경우
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         }
+
         resProtocol.setHeader(header);
         return resProtocol;
     }
+
+
 
     /**
      * @param protocol header(type:request, dataType: TLV, code: getPaymentStatus, dataLength:)
@@ -61,35 +71,41 @@ public class PaymentController {
      */
     public static Protocol<?> getPaymentStatus(Protocol<?> protocol) throws SQLException {
         Protocol<?> resProtocol = new Protocol<>();
-        Protocol<String> childProtocol = new Protocol<>();
-        Header header = new Header();
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
 
-        PaymentDAO paymentDAO = new PaymentDAO();
-        PaymentDTO paymentDTO;
-        String id;
-        String status;
+        String sessionId = (String) protocol.getChildren().getFirst().getData();
+        String id = getIdBySessionId(sessionId);
 
-        id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
-        header.setType(Type.RESPONSE);
-        header.setDataType(DataType.TLV);
         if (id != null) {
-            paymentDTO = paymentDAO.findByUid(id);
-            status = paymentDTO.getPaymentStatusDTO().getStatusName();
-            header.setCode(Code.ResponseCode.OK);
-            Header childHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0);
-            childProtocol.setHeader(childHeader);
-            childProtocol.setData(status);
-            protocol.addChild(childProtocol);
+            PaymentDAO paymentDAO = new PaymentDAO();
+            PaymentDTO paymentDTO = paymentDAO.findByUid(id);
+
+            if (paymentDTO != null) {
+                String status = paymentDTO.getPaymentStatusDTO().getStatusName();
+
+                Protocol<String> childProtocol = new Protocol<>(
+                        new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0),
+                        status
+                );
+
+                resProtocol.addChild(childProtocol);
+            } else {
+                // 결제 정보가 없는 경우 처리
+                header.setCode(Code.ResponseCode.ErrorCode.INVALID_REQUEST);
+            }
         } else {
+            // 세션 ID가 유효하지 않은 경우 처리
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         }
+
         resProtocol.setHeader(header);
         return resProtocol;
     }
 
 
+
     /**
-     * @param protocol header(type:request, dataType: TLV, code: payByBankTransfer, dataLength:)
+     * @param protocol header(type:request, dataType: TLV, code: BANK_TRANSFER, dataLength:)
      *                 data:
      *                 children <
      *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
@@ -100,6 +116,8 @@ public class PaymentController {
      *                 data: 계좌주이름 ),
      *                 4 ( header(type: value, dataType: string, code: bankName, dataLength:,)
      *                 data: 은행명)
+     *                 5 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
+     *                 data: "납부")
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
      * data: null
@@ -122,19 +140,97 @@ public class PaymentController {
 
             BTpaymentDAO.update(id, (String) protocol.getChildren().get(1).getData(),
                     (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData());
-            paymentDAO.statusUpdate(id, "납부");
+            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(4).getData());
         } else header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         resProtocol.setHeader(header);
         return resProtocol;
     }
 
-
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: CARD_MOVEMENT, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 ),
+     *                 2 ( header(type: value, dataType: string, code: cardNumber, dataLength:,)
+     *                 data: 카드번호),
+     *                 3 ( header(type: value, dataType: string, code: card_issuer, dataLength:,)
+     *                 data: 계좌주이름 ),
+     *                 4 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
+     *                 data: "납부")
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> payByCard(Protocol<?> protocol) {
         Protocol<?> resProtocol = new Protocol<>();
         CardPaymentDAO CMpaymentDAO = new CardPaymentDAO();
         PaymentDTO paymentDTO = new PaymentDTO();
         CardIssuerDTO cardIssuerDTO = new CardIssuerDTO();
-    //todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
+        //todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
+        return resProtocol;
+    }
+
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return
+     */
+    public static Protocol<?> requestRefund(Protocol<?> protocol) throws SQLException {
+        String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        PaymentDAO paymentDAO = new PaymentDAO();
+        if (id != null) {
+            PaymentDTO paymentDTO = paymentDAO.findByUid(id);
+            if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
+//계산..어케함
+            }
+        }
+        return null;
+    }
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
+     *                 data:
+     *                 children <
+     *                 header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type: response, dataType: TLV, code: OK, dataLength:)
+     *                 children<
+     *                 header(type: value, dataType: string, code: REFUND_STATUS,dataLength:)
+     *                 data: 환불 상태)
+     *                 >
+     *
+     */
+    public static Protocol<?> getRefundStatus(Protocol<?> protocol) throws SQLException {
+        String sessionId = (String) protocol.getChildren().getFirst().getData();
+        String id = getIdBySessionId(sessionId);
+
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
+        Protocol<?> resProtocol = new Protocol<>();
+
+        if (id != null) {
+            PaymentDAO paymentDAO = new PaymentDAO();
+            PaymentDTO paymentDTO = paymentDAO.findByUid(id);
+
+            if (paymentDTO != null) {
+                resProtocol.addChild(new Protocol<>(
+                        new Header(Type.VALUE, DataType.STRING, Code.ValueCode.REFUND_STATUS, 0),
+                        paymentDTO.getPaymentStatusDTO().getStatusName()
+                ));
+            } else {
+
+                header.setCode(Code.ResponseCode.ErrorCode.INVALID_REQUEST);
+            }
+        } else {
+            // 세션 ID가 유효하지 않은 경우 UNAUTHORIZED 처리
+            header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+        }
+
+        resProtocol.setHeader(header);
         return resProtocol;
     }
 
