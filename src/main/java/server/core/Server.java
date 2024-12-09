@@ -6,8 +6,8 @@ import server.config.RequestHandlerInitializer;
 import server.core.handler.AcceptHandler;
 import server.core.handler.OutputHandler;
 import server.core.handler.RequestHandler;
+import server.core.persistence.Session;
 import server.core.persistence.WorkItem;
-import server.util.RemoteAddressResolver;
 import shared.protocol.persistence.*;
 import shared.protocol.util.ProtocolSerializer;
 
@@ -31,11 +31,15 @@ public class Server {
     private Server() {
         port = Config.getInt("PORT");
         workerThreads = Config.getInt("WORKER_THREADS");
+        int workQueueCapacity = Config.getInt("QUEUE_CAPACITY");
 
         this.workerExecutor = Executors.newFixedThreadPool(workerThreads);
-        this.workQueue = new LinkedBlockingQueue<>(workerThreads);
-
+        this.workQueue = new LinkedBlockingQueue<>(workQueueCapacity);
         this.requestHandler = RequestHandler.getINSTANCE();
+
+        for (int i = 0; i < workerThreads; i++) {
+            workerExecutor.submit(() -> {}); // 빈 작업 제출
+        }
     }
 
     public void start() {
@@ -43,7 +47,7 @@ public class Server {
 
         RequestHandlerInitializer.init(this.requestHandler);
 
-        try (AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(port))) {
+        try (AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(port), 10_000)) {
             server.accept(server, new AcceptHandler(this::closeClient, workQueue));
             Thread.currentThread().join();
         } catch (IOException | InterruptedException e) {
@@ -69,7 +73,8 @@ public class Server {
 
     private void work(WorkItem workItem) {
         // todo session 기능 만들기
-        System.out.println("Working " + workItem.toString());
+        checkSessionId(workItem.getRequestProtocol());
+        System.out.println("Working " + workItem);
         Protocol<?> protocol = requestHandler.request(workItem.getRequestProtocol());
         workItem.setResponseProtocol(protocol);
         ByteBuffer buffer = ProtocolSerializer.serialize(protocol);
@@ -77,8 +82,26 @@ public class Server {
         workItem.getClient().write(buffer, buffer, new OutputHandler(workItem, this::closeClient));
     }
 
+    private void checkSessionId(Protocol<?> protocol) {
+        boolean hasSessionId = protocol.getChildren().stream().anyMatch(child -> child.getHeader().getCode() == Code.ValueCode.SESSION_ID);
+        if (!hasSessionId) {
+            Session session = SessionManager.getINSTANCE().createSession();
+
+            Protocol<String> sessionValueProtocol = new Protocol<>();
+            Header header = new Header();
+            header.setType(Type.VALUE);
+            header.setCode(Code.ValueCode.SESSION_ID);
+            header.setDataType(DataType.STRING);
+            sessionValueProtocol.setHeader(header);
+            sessionValueProtocol.setData(session.getSessionId());
+
+            protocol.addChild(sessionValueProtocol);
+        }
+    }
+
     private void closeClient(AsynchronousSocketChannel client) {
         try {
+            System.out.println("Closing client");
             client.close();
         } catch (IOException e) {
             e.printStackTrace();
