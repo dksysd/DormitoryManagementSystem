@@ -273,7 +273,6 @@ public class PaymentController {
     public static Protocol<?> confirmRefund(Protocol<?> protocol) throws SQLException {
         String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         if (id != null) {
-        //todo 저는 여기서 찾을거긴 해요 퇴사 신청자 리스트 깁미 허허 각 생활관별 조회가 되어야 할 것 같습니다
         }
     }
 

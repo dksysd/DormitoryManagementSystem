@@ -9,6 +9,7 @@ public interface MoveOutRequestDAOI {
     MoveOutRequestDTO findById(Integer id) throws SQLException;
     MoveOutRequestDTO findByUid(String uid) throws SQLException;
     List<MoveOutRequestDTO> findAll() throws SQLException;
+    List<String> findAllOfMoveOut() throws SQLException;
     void save(MoveOutRequestDTO moveOutRequestDTO) throws SQLException;
     void update(MoveOutRequestDTO moveOutRequestDTO) throws SQLException;
     void delete(Integer id) throws SQLException;

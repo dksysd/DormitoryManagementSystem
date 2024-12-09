@@ -109,7 +109,6 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
             bank_id = resultSet.getInt("bank_id");
         }
         query = "UPDATE bank_transfer_payments btp SET btp.account_number = ?, btp.account_holder_name = ?, btp.bank_id = ?" +
-                "btp.created_at = " + LocalDateTime.now() + // TODO : 이거 created_at 수정시에도 바뀌어아하는가에 대해 검토 필요
                 "WHERE id = " + btp_id;
 
 
