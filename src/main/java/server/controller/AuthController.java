@@ -1,14 +1,13 @@
 package server.controller;
 
 import server.persistence.dao.UserDAO;
-import server.persistence.dao.UserDAOI;
 import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
 import java.sql.SQLException;
 import java.util.Objects;
 //refreshSession 미완
 public class AuthController implements Controller {
-
+//맞다 로그인할때 학생인지 관리잔지 줘야된다 깜빡핑
     /**
      * id : 숫자 8자리 제한, password: 8~20자리, 영어, 특수문자, 숫자 포함
      *
@@ -22,36 +21,39 @@ public class AuthController implements Controller {
      *                 >
      * @return 성공 header(type: response, dataType: TLV, code: OK, dataLength:
      * children<
-     * header(type:value, dataType: String, code: SessionId, dataLength:)
-     * data: 세션아이디
-     * >
+     *          1 header(type:value, dataType: String, code: SessionId, dataLength:)
+     *          data: 세션아이디,
+     *          2 header(type:value, dataType: String, code: USER_TYPE_ID, dataLength:)
+     *          data: 사용자 유형 아이디(관리자 or 학생)
+     *          >
      * 실패 header(type: response, dataType: TLV, code: 에러코드(개중 보고 에러원인 판단), dataLength: 0)
      * data:
-     * @throws SQLException
+     *
      */
     public static Protocol<?> login(Protocol<?> protocol) throws SQLException {
 
         Protocol<?> resProtocol = new Protocol<>();
         Protocol<String> childProtocol1 = new Protocol<>();
+        Protocol<String> childProtocol2 = new Protocol<>();
         Header header = new Header();
-        Header c1Header = childProtocol1.getHeader();
+        UserDAO userDAO = new UserDAO();
         String sessionId = "";
         try {
             String id = (String) protocol.getChildren().get(0).getData();
             String pw = (String) protocol.getChildren().get(1).getData();
-
+            UserDTO userDTO = userDAO.findByUid(id);
             header.setType(Type.RESPONSE);
             header.setDataType(DataType.TLV);
 
             if (isValidLoginCredentials(id, pw, header)) {
                 // 세션아이디 발급(세션 저장소에 id,pw 추가)
                 header.setCode(Code.ResponseCode.OK);
-                c1Header.setType(Type.VALUE);
-                c1Header.setDataType(DataType.STRING);
-                c1Header.setCode(Code.ValueCode.SESSION_ID);
-                childProtocol1.setHeader(c1Header);
+                childProtocol1.setHeader(new Header(Type.VALUE,DataType.STRING,Code.ValueCode.SESSION_ID,0));
+                childProtocol2.setHeader(new Header(Type.VALUE,DataType.STRING,Code.ValueCode.USER_TYPE_ID,0));
                 childProtocol1.setData(sessionId);
+                childProtocol2.setData(userDTO.getUserTypeDTO().getTypeName());
                 resProtocol.addChild(childProtocol1);
+                resProtocol.addChild(childProtocol2);
             }
         } catch (SQLException e) {
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR); // SQL 에러 발생 시 처리
@@ -96,7 +98,6 @@ public class AuthController implements Controller {
                 if (authenticateUser(id, password)) {
                     return true;
                 }
-                ;
                 header.setCode(Code.ErrorCode.UNAUTHORIZED);
             }
             header.setCode(Code.ErrorCode.INVALID_VALUE);
@@ -125,7 +126,7 @@ public class AuthController implements Controller {
     }
 
     private static boolean authenticateUser(String id, String password) throws SQLException {
-        UserDAOI userDAO = new UserDAO();
+        UserDAO userDAO = new UserDAO();
         UserDTO userDTO = userDAO.findByUid(id);
 
         // 사용자 존재 여부 및 비밀번호 확인
