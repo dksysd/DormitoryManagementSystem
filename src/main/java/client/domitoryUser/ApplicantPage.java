@@ -43,7 +43,7 @@ public class ApplicantPage {
     }
 
     public void displayInfo(){
-        // 선발 일정 요청
+        // 선발 일정 요청 - sessionId
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.SELECTION_SCHEDULE,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -51,18 +51,18 @@ public class ApplicantPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        // 선발 일정 받기
+        // 선발 일정 받기 - String 들로 받아와짐. -> 일정, 일정, 일정 이런 방식으로
     }
 
     public void applicate(){
-        // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴
+        // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴 -> User getUserInfo로 가시면 될듯
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
         Protocol<?> protocol = new Protocol();
         protocol.setHeader(header);
         protocol.addChild(tlv);
-        // 성별 받아오기
+        // 성별 받아오기 -> getUser Info 참조하시면 됨.
 
         // 성별별로 좀 다르게 하기 - 수정 필요
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 입사 신청 페이지 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
@@ -101,7 +101,7 @@ public class ApplicantPage {
         }
 
 
-        // 결핵진단서 어케할거?
+        // 결핵진단서 어케할거? -> setTuber 머시기 만들 예정.
         // 날짜에 따라서 우선선발 인증 어쩌고도 넣어야함
 
 
