@@ -237,7 +237,7 @@ public class ApplicantPage {
         Protocol<?> protocol = new Protocol();
         protocol.setHeader(header);
         protocol.addChild(tlv);
-
+        //
         // 결제 상태 따라서 불리언 값 리턴
         return false;
     }
