@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import server.core.persistence.WorkItem;
 import server.util.RemoteAddressResolver;
 import shared.protocol.persistence.Header;
-import shared.protocol.persistence.Protocol;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.BlockingQueue;
-import java.util.function.BiConsumer;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @AllArgsConstructor
@@ -27,7 +25,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
         System.out.println("Server accepted from " + RemoteAddressResolver.getRemoteAddress(client));
 
         ByteBuffer headerBuffer = ByteBuffer.allocate(Header.BYTES);
-        client.read(headerBuffer, headerBuffer, new InputHeaderHandler(client, closeClientConsumer, workQueue));
+        client.read(headerBuffer, 10, TimeUnit.SECONDS, headerBuffer, new InputHeaderHandler(client, closeClientConsumer, workQueue));
     }
 
     @Override
