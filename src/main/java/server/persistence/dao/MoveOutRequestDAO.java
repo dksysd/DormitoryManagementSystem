@@ -11,7 +11,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public MoveOutRequestDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests WHERE id = ?";
+        String query = "SELECT id, checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -25,9 +25,32 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
     }
 
     @Override
+    public MoveOutRequestDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT mor.id AS id, mor.checkout_at AS checkout_at, mor.expect_checkout_at AS expect_checkout_at" +
+                "mor.account_number AS account_number, mor.created_at AS created_at, " +
+                "mor.updated_at AS updated_at , mor.move_out_request_status_id AS move_out_request_status_id" +
+                ", mor.selection_id AS selection_id, mor.bank_id AS bank_id" +
+                "FROM move_out_requests mor" +
+                "INNER JOIN selections s ON s.id = mor.selection_id" +
+                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id" +
+                "INNER JOIN user u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToMoveOutRequestDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+    @Override
     public List<MoveOutRequestDTO> findAll() throws SQLException {
         List<MoveOutRequestDTO> moveOutRequests = new ArrayList<>();
-        String query = "SELECT id, checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests";
+        String query = "SELECT id, checkout_at, expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -41,7 +64,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public void save(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
-        String query = "INSERT INTO move_out_requests (checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO move_out_requests (checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -89,6 +112,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         return MoveOutRequestDTO.builder()
                 .id(resultSet.getInt("id"))
                 .checkoutAt(resultSet.getTimestamp("checkout_at").toLocalDateTime())
+                .expectCheckoutAt(resultSet.getTimestamp("expect_checkout_at").toLocalDateTime())
                 .accountNumber(resultSet.getString("account_number"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())

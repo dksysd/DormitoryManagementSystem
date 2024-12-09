@@ -1,13 +1,12 @@
 package client.domitoryUser;
-
-import client.domitoryAdmin.AdminPage;
+import shared.protocol.persistence.*;
 
 import java.util.Scanner;
 
 public class ApplicantPage {
     private static Scanner sc = new Scanner(System.in);
-
-    public static void applicantFunction(){
+    private String sessionID;
+    public void applicantFunction(){
         int option = 0;
 
         do{
@@ -33,22 +32,39 @@ public class ApplicantPage {
         System.out.println("============= 학생 페이지입니다 =============");
         System.out.println("1. 선발 일정 확인");
         System.out.println("2. 입사신청하기"); // 결핵진단서는 따로 업로드 기능 만들것인지?
-        System.out.println("3. 퇴사 신청 / 확인"); // 환불신청도 같이 할 것인가?
+        System.out.println("3. 퇴사 신청 / 확인"); // 환불신청도 같이 할 것인가? >> 환불신청도 같이
         System.out.println("4. 선발 결과 확인");
         System.out.println("5. 상벌점 확인");
         System.out.println("6. 명세서/영수증 확인");
-        System.out.println("7. 로그아웃");
+        System.out.println("7. 결제 / 결제상태 확인");
+        System.out.println("8. 로그아웃");
         System.out.println();
         System.out.println();
     }
 
-    public static void displayInfo(){
-        //사용자 입력 없음 >> 메시지 보내와서 출력만
+    public void displayInfo(){
+        // 선발 일정 요청
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.SELECTION_SCHEDULE,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        // 선발 일정 받기
     }
 
-    public static void applicate(){
-        // 성별 물어보는 메시지를 보내서 결과 받아올것인지? 아니면 잘못입력하면 탈락시킬지 / 탈락시킨다 가정하면
-        // 메시지 보내면 서버측에서 확인하고 바로 탈락시키면 됨
+    public void applicate(){
+        // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+        // 성별 받아오기
+
+        // 성별별로 좀 다르게 하기 - 수정 필요
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 입사 신청 페이지 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println();
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 기숙사 지망 순위 설정 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
@@ -95,26 +111,134 @@ public class ApplicantPage {
         // 응답메시지 받고 결과 출력
     }
 
-    public static void moveOutApplicate(){
+    public void moveOutApplicate(){
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
         if(option == 2){
+            // 퇴사확인 요청
+            Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.CHECK_MOVE_OUT,0);
+            Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+            Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+            Protocol<?> protocol = new Protocol();
+            protocol.setHeader(header);
+            protocol.addChild(tlv);
+
             // 메시지 받아서 결과만 확인
+
         } else{
-            // 환불신청 할거임?
+            // 환불신청 >> 결과 확인은 학생 페이지 7번 결제확인 기능을 사용하라고 안내
+            System.out.println("환불 완료 시, 자동으로 퇴사 신청이 됩니다. \"환불\" 입력 시 환불이 완료됩니다. : ");
+            String text = sc.next();
+
+            if(text.trim().equals("환불")){
+                // 환불 요청 보내기
+                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.MOVE_OUT,0);
+                Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+                Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+                Protocol<?> protocol = new Protocol();
+                protocol.setHeader(header);
+                protocol.addChild(tlv);
+
+                // 메시지 받고 환불 완료 안내 띄우기
+
+            }
         }
-        // 환불 신청 같이?
     }
 
-    public static void displaySelectionResult(){
-        // 사용자 입력 없고 메시지 받기만 하면됨
+    public void displaySelectionResult(){
+        // 합격했는지 확인 요청
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_RESULT,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        //날짜가 안됐다면 오류 메시지가 옴 - 그거 처리
+
     }
 
-    public static void displayMeritPoint(){
-        // 사용자 입력 없고 메시지 받기만 하면됨
+    public void displayMeritPoint(){
+        //상벌점 요청
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MERIT_AND_DEMERIT_POINTS,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        //상벌점 불러오기
+
+        int point = 0;
+        System.out.println("총 점수 : " + point);
+        System.out.println("자세한 사항은 관리자에게 문의하세요.");
     }
 
-    public static void displayBill(){
+    public void displayBill(){
         // 사용자 입력 없고 메시지 받기만 하면됨
+        //클래스 및 메서드 불러오기
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BILL,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+        //sendProtocol(Protocol protocol)해서 전송하면 readProtocol()해서 받아오세용 빨간줄 당연히 뜨는데 걍 무시해
+        //받은 결과 파싱해서 화면에 띄우기
+        //파싱은 이제... getHeader()...getData()..일케 하는거야 대충하고 나중에 안되면 고쳐
+        //그래서 받아왔다 치고 다음으로 연결해
+        String price = null;
+        System.out.println("납부해야할 금액 : " + price + "원입니다.");
+    }
+
+    public void displayReceipt(){
+        //클래스 및 메서드 불러오기
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_RECEIPT,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        String price = null;
+
+        displayBill();
+        //결제상태 확인
+        if(paidCheck()){
+            System.out.println("납부된 금액 : " + price + "원입니다.");
+        }
+    }
+
+    public void payment(){
+        //Payment 클래스 끌어와서 하기
+        if(!paidCheck()){
+            displayBill();
+            System.out.println("납부 후, \"납부\" 글자를 입력해주시면 결제상태가 완료로 바뀝니다 : ");
+            String text = sc.next();
+            if(text.trim().equals("납부")){
+                // 납부 상태 변경 요청
+                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT,0);
+                Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+                Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+                Protocol<?> protocol = new Protocol();
+                protocol.setHeader(header);
+                protocol.addChild(tlv);
+
+                // 응답 메시지로 할건지 ? 페이드체크 메서드 호출로 완료 안내줄건지?
+            }
+        }
+
+    }
+
+    public boolean paidCheck(){
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_CHECK,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        // 결제 상태 따라서 불리언 값 리턴
+        return false;
     }
 }

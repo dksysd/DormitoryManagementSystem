@@ -18,7 +18,7 @@ public class DefaultPage {
         }
         else if(identity == 1){
             //학생 화면
-            ApplicantPage.applicantFunction();
+            new ApplicantPage().applicantFunction();
         }
         else {
             System.out.println("=============로그인 실패!=============");

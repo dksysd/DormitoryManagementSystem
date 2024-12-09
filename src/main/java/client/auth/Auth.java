@@ -17,7 +17,7 @@ public class Auth {
 
         System.out.println("=============생활관 관리 시스템==============");
         System.out.println();
-        System.out.print("ID : ");
+        System.out.print("학번 : ");
         id = sc.next();
         System.out.print("PW : ");
         pw = sc.next();

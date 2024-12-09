@@ -1,140 +1,140 @@
-/*
 package server.controller;
 
 import server.persistence.dao.UserDAO;
-import server.persistence.dao.UserDAOI;
-import server.persistence.dto.LoginDTO;
 import server.persistence.dto.UserDTO;
-
+import shared.protocol.persistence.*;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import static server.util.ProtocolValidator.verifySessionId;
+
+//refreshSession 미완
 public class AuthController implements Controller {
-    */
-/**
+
+    /**
      * id : 숫자 8자리 제한, password: 8~20자리, 영어, 특수문자, 숫자 포함
      *
-     * @param requestProtocol loginDTO 객체로 전송 요망
-     * @param response        header(contentType: APPLICATION_JSON)
-     *//*
+     * @param protocol header(type:request, dataType: TLV, code: LOGIN, dataLength:)
+     *                 data:
+     *                 children<
+     *                 1 header(type: value, dataType: string, code: id, dataLength:)
+     *                 data:아이디.
+     *                 2 header(type: value, dataType: string, code: password, dataLength:)
+     *                 data: 비밀번호
+     *                 >
+     * @return 성공 header(type: response, dataType: TLV, code: OK, dataLength:
+     * children<
+     *          1 header(type:value, dataType: String, code: SessionId, dataLength:)
+     *          data: 세션아이디,
+     *          2 header(type:value, dataType: String, code: USER_TYPE_ID, dataLength:)
+     *          data: 사용자 유형 아이디(관리자 or 학생)
+     *          >
+     * 실패 header(type: response, dataType: TLV, code: 에러코드(개중 보고 에러원인 판단), dataLength: 0)
+     * data:
+     *
+     */
+    public static Protocol<?> login(Protocol<?> protocol) throws SQLException {
 
-    public static void login(RequestProtocol requestProtocol, ResponseProtocol response) {
+        Protocol<?> resProtocol = new Protocol<>();
+        Protocol<String> childProtocol1 = new Protocol<>();
+        Protocol<String> childProtocol2 = new Protocol<>();
+        Header header = new Header();
+        UserDAO userDAO = new UserDAO();
+        String sessionId = "";
         try {
-            Header header = response.getHeader();
-            header.setContentType(Header.ContentType.APPLICATION_JSON);
-            Body responseBody = response.getBody();
-            Body requestBody = requestProtocol.getBody();
-            LoginDTO loginDTO = (LoginDTO) requestBody.getData("loginDTO");
+            String id = (String) protocol.getChildren().get(0).getData();
+            String pw = (String) protocol.getChildren().get(1).getData();
+            UserDTO userDTO = userDAO.findByUid(id);
+            header.setType(Type.RESPONSE);
+            header.setDataType(DataType.TLV);
 
-            if (!isValidateLoginDTO(loginDTO, response, responseBody)) {
-                return;
-            } else if (!isValidLoginCredentials(loginDTO, requestBody)) {
-                response.setStatus(ResponseProtocol.Status.Unauthorized);
-                return;
+            if (isValidLoginCredentials(id, pw, header)) {
+                // 세션아이디 발급(세션 저장소에 id,pw 추가)
+                header.setCode(Code.ResponseCode.OK);
+                childProtocol1.setHeader(new Header(Type.VALUE,DataType.STRING,Code.ValueCode.SESSION_ID,0));
+                childProtocol2.setHeader(new Header(Type.VALUE,DataType.STRING,Code.ValueCode.USER_TYPE_ID,0));
+                childProtocol1.setData(sessionId);
+                childProtocol2.setData(userDTO.getUserTypeDTO().getTypeName());
+                resProtocol.addChild(childProtocol1);
+                resProtocol.addChild(childProtocol2);
             }
-            // 최종 응답 설정
-            response.setStatus(ResponseProtocol.Status.OK);
-            responseBody.addData("message", "Login successful");
-
-        } catch (Exception e) {
-            response.setStatus(ResponseProtocol.Status.InternalServerError);
+        } catch (SQLException e) {
+            header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR); // SQL 에러 발생 시 처리
         }
+        resProtocol.setHeader(header);
+        return resProtocol;
     }
 
-    public static boolean isValidateLoginDTO(LoginDTO loginDTO, ResponseProtocol response, Body responseBody) {
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: LOGOUT, dataLength:)
+     *                 data:
+     *                 children<
+     *                 1 header(type: value, dataType: string, code: SessionId, dataLength:)
+     *                 data: sessionId
+     *                 >
+     * @return header(type : response, dataType : TLV, code : OK ( 실패시 에러코드), dataLength :
+     * data:
+     */
+    public static Protocol<?> logout(Protocol<?> protocol) {
+        Protocol<?> resProtocol = new Protocol<>();
+        Header header = new Header();
+        String sessionId;
         try {
-            Objects.requireNonNull(loginDTO, "loginDTO is null");
-            Objects.requireNonNull(loginDTO.getId(), "loginDTO.id is null");
-            Objects.requireNonNull(loginDTO.getPassword(), "loginDTO.password is null");
-        } catch (NullPointerException e) {
-            response.setStatus(ResponseProtocol.Status.BadRequest);
-            responseBody.addData("error", e.getMessage());  // 예외 메시지를 반환
-            return false;  // 검증 실패 시 false 반환
+            sessionId = (String) protocol.getChildren().getFirst().getData();
+            header.setType(Type.RESPONSE);
+            header.setDataType(DataType.TLV);
+            if (verifySessionId(sessionId)) {//세션아이디 검증 및 처리
+                header.setCode(Code.ResponseCode.OK);
+            } else header.setCode(Code.ErrorCode.UNAUTHORIZED);
+            resProtocol.setHeader(header);
+        } catch (Exception e) {
+            header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
-        return true;  // 검증 성공 시 true 반환
+        return resProtocol;
     }
 
-    private static boolean isValidLoginCredentials(LoginDTO loginDTO, Body responseBody) throws SQLException {
-        String id = loginDTO.getId();
-        String password = loginDTO.getPassword();
-
-        // id와 password null 체크
-        if (id == null) {
-            responseBody.addData("error", "id is null");
-            return false;
-        } else if (password == null) {
-            responseBody.addData("error", "password is null");
-            return false;
+    private static boolean isValidLoginCredentials(String id, String password, Header header) throws SQLException {
+        try {
+            // ID 형식 검증 (8자리 숫자)
+            if (!isValidId(id) && !isValidPassword(password)) {
+                // 실제 데이터베이스 검증
+                if (authenticateUser(id, password)) {
+                    return true;
+                }
+                header.setCode(Code.ErrorCode.UNAUTHORIZED);
+            }
+            header.setCode(Code.ErrorCode.INVALID_VALUE);
+        } catch (SQLException e) {
+            header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
-
-        // ID 형식 검증 (8자리 숫자)
-        if (!isValidId(id)) {
-            responseBody.addData("error", "id is invalid");
-            return false;
-        }
-        if (!isValidPassword(password)) {
-            responseBody.addData("error", "password is invalid");
-            return false;
-        }
-
-        // 실제 데이터베이스 검증
-        return authenticateUser(loginDTO, responseBody);
+        return false;
     }
 
     private static boolean isValidId(String id) {
-        // id가 8자리인지 확인(id는 학번)
-        if (id.length() != 8) {
-            return false;
-        }
-        // 모든 문자가 숫자인지 확인
-        try {
-            Long.parseLong(id);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+        return id != null && id.matches("\\d{8}");
     }
 
     private static boolean isValidPassword(String password) {
-        // 길이 검증 (8-20자)
-        if (password.length() < 8 || password.length() > 20) {
+        if (password == null || password.length() < 8 || password.length() > 20) {
             return false;
         }
 
         int validationCount = 0;
 
-        // 소문자 포함 여부 검사
-        if (password.matches(".*[a-z].*") || password.matches(".*[A-Z].*")) {
-            validationCount++;
-        }
+        if (password.matches(".*[a-zA-Z].*")) validationCount++; // 영문자 포함
+        if (password.matches(".*\\d.*")) validationCount++;      // 숫자 포함
+        if (password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) validationCount++; // 특수문자 포함
 
-        // 숫자 포함 여부 검사
-        if (password.matches(".*\\d.*")) {
-            validationCount++;
-        }
-
-        // 특수문자 포함 여부 검사
-        if (password.matches(".*[!@#$%^&*()\\-_=+\\[\\]{};:'\",.<>/?].*")) {
-            validationCount++;
-        }
-
-        // 3가지 이상의 조합이 있어야 함
         return validationCount >= 3;
     }
 
-    private static boolean authenticateUser(LoginDTO loginDTO, Body responseBody) throws SQLException {
-        UserDAOI userDAO = new UserDAO() {
-        };
-        String id = loginDTO.getId();
+    private static boolean authenticateUser(String id, String password) throws SQLException {
+        UserDAO userDAO = new UserDAO();
         UserDTO userDTO = userDAO.findByUid(id);
-        if (userDTO == null) {
-            responseBody.addData("error", "user not found");
-            return false;
-        }
-        if(!Objects.equals(loginDTO.getPassword(), userDAO.getPasswordByUid(id))){
-            responseBody.addData("error", "password does not match");
-            return false;
-        }
-        return true;
+
+        // 사용자 존재 여부 및 비밀번호 확인
+        return userDTO != null && Objects.equals(password, userDTO.getPassword());
+        //userDTO에 getPassword() -> getLoginPassword
+        //+LoginDTO 지워도 됨
     }
-}*/
+}

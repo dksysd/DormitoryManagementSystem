@@ -111,7 +111,7 @@ public class DormitoryUserController {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String sessionId = (String) protocol.getChildren().getFirst().getData();
-        String id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         Integer preference = (Integer) protocol.getChildren().get(1).getData();
 
         if (verifySessionId(sessionId)) {
@@ -133,7 +133,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getFirst().getData();
         if (verifySessionId(id)) {
-            dao.updateRoommate(getIdByIdBySessionId(id), (Integer) protocol.getChildren().get(1).getData());
+            dao.updateRoommate(getIdBySessionId(id), (Integer) protocol.getChildren().get(1).getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
 
@@ -186,7 +186,7 @@ public class DormitoryUserController {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getFirst().getData();
-        String uid = getIdByIdBySessionId(id);
+        String uid = getIdBySessionId(id);
         if (verifySessionId(id)) {
             String statusName = dao.findByUid(uid).getSelectionApplicationStatusDTO().getStatusName();
             resultHeader.setCode(Code.ResponseCode.OK);
@@ -217,7 +217,6 @@ public class DormitoryUserController {
         if (verifySessionId(id)) {
             List<Integer> list = dao.findAllPointIntoInt();
 
-            // FIXME : list? SUM?
             for (Integer i : list) {
                 Protocol<Integer> child = new Protocol<>();
                 Header childHeader = new Header();

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class MoveOutRequest implements Model {
     private Integer id;
     private LocalDateTime checkoutAt;
+    private LocalDateTime expectCheckoutAt;
     private String accountNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

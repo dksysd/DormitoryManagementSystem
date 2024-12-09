@@ -348,6 +348,7 @@ create table if not exists move_out_requests
 (
     id                 int primary key auto_increment,
     checkout_at        timestamp   not null,
+    expect_checkout_at timestamp   not null,
     account_number     varchar(50) not null,
     created_at         timestamp   not null default now(),
     updated_at         timestamp   not null default now() on update now(),

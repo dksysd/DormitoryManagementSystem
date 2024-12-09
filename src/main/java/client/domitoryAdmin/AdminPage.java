@@ -31,7 +31,7 @@ public class AdminPage {
 
     public static void adminFunctionInfo(){
         System.out.println("============= 관리자 페이지입니다 =============");
-        System.out.println("1. register selection information 이거 머임?");
+        System.out.println("1. 선발 일정 등록");
         System.out.println("2. 입사 신청자 목록 확인");
         System.out.println("3. 입사자 선발하기");
         System.out.println("4. 상벌점 관리");
@@ -56,7 +56,7 @@ public class AdminPage {
             }
 
             System.out.println("선발 일정을 입력하세요.");
-            System.out.println("ex : yyyy년 mm월 dd일 부터 8일동안 - (yyyymmdd 8)");
+            System.out.println("ex : yyyy년 mm월 dd일부터 YYYY년 MM월 DD일까지 - (yyyymmdd YYYYMMDD)");
             //입력 형식을 몰라서 이만큼만..!
             String day = sc.next();
             int dayLast = sc.nextInt();

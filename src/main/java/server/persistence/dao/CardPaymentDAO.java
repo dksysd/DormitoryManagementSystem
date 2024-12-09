@@ -84,6 +84,54 @@ public class CardPaymentDAO implements CardPaymentDAOI {
     }
 
     @Override
+    public void update(String uid, String cardNumber, String cardIssuerName, String paymentStatus) throws SQLException {
+        String query = "SELECT cp.id, ci.id, p.id, ps.id FROM card_payments cp" +
+                "INNER JOIN payments p ON p.id = cp.payment_id" +
+                "INNER JOIN card_issuers ci ON ci.issuer_name = ?" +
+                "INNER JOIN payment_statuses ps ON ps.name = ?" +
+                "INNER JOIN payment_history ph ON p.id = ph.payment_id" +
+                "INNER JOIN users u ON u.id = ph.user_id" +
+                "WHERE u.uid = ?";
+        int cardId;
+        int paymentId;
+        int issuerId;
+        int statusId;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, cardIssuerName);
+            preparedStatement.setString(2, paymentStatus);
+            preparedStatement.setString(3, uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            cardId = resultSet.getInt(1);
+            paymentId = resultSet.getInt(2);
+            issuerId = resultSet.getInt(3);
+            statusId = resultSet.getInt(4);
+        }
+
+        query = "UPDATE card_payments SET card_number = ?, card_issuer_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,cardNumber);
+            preparedStatement.setInt(2, issuerId);
+            preparedStatement.setInt(3, cardId);
+
+            preparedStatement.executeUpdate();
+        }
+
+        query = "UPDATE payments SET payment_status_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, statusId);
+            preparedStatement.setInt(2,paymentId);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM card_payments WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();

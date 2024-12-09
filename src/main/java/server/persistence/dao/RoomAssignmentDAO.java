@@ -33,6 +33,29 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
     }
 
     @Override
+    public RoomAssignmentDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT ra.id AS assignment_id, ra.bed_number, ra.move_in_at, ra.move_out_at, ra.created_at, " +
+                "ra.selection_id, ra.room_id, s.id AS selection_id, s.selection_name, " +
+                "r.id AS room_id, r.room_number " +
+                "FROM room_assignments ra " +
+                "LEFT JOIN selections s ON ra.selection_id = s.id " +
+                "LEFT JOIN rooms r ON ra.room_id = r.id " +
+                "INNER JOIN demerit_points dp ON dp.room_assignment_id = ra.id" +
+                "INNER JOIN users u ON u.id = dp.user_id" +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToRoomAssignmentDTO(resultSet);
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<RoomAssignmentDTO> findAll() throws SQLException {
         List<RoomAssignmentDTO> roomAssignments = new ArrayList<>();
         String query = "SELECT ra.id AS assignment_id, ra.bed_number, ra.move_in_at, ra.move_out_at, ra.created_at, " +
