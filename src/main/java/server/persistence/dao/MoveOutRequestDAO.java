@@ -67,12 +67,12 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
     public List<String> findAllOfMoveOut() throws SQLException {
         List<String> moveOutRequests = new ArrayList<>();
         String query = "SELECT u.uid AS uid, d.name AS dormitory_name " +
-                "FROM move_out_request mor" +
+                "FROM move_out_request mor " +
+                "INNER JOIN selections s ON s.id = mor.selection_application_id" +
                 "INNER JOIN selection_applications sa ON s.selection_application_id = sa.id" +
                 "INNER JOIN user u ON sa.user_id = u.id" +
                 "INNER JOIN dormitory_user_types dut ON dut.id = sa.dormitory_room_type_id" +
-                "INNER JOIN dormitory d ON dut.dormitory_id = d.id" +
-                "WHERE sa.selection_schedule_id = 1";
+                "INNER JOIN dormitory d ON dut.dormitory_id = d.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
