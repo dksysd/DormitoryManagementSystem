@@ -6,6 +6,7 @@ import server.persistence.dto.PaymentDTO;
 import server.config.DatabaseConnectionPool;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,8 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
 
     @Override
     public void update(BankTransferPaymentDTO paymentDTO) throws SQLException {
-        String query = "UPDATE bank_transfer_payments SET account_number = ?, account_holder_name = ?, created_at = ?, payment_id = ?, bank_id = ? WHERE id = ?";
+        String query = "UPDATE bank_transfer_payments SET account_number = ?, account_holder_name = ?" +
+                "WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -82,6 +84,40 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
             preparedStatement.setInt(4, paymentDTO.getPaymentDTO() != null ? paymentDTO.getPaymentDTO().getId() : null);
             preparedStatement.setInt(5, paymentDTO.getBankDTO() != null ? paymentDTO.getBankDTO().getId() : null);
             preparedStatement.setInt(6, paymentDTO.getId());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void update(String uid, String accountNumber, String accountHolderName, String bankName) throws SQLException {
+        String query = "SELECT btp.id AS btp_id, b.id AS bank_id FROM bank_transfer_payments btp" +
+                "INNER JOIN payments p ON btp.payment_id = p.id" +
+                "INNER JOIN payment_history ph ON ph.payment_id = p.id" +
+                "INNER JOIN users u ON u.uid = ph.user_id" +
+                "INNER JOIN bank b ON b.bank_name = ?" +
+                "WHERE u.uid = ?";
+        int btp_id;
+        int bank_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, bankName);
+            preparedStatement.setString(2,uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            btp_id = resultSet.getInt("btp_id");
+            bank_id = resultSet.getInt("bank_id");
+        }
+        query = "UPDATE bank_transfer_payments btp SET btp.account_number = ?, btp.account_holder_name = ?, btp.bank_id = ?" +
+                "btp.created_at = " + LocalDateTime.now() + // TODO : 이거 created_at 수정시에도 바뀌어아하는가에 대해 검토 필요
+                "WHERE id = " + btp_id;
+
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, accountNumber);
+            preparedStatement.setString(2, accountHolderName);
+            preparedStatement.setInt(3,bank_id);
             preparedStatement.executeUpdate();
         }
     }

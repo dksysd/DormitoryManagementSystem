@@ -44,22 +44,54 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     }
 
     @Override
-    public List<SelectionApplicationDTO> findAll() throws SQLException {
-        List<SelectionApplicationDTO> selectionApplications = new ArrayList<>();
+    public SelectionApplicationDTO findByUid(String uid) throws SQLException {
         String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
                 "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
-                "sa.roommate_user_id, sa.user_id, " +
+                "sa.roommate_user_id AS rommate_user_id, sa.user_id, " +
                 "sas.id AS status_id, sas.status_name, " +
                 "ss.id AS schedule_id, ss.schedule_name, " +
                 "drt.id AS room_type_id, drt.room_type_name, " +
                 "mp.id AS meal_plan_id, mp.meal_plan_name, " +
-                "u.id AS user_id, u.user_name " +
+                "u.id AS user_id, ru.user_name AS roommate_user_name " +
                 "FROM selection_applications sa " +
                 "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
                 "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
                 "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
                 "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
-                "LEFT JOIN users u ON sa.roommate_user_id = u.id";
+                "LEFT JOIN users ru ON sa.roommate_user_id = u.id " +
+                "LEFT JOIN users u ON sa.user_id = u.id " +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToSelectionApplicationDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+
+    @Override
+    public List<SelectionApplicationDTO> findAll() throws SQLException {
+        List<SelectionApplicationDTO> selectionApplications = new ArrayList<>();
+        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
+                "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
+                "sa.roommate_user_id, sa.user_id AS user_id, " +
+                "sas.id AS status_id, sas.status_name, " +
+                "ss.id AS schedule_id, ss.schedule_name, " +
+                "drt.id AS room_type_id, drt.room_type_name, " +
+                "mp.id AS meal_plan_id, mp.meal_plan_name, " +
+                "u.id AS user_id, u.user_name AS user_name " +
+                "FROM selection_applications sa " +
+                "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
+                "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
+                "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
+                "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
+                "LEFT JOIN users ru ON sa.roommate_user_id = u.id " +
+                "LEFT JOIN users u ON sa.user_id = u.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -119,6 +151,96 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     }
 
     @Override
+    public void updatePreference(String uid, Integer preference) throws SQLException {
+        String query = "SELECT s.id FROM users u " +
+                "INNER JOIN selection_applications s ON u.id = s.user_id " +
+                "WHERE u.uid = ?";
+        int id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            id = resultSet.getInt(1);
+        }
+
+        query = "UPDATE selection_applications SET preference = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, preference);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateMealPlan(String uid, String mealPlanName) throws SQLException {
+        String query = "SELECT s.id FROM selection_applications s" +
+                "LEFT JOIN users u ON u.uid = ?";
+        int user_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            user_id = resultSet.getInt(1);
+        }
+
+        query = "SELECT m.id FROM meal_plans m " +
+                "INNER JOIN meal_plan_types mpt ON mpt.type_name = ?";
+        int meal_plan_id;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,mealPlanName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            meal_plan_id = resultSet.getInt(1);
+        }
+
+        query = "UPDATE selection_applications SET meal_plan_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, meal_plan_id);
+            preparedStatement.setInt(2, user_id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateRoomType(String uid, String roomTypeName) throws SQLException {
+        String query = "SELECT s.id FROM selection_applications s" +
+                "LEFT JOIN users u ON u.uid = ?";
+        int user_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            user_id = resultSet.getInt(1);
+        }
+
+        query = "SELECT drt.id FROM dormitory_room_types drt" +
+                "INNER JOIN room_types rt ON rt.type_name = ?";
+        int drt_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,roomTypeName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            drt_id = resultSet.getInt(1);
+        }
+
+        query = "UPDATE  selection_applications SET dormitory_room_type_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, drt_id);
+            preparedStatement.setInt(2, user_id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM selection_applications WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -152,7 +274,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
         UserDTO roommateUserDTO = UserDTO.builder()
                 .id(resultSet.getInt("roommate_user_id"))
-                .userName(resultSet.getString("user_name"))
+                .userName(resultSet.getString("roommate_user_name"))
                 .build();
 
         UserDTO userDTO = UserDTO.builder()

@@ -11,5 +11,6 @@ public interface UserDAOI {
     List<UserDTO> findAll() throws SQLException;
     void save(UserDTO userDTO) throws SQLException;
     void update(UserDTO userDTO) throws SQLException;
+    void updateRoommate(String uid, int roommate) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

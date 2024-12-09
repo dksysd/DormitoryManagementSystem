@@ -125,6 +125,41 @@ public class UserDAO implements UserDAOI {
     }
 
     @Override
+    public void updateRoommate(String uid, int roommate) throws SQLException {
+        String query = "SELECT sa.id AS id, u.id AS userId AS roommate_id FROM users u " +
+                "INNER JOIN selection_applications sa ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        int id;
+        int userId;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1,uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            id = resultSet.getInt("id");
+            userId = resultSet.getInt("userId");
+        }
+
+        query = "UPDATE selection_applications sa SET roommate_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, roommate);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+
+        query = "UPDATE selection_applications sa SET roommate_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, roommate);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM users WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();

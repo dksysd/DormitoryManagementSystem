@@ -10,5 +10,6 @@ public interface PaymentDAOI {
     PaymentDTO findByUid(String uid) throws SQLException;
     void save(PaymentDTO paymentDTO) throws SQLException;
     void update(PaymentDTO paymentDTO) throws SQLException;
+    void statusUpdate(String uid, String paymentStatusName) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

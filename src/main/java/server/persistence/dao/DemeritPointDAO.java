@@ -11,7 +11,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
 
     @Override
     public DemeritPointDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, description, created_at, user_id, room_assignment_id FROM demerit_points WHERE id = ?";
+        String query = "SELECT id, description, point, created_at, user_id, room_assignment_id FROM demerit_points WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,7 +27,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
     @Override
     public List<DemeritPointDTO> findAll() throws SQLException {
         List<DemeritPointDTO> demeritPoints = new ArrayList<>();
-        String query = "SELECT id, description, created_at, user_id, room_assignment_id FROM demerit_points";
+        String query = "SELECT id, description, point, created_at, user_id, room_assignment_id FROM demerit_points";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -37,6 +37,22 @@ public class DemeritPointDAO implements DemeritPointDAOI {
             }
         }
         return demeritPoints; // 모든 불이익 점수 정보 반환
+    }
+
+    @Override
+    public List<Integer> findAllPointIntoInt() throws SQLException {
+        List<Integer> demeritPoints = new ArrayList<>();
+        String query = "SELECT point FROM demerit_points";
+        try(Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                demeritPoints.add(resultSet.getInt(1));
+            }
+        }
+
+        return demeritPoints;
     }
 
     @Override
@@ -83,6 +99,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         return DemeritPointDTO.builder()
                 .id(resultSet.getInt("id"))
                 .description(resultSet.getString("description"))
+                .point(resultSet.getInt("point"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .build();
     }

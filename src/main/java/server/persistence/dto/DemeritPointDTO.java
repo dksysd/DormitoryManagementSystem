@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class DemeritPointDTO implements DTO {
     private Integer id;
     private String description;
+    private int point;
     private LocalDateTime createdAt;
 
     private UserDTO userDTO;

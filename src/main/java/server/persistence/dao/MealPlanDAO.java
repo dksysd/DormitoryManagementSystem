@@ -1,7 +1,9 @@
 package server.persistence.dao;
 
+import server.persistence.dto.DormitoryDTO;
 import server.persistence.dto.MealPlanDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.MealPlanTypeDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +13,12 @@ public class MealPlanDAO implements MealPlanDAOI {
 
     @Override
     public MealPlanDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, price, meal_plan_type_id, dormitory_id FROM meal_plans WHERE id = ?";
+        String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
+                "mp.type_name AS mealTypeName, " +
+                "d.name AS DormitoryName" +
+                "FROM meal_plans m " +
+                "LEFT JOIN meal_plan_types mp ON m.meal_plan_type_id = mp.id " +
+                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,7 +34,12 @@ public class MealPlanDAO implements MealPlanDAOI {
     @Override
     public List<MealPlanDTO> findAll() throws SQLException {
         List<MealPlanDTO> mealPlans = new ArrayList<>();
-        String query = "SELECT id, price, meal_plan_type_id, dormitory_id FROM meal_plans";
+        String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
+                "mp.type_name AS mealTypeName, " +
+                "d.name AS DormitoryName" +
+                "FROM meal_plans m " +
+                "LEFT JOIN meal_plan_types mp ON m.meal_plan_type_id = mp.id " +
+                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -37,6 +49,27 @@ public class MealPlanDAO implements MealPlanDAOI {
             }
         }
         return mealPlans; // 모든 식사 계획 정보 반환
+    }
+
+    @Override
+    public List<String> findAllMealTypeIntoString() throws SQLException {
+        List<String> mealPlans = new ArrayList<>();
+        String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
+                "mp.type_name AS mealTypeName, " +
+                "d.name AS DormitoryName" +
+                "FROM meal_plans m " +
+                "LEFT JOIN meal_plan_types mp ON m.meal_plan_type_id = mp.id " +
+                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                mealPlans.add(resultSet.getString("DormitoryName") + " : " + resultSet.getString("mealTypeName"));
+            }
+        }
+
+        return mealPlans;
     }
 
     @Override
@@ -78,9 +111,18 @@ public class MealPlanDAO implements MealPlanDAOI {
     }
 
     private MealPlanDTO mapRowToMealPlanDTO(ResultSet resultSet) throws SQLException {
+        MealPlanTypeDTO mealPlanTypeDTO = MealPlanTypeDTO.builder()
+                .typeName(resultSet.getString("mealTypeName"))
+                .build();
+        DormitoryDTO dormitoryDTO = DormitoryDTO.builder()
+                .name(resultSet.getString("DormitoryName"))
+                .build();
+
         return MealPlanDTO.builder()
-                .id(resultSet.getInt("id"))
+                .id(resultSet.getInt("meal_id"))
                 .price(resultSet.getInt("price"))
+                .mealPlanTypeDTO(mealPlanTypeDTO)
+                .dormitoryDTO(dormitoryDTO)
                 .build();
     }
 }

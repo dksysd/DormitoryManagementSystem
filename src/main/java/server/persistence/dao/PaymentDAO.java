@@ -59,7 +59,14 @@ public class PaymentDAO implements PaymentDAOI {
     @Override
     public List<PaymentDTO> findAll() throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
-        String query = "SELECT id, payment_amount, created_at, payment_code_id, payment_status_id, payment_method_id FROM payments";
+        String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
+                "ps.status_name AS payment_status, pc.payment_code AS code" +
+                "pm.method_name AS method " +
+                "FROM payments p " +
+                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
+                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
+                "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id";
+
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -103,6 +110,34 @@ public class PaymentDAO implements PaymentDAOI {
     }
 
     @Override
+    public void statusUpdate(String uid, String paymentStatusName) throws SQLException {
+        String query = "SELECT p.id AS payment_id, ps.id AS ps_id FROM payments p" +
+                "INNER JOIN payment_history ph ON ph.payment_id = p.id" +
+                "INNER JOIN users u ON u.uid = ph.user_id" +
+                "INNER JOIN payment_statuses ps ON ps.status_name = ?" +
+                "WHERE u.uid = ?";
+        int id;
+        int paymentStatusId;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,paymentStatusName);
+            preparedStatement.setString(2, uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            id = resultSet.getInt("payment_id");
+            paymentStatusId = resultSet.getInt("ps_id");
+        }
+
+        query = "UPDATE payments SET payment_status_id = ? WHERE payment_id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, paymentStatusId);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM payments WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -126,10 +161,14 @@ public class PaymentDAO implements PaymentDAOI {
                 .id(resultSet.getInt("payment_method_id"))
                 .methodName(resultSet.getString("method_name"))
                 .build();
+
         return PaymentDTO.builder()
                 .id(resultSet.getInt("id"))
                 .paymentAmount(resultSet.getInt("payment_amount"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .paymentCodeDTO(paymentCodeDTO)
+                .paymentStatusDTO(paymentStatusDTO)
+                .paymentMethodDTO(paymentMethodDTO)
                 .build();
     }
 }

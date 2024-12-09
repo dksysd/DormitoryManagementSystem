@@ -40,6 +40,20 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
     }
 
     @Override
+    public List<String> findAllTitleIntoString() throws SQLException {
+        List<String> selectionSchedules = new ArrayList<>();
+        String query = "SELECT id, title, created_at FROM selection_schedules";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                selectionSchedules.add(resultSet.getString(2));
+            }
+        }
+        return selectionSchedules;
+    }
+    @Override
     public void save(SelectionScheduleDTO selectionScheduleDTO) throws SQLException {
         String query = "INSERT INTO selection_schedules (title, created_at) VALUES (?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
