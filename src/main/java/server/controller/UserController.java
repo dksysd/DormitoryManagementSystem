@@ -1,9 +1,12 @@
 package server.controller;
 
 
+import server.persistence.dao.UserDAO;
+import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
 
-import static server.util.ProtocolValidator.getIdByIdBySessionId;
+import java.sql.SQLException;
+import static server.util.ProtocolValidator.getIdBySessionId;
 
 
 public class UserController {
@@ -33,35 +36,54 @@ public class UserController {
      * data: 상세주소
      * >
      */
-    public static Protocol<?> getUserInfo(Protocol<?> protocol) {
+    public static Protocol<?> getUserInfo(Protocol<?> protocol) throws SQLException {
         Header header = new Header();
-        Header childHeader = new Header(Type.VALUE,DataType.STRING,Code.ValueCode.ID,0);
         Protocol<?> resProtocol = new Protocol<>();
-        Protocol<?> c1Protocol = new Protocol<>(childHeader,"");
-        Protocol<?> c2Protocol = new Protocol<>(childHeader,"");
-        Protocol<?> c3Protocol = new Protocol<>(childHeader,"");
-        Protocol<?> c4Protocol = new Protocol<>(childHeader,"");
-        Protocol<?> c5Protocol = new Protocol<>(childHeader,"");
-        Protocol<?> c6Protocol = new Protocol<>(childHeader,"");
-        Protocol<?> c7Protocol = new Protocol<>(childHeader,"");
-        String id;
-        String name;
-        String phone;
-        String gender;
-        String doo;
-        String si;
-        String detailAddress;
-        //todo List<String>(name:phone:gender:do:si:detailAdress)getUserInfo(String Uid)
-        id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
-        header.setType(Type.RESPONSE);
-        header.setDataType(DataType.TLV);
-        if(id!=null){
+        UserDAO userDAO = new UserDAO();
+        try {
+            String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
+
+            if (id == null) {
+                header.setType(Type.RESPONSE);
+                header.setDataType(DataType.TLV);
+                header.setCode(Code.ErrorCode.UNAUTHORIZED);
+                resProtocol.setHeader(header);
+                return resProtocol;
+            }
+
+            UserDTO userDTO = userDAO.findByUid(id);
+            if (userDTO == null) {
+                header.setType(Type.RESPONSE);
+                header.setDataType(DataType.TLV);
+                header.setCode(Code.ErrorCode.UNAUTHORIZED);
+                resProtocol.setHeader(header);
+                return resProtocol;
+            }
+
+            header.setType(Type.RESPONSE);
+            header.setDataType(DataType.TLV);
             header.setCode(Code.ResponseCode.OK);
+            resProtocol.setHeader(header);
 
+            addChildToProtocol(resProtocol, Code.ValueCode.USER_NAME, userDTO.getUserName());
+            addChildToProtocol(resProtocol, Code.ValueCode.PHONE_NUMBER, userDTO.getPhoneNumber());
+            addChildToProtocol(resProtocol, Code.ValueCode.GENDER_NAME, userDTO.getGenderCodeDTO().getCodeName());
+            addChildToProtocol(resProtocol, Code.ValueCode.DO, userDTO.getAddressDTO().get_do());
+            addChildToProtocol(resProtocol, Code.ValueCode.SI, userDTO.getAddressDTO().getSi());
+            addChildToProtocol(resProtocol, Code.ValueCode.DETAIL_ADDRESS, userDTO.getAddressDTO().getDetailAddress());
+
+        } catch (Exception e) {
+            header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
         }
-
-
+        resProtocol.setHeader(header);
+        return resProtocol;
     }
+
+    private static void addChildToProtocol(Protocol<?> protocol, Code.ValueCode code, String data) {
+        protocol.addChild(new Protocol<>(new Header(Type.VALUE, DataType.STRING, code, 0), data));
+    }
+
 
 
 }

@@ -8,8 +8,7 @@ import server.persistence.dto.PaymentDTO;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
-
-import static server.util.ProtocolValidator.getIdByIdBySessionId;
+import static server.util.ProtocolValidator.getIdBySessionId;
 
 public class PaymentController {
 
@@ -32,7 +31,7 @@ public class PaymentController {
         String id;
         int amount;
 
-        id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         header.setType(Type.RESPONSE);
         header.setDataType(DataType.TLV);
         if (id != null) {
@@ -70,7 +69,7 @@ public class PaymentController {
         String id;
         String status;
 
-        id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         header.setType(Type.RESPONSE);
         header.setDataType(DataType.TLV);
         if (id != null) {
@@ -111,7 +110,7 @@ public class PaymentController {
         BankTransferPaymentDAO BTpaymentDAO = new BankTransferPaymentDAO();
         PaymentDAO paymentDAO = new PaymentDAO();
         String id;
-        id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         if (id != null) {
             /* todo uid로 update를 만드시는데 accountNumber, bankName, accountHolderName,paymentStatusName 만 update하고싶어요
              * NOTE : accountNumber, bankName은 BankTransferPaymentDAO에서 바꿀 수 있지만 나머지는 나머지에 해당하는 친구들을 update하는게
@@ -135,7 +134,7 @@ public class PaymentController {
         CardPaymentDAO CMpaymentDAO = new CardPaymentDAO();
         PaymentDTO paymentDTO = new PaymentDTO();
         CardIssuerDTO cardIssuerDTO = new CardIssuerDTO();
-//todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
+    //todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
         return resProtocol;
     }
 

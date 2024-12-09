@@ -5,9 +5,12 @@ import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
 import java.sql.SQLException;
 import java.util.Objects;
+
+import static server.util.ProtocolValidator.verifySessionId;
+
 //refreshSession 미완
 public class AuthController implements Controller {
-//맞다 로그인할때 학생인지 관리잔지 줘야된다 깜빡핑
+
     /**
      * id : 숫자 8자리 제한, password: 8~20자리, 영어, 특수문자, 숫자 포함
      *
@@ -80,7 +83,7 @@ public class AuthController implements Controller {
             sessionId = (String) protocol.getChildren().getFirst().getData();
             header.setType(Type.RESPONSE);
             header.setDataType(DataType.TLV);
-            if (true) {//세션아이디 검증 및 처리
+            if (verifySessionId(sessionId)) {//세션아이디 검증 및 처리
                 header.setCode(Code.ResponseCode.OK);
             } else header.setCode(Code.ErrorCode.UNAUTHORIZED);
             resProtocol.setHeader(header);
