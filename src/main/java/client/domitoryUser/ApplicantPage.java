@@ -202,6 +202,7 @@ public class ApplicantPage {
             List<Protocol<?>> list = resultProtocol.getChildren();
             Protocol<?> childProtocol = list.getFirst();
             int value = (int) childProtocol.getData();
+      //      int value = (int) resultProtocol.getChildren().getFirst().getData();
             System.out.println("납부해야할 금액 : " + value + "원입니다.");
 
         } else{
