@@ -3,8 +3,6 @@ package server.controller;
 import server.persistence.dao.BankTransferPaymentDAO;
 import server.persistence.dao.CardPaymentDAO;
 import server.persistence.dao.PaymentDAO;
-import server.persistence.dto.BankDTO;
-import server.persistence.dto.BankTransferPaymentDTO;
 import server.persistence.dto.CardIssuerDTO;
 import server.persistence.dto.PaymentDTO;
 import shared.protocol.persistence.*;
@@ -29,7 +27,6 @@ public class PaymentController {
         Protocol<?> resProtocol = new Protocol<>();
         Protocol<Integer> childProtocol = new Protocol<>();
         Header header = new Header();
-        Header childHeader = childProtocol.getHeader();
         PaymentDAO paymentDAO = new PaymentDAO();
         PaymentDTO paymentDTO;
         String id;
@@ -42,9 +39,7 @@ public class PaymentController {
             paymentDTO = paymentDAO.findByUid(id);
             amount = paymentDTO.getPaymentAmount();
             header.setCode(Code.ResponseCode.OK);
-            childHeader.setType(Type.VALUE);
-            childHeader.setDataType(DataType.INTEGER);
-            childHeader.setCode(Code.ResponseCode.ValueCode.PAYMENT_AMOUNT);
+            Header childHeader = new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PAYMENT_AMOUNT, 0);
             childProtocol.setHeader(childHeader);
             childProtocol.setData(amount);
             protocol.addChild(childProtocol);
@@ -69,7 +64,7 @@ public class PaymentController {
         Protocol<?> resProtocol = new Protocol<>();
         Protocol<String> childProtocol = new Protocol<>();
         Header header = new Header();
-        Header childHeader = childProtocol.getHeader();
+
         PaymentDAO paymentDAO = new PaymentDAO();
         PaymentDTO paymentDTO;
         String id;
@@ -82,9 +77,7 @@ public class PaymentController {
             paymentDTO = paymentDAO.findByUid(id);
             status = paymentDTO.getPaymentStatusDTO().getStatusName();
             header.setCode(Code.ResponseCode.OK);
-            childHeader.setType(Type.VALUE);
-            childHeader.setDataType(DataType.STRING);
-            childHeader.setCode(Code.ResponseCode.ValueCode.PAYMENT_STATUS_NAME);
+            Header childHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0);
             childProtocol.setHeader(childHeader);
             childProtocol.setData(status);
             protocol.addChild(childProtocol);
@@ -104,24 +97,21 @@ public class PaymentController {
      *                 data: 세션아이디 ),
      *                 2 ( header(type: value, dataType: string, code: accountNumber, dataLength:,)
      *                 data: 계좌번호),
-     *                 3 ( header(type: value, dataType: string, code: bankName, dataLength:,)
-     *                 data: 은행명),
-     *                 4 ( header(type: value, dataType: string, code: accountHolderName, dataLength:,)
-     *                 data: 계좌주이름 )
+     *                 3 ( header(type: value, dataType: string, code: accountHolderName, dataLength:,)
+     *                 data: 계좌주이름 ),
+     *                 4 ( header(type: value, dataType: string, code: bankName, dataLength:,)
+     *                 data: 은행명)
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
      * data: null
      */
-    public static Protocol<?> payByBankTransfer(Protocol<?> protocol) {
-        Header header = new Header();
+    public static Protocol<?> payByBankTransfer(Protocol<?> protocol) throws SQLException {
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         Protocol<?> resProtocol = new Protocol<>();
         BankTransferPaymentDAO BTpaymentDAO = new BankTransferPaymentDAO();
-        BankTransferPaymentDTO BTpaymentDTO = new BankTransferPaymentDTO();
-        BankDTO bankDTO = new BankDTO();
+        PaymentDAO paymentDAO = new PaymentDAO();
         String id;
         id = getIdByIdBySessionId((String) protocol.getChildren().getFirst().getData());
-        header.setType(Type.RESPONSE);
-        header.setDataType(DataType.TLV);
         if (id != null) {
             /* todo uid로 update를 만드시는데 accountNumber, bankName, accountHolderName,paymentStatusName 만 update하고싶어요
              * NOTE : accountNumber, bankName은 BankTransferPaymentDAO에서 바꿀 수 있지만 나머지는 나머지에 해당하는 친구들을 update하는게
@@ -130,22 +120,23 @@ public class PaymentController {
              * paymentStatusName : PaymentDAO.statusUpdate(String uid, String PaymentStatusName)
              * uid 따로 따로 똑같은 값 입력해야한다는 단점이 있으나, 설계 깔끔함.
              */
-            // BTpaymentDAO.update();
 
-
-        }
+            BTpaymentDAO.update(id, (String) protocol.getChildren().get(1).getData(),
+                    (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData());
+            paymentDAO.statusUpdate(id, "납부");
+        } else header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+        resProtocol.setHeader(header);
+        return resProtocol;
     }
 
 
     public static Protocol<?> payByCard(Protocol<?> protocol) {
-        Header header = protocol.getHeader();
+        Protocol<?> resProtocol = new Protocol<>();
         CardPaymentDAO CMpaymentDAO = new CardPaymentDAO();
-
         PaymentDTO paymentDTO = new PaymentDTO();
         CardIssuerDTO cardIssuerDTO = new CardIssuerDTO();
-/**todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
- *
- */
+//todo update(uid) cardNumber, cardIssuerName, paymentStatus 변경
+        return resProtocol;
     }
 
 
