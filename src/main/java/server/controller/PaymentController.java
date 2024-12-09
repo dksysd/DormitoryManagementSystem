@@ -6,6 +6,7 @@ import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import static server.util.ProtocolValidator.getIdBySessionId;
@@ -104,16 +105,16 @@ public class PaymentController {
      * @param protocol header(type:request, dataType: TLV, code: BANK_TRANSFER, dataLength:)
      *                 data:
      *                 children <
-     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
-     *                 data: 세션아이디 ),
-     *                 2 ( header(type: value, dataType: string, code: accountNumber, dataLength:,)
+     *                 1 ( header(type: value, dataType: string, code: accountNumber, dataLength:,)
      *                 data: 계좌번호),
-     *                 3 ( header(type: value, dataType: string, code: accountHolderName, dataLength:,)
+     *                 2 ( header(type: value, dataType: string, code: accountHolderName, dataLength:,)
      *                 data: 계좌주이름 ),
-     *                 4 ( header(type: value, dataType: string, code: bankName, dataLength:,)
+     *                 3 ( header(type: value, dataType: string, code: bankName, dataLength:,)
      *                 data: 은행명)
-     *                 5 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
+     *                 4 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
      *                 data: "납부")
+     *                 5 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                  data: 세션아이디 ),
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
      * data: null
@@ -124,11 +125,11 @@ public class PaymentController {
         BankTransferPaymentDAO BTpaymentDAO = new BankTransferPaymentDAO();
         PaymentDAO paymentDAO = new PaymentDAO();
         String id;
-        id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
+        id = getIdBySessionId((String) protocol.getChildren().getLast().getData());
         if (id != null) {
-            BTpaymentDAO.update(id, (String) protocol.getChildren().get(1).getData(),
-                    (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData());
-            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(4).getData());
+            BTpaymentDAO.update(id, (String) protocol.getChildren().get(0).getData(),
+                    (String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData());
+            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(3).getData());
         } else header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         resProtocol.setHeader(header);
         return resProtocol;
@@ -138,14 +139,14 @@ public class PaymentController {
      * @param protocol header(type:request, dataType: TLV, code: CARD_MOVEMENT, dataLength:)
      *                 data:
      *                 children <
-     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
-     *                 data: 세션아이디 ),
-     *                 2 ( header(type: value, dataType: string, code: cardNumber, dataLength:,)
+     *                 1 ( header(type: value, dataType: string, code: cardNumber, dataLength:,)
      *                 data: 카드번호),
-     *                 3 ( header(type: value, dataType: string, code: card_issuer, dataLength:,)
+     *                 2 ( header(type: value, dataType: string, code: card_issuer, dataLength:,)
      *                 data: 계좌주이름 ),
-     *                 4 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
-     *                 data: "납부")
+     *                 3 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
+     *                 data: "납부"),
+     *                 4 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
      * data: null
@@ -155,7 +156,7 @@ public class PaymentController {
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
 
         try {
-            String sessionId = (String) protocol.getChildren().getFirst().getData();
+            String sessionId = (String) protocol.getChildren().getLast().getData();
             String id = getIdBySessionId(sessionId);
 
             if (id == null) {
@@ -166,9 +167,9 @@ public class PaymentController {
             CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
             cardPaymentDAO.update(
                     id,
+                    (String) protocol.getChildren().get(0).getData(),
                     (String) protocol.getChildren().get(1).getData(),
-                    (String) protocol.getChildren().get(2).getData(),
-                    (String) protocol.getChildren().get(3).getData()
+                    (String) protocol.getChildren().get(2).getData()
             );
 
         } catch (SQLException e) {
@@ -198,12 +199,19 @@ public class PaymentController {
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
                 RoomAssignmentDAO roomAssignmentDAO = new RoomAssignmentDAO();
                 MoveOutRequestDAO moveOutRequestDAO = new MoveOutRequestDAO();
-                // room_assignments 테이블에 퇴사예정일 추가 : expect_checkout_at
                 RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
                 LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
+                LocalDateTime end = moveOutRequestDTO.getCheckoutAt();
+                if (!moveOut.isAfter(end)) {
+                    long totalDays = ChronoUnit.DAYS.between(start, end);
+                    long remainingDays = ChronoUnit.DAYS.between(moveOut, end);
 
+                    int totalAmount = paymentDTO.getPaymentAmount();
+                    int refundAmount = (int) ((remainingDays / (double) totalDays) * totalAmount);
+                    paymentDTO.getPaymentStatusDTO().setStatusName("환불");
+                    paymentDAO.update(paymentDTO);
             }
         }
         return null;
@@ -265,7 +273,7 @@ public class PaymentController {
     public static Protocol<?> confirmRefund(Protocol<?> protocol) throws SQLException {
         String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
         if (id != null) {
-//todo 저는 여기서 찾을거긴 해요 퇴사 신청자 리스트 깁미
+        //todo 저는 여기서 찾을거긴 해요 퇴사 신청자 리스트 깁미 허허 각 생활관별 조회가 되어야 할 것 같습니다
         }
     }
 
