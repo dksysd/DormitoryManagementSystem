@@ -2,6 +2,7 @@ package server.config;
 
 import lombok.SneakyThrows;
 import server.controller.AuthController;
+import server.controller.DormitoryUserController;
 import server.controller.PaymentController;
 import server.controller.UserController;
 import server.core.handler.RequestHandler;
@@ -36,6 +37,18 @@ public interface RequestHandlerInitializer {
 
         requestHandler.addRequestHandler(Code.RequestCode.GET_USER_INFO, UserController::getUserInfo);//userController
 
+        requestHandler.addRequestHandler(Code.RequestCode.GET_SELECTION_SCHEDULE, DormitoryUserController::getSelectionSchedule);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_MEAL_PLAN, DormitoryUserController::getMealPlan);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_DORMITORY_ROOMS, DormitoryUserController::getDormitoryRooms);
+        requestHandler.addRequestHandler(Code.RequestCode.SELECT_PRIORITY_APPLICATION, DormitoryUserController::selectPriorityApplication);
+        requestHandler.addRequestHandler(Code.RequestCode.APPLY_ROOMMATE, DormitoryUserController::applyRoommate);
+        requestHandler.addRequestHandler(Code.RequestCode.APPLY_MEAL, DormitoryUserController::applyMeal);
+        requestHandler.addRequestHandler(Code.RequestCode.APPLY_ROOM, DormitoryUserController::applyRoom);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_SELECTION_RESULT, DormitoryUserController::getSelectionResult);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_MEAL_PLAN, DormitoryUserController::getMeritAndDemeritPoints);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_FILE_FOR_PROOF, DormitoryUserController::getFileForProof);
+        requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_FILE_FOR_PROOF,DormitoryUserController::uploadFileForProof);
+        requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_TUBER_REPORT,DormitoryUserController::uploadTuberReport);//DormitoryUserController
 
         requestHandler.addRequestHandler(Code.RequestCode.GET_PAYMENT_AMOUNT, PaymentController::getPaymentAmount);
         requestHandler.addRequestHandler(Code.RequestCode.GET_PAYMENT_STATUS, PaymentController::getPaymentStatus);
@@ -44,7 +57,6 @@ public interface RequestHandlerInitializer {
         requestHandler.addRequestHandler(Code.RequestCode.REFUND_REQUEST, PaymentController::requestRefund);
 //        requestHandler.addRequestHandler(Code.RequestCode.REFUND_CONFIRM, PaymentController::confirmRefund);
         requestHandler.addRequestHandler(Code.RequestCode.GET_REFUND_STATEMENT, PaymentController::getRefundStatus);//paymentController
-
 
 
     }
