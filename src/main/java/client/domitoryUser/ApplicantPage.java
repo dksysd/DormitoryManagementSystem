@@ -1,8 +1,10 @@
 package client.domitoryUser;
 import server.controller.PaymentController;
+import server.controller.UserController;
 import shared.protocol.persistence.*;
 
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,8 +26,9 @@ public class ApplicantPage {
                 case 3:
                 case 4:
                 case 5:
-                case 6:
-                case 7:
+                case 6: displayBill(); break;
+                case 7: payment(); break;
+                case 8:
                 default: break;
             }
         } while (option != 7);
@@ -34,12 +37,12 @@ public class ApplicantPage {
     public static void applicantFunctionInfo(){
         System.out.println("============= 학생 페이지입니다 =============");
         System.out.println("1. 선발 일정 확인");
-        System.out.println("2. 입사신청하기"); // 결핵진단서는 따로 업로드 기능 만들것인지?
-        System.out.println("3. 퇴사 신청 / 확인"); // 환불신청도 같이 할 것인가? >> 환불신청도 같이
+        System.out.println("2. 입사신청하기");
+        System.out.println("3. 퇴사 신청 / 확인");
         System.out.println("4. 선발 결과 확인");
         System.out.println("5. 상벌점 확인");
-        System.out.println("6. 명세서/영수증 확인");
-        System.out.println("7. 결제 / 결제상태 확인");
+        System.out.println("6. 명세서 확인"); // 0k
+        System.out.println("7. 결제 / 결제상태 확인"); // 결제부분 수정 필요
         System.out.println("8. 로그아웃");
         System.out.println();
         System.out.println();
@@ -58,22 +61,36 @@ public class ApplicantPage {
     }
 
     public void applicate(){
-        // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴 -> User getUserInfo로 가시면 될듯
+        // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
         Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
-        // 성별 받아오기 -> getUser Info 참조하시면 됨.
 
-        // 성별별로 좀 다르게 하기 - 수정 필요
+        Protocol<?> resProtocol = UserController.getUserInfo(protocol);
+        String sexuality = null;
+        if(resProtocol.getHeader().getType() == Type.RESPONSE){
+            List<?> list = resProtocol.getChildren();
+            Protocol<?> childProtocol = (Protocol<?>) list.get(3);
+            sexuality = (String) childProtocol.getData();
+        } else {
+            System.out.println("학생 정보를 가져올 수 없습니다. 재로그인 해주세요");
+            return;
+        }
+
+        // 성별별로 좀 다르게 하기 - 수정 필요 + 식사신청이랑 묶어서 받는지? 따로 받는지?
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 입사 신청 페이지 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println();
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 기숙사 지망 순위 설정 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("지망하는 순서대로 기숙사 3개를 띄어쓰기로 구분하여 입력하세요 ");
-        System.out.println("(a.푸름1 / b.푸름2 / c.푸름3 / d.푸름4 / " +
-                "e.오름1 / f.오름2 / g.오름3 / h.아름관)");
+
+        if(sexuality.equals("F")){
+            System.out.println("(a.푸름3 / b.오름1 / c.아름관)");
+        } else {
+            System.out.println("(a.푸름1 / b.푸름2 / c.푸름4 / d.오름2 / e.오름3");
+        }
         System.out.println();
         System.out.println(">> 예시 : e c h (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 아름관)");
         System.out.println();
@@ -114,6 +131,7 @@ public class ApplicantPage {
         // 응답메시지 받고 결과 출력
     }
 
+    // 퇴사 확인 부문만 추가하면 됨! 퇴사신청(환불신청) 부분서현이가 봐죠
     public void moveOutApplicate(){
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
@@ -130,19 +148,56 @@ public class ApplicantPage {
 
         } else{
             // 환불신청 >> 결과 확인은 학생 페이지 7번 결제확인 기능을 사용하라고 안내
-            System.out.println("환불 완료 시, 자동으로 퇴사 신청이 됩니다. \"환불\" 입력 시 환불이 완료됩니다. : ");
+            System.out.println("환불 완료 시, 자동으로 퇴사 신청이 됩니다. \"환불\" 입력 시 환불절차가 시작됩니다. : ");
             String text = sc.next();
+            System.out.println("환불 받을 계좌번호, 계좌주 이름, 은행명을 띄어쓰기로 구분하여 입력해주세요 : ");
+            String account = sc.next();
+            String name = sc.next();
+            String bank = sc.next();
 
             if(text.trim().equals("환불")){
                 // 환불 요청 보내기
-                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.MOVE_OUT,0);
-                Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
-                Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
                 Protocol<?> protocol = new Protocol<>();
+                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.REFUND_REQUEST,0);
                 protocol.setHeader(header);
-                protocol.addChild(tlv);
 
-                // 메시지 받고 환불 완료 안내 띄우기
+                for(int i = 0; i < 5; i++){
+                    Protocol<String> tlv = null;
+                    Header tlvHeader = null;
+
+                    switch (i){
+                        case 0: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, text);
+                            break;
+                        case 1: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_NUMBER, 0);
+                            tlv = new Protocol<>(tlvHeader, account);
+                            break;
+                        case 2: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_HOLDER_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, name);
+                            break;
+                        case 3: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.BANK_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, bank);
+                            break;
+                        case 4: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+                            tlv = new Protocol<>(tlvHeader, sessionID);
+                            break;
+                    }
+
+                    protocol.addChild(tlv);
+                }
+
+                Protocol<?> resProtocol;
+                try {
+                    resProtocol = PaymentController.requestRefund(protocol);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // 메시지 받고 환불 완료 안내 띄우기 - 여기 좀 봐죠!!!!! 응답메시지 어떻게 오는지 몰라서!! 안에 밸류는 필요 없을 것 같아서 이러케 함
+                if(resProtocol.getHeader().getType() == Type.RESPONSE){
+                    System.out.println("환불과 퇴사신청이 정상적으로 완료되었습니다.");
+                    System.out.println("환불 상태를 다시 확인하고 싶으시다면 학생페이지 7번 결제 상태 확인을 참고 하세요.");
+                }
 
             }
         }
@@ -202,7 +257,6 @@ public class ApplicantPage {
             List<Protocol<?>> list = resultProtocol.getChildren();
             Protocol<?> childProtocol = list.getFirst();
             int value = (int) childProtocol.getData();
-      //      int value = (int) resultProtocol.getChildren().getFirst().getData();
             System.out.println("납부해야할 금액 : " + value + "원입니다.");
 
         } else{
@@ -210,40 +264,105 @@ public class ApplicantPage {
         }
     }
 
-    public void displayReceipt(){
-        //클래스 및 메서드 불러오기
-        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_RECEIPT,0);
-        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
-        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol<>();
-        protocol.setHeader(header);
-        protocol.addChild(tlv);
-
-        String price = null;
-
-        displayBill();
-        //결제상태 확인
-        if(paidCheck()){
-            System.out.println("납부된 금액 : " + price + "원입니다.");
-        }
-    }
-
+    //서혀나 봐조
     public void payment(){
         //Payment 클래스 끌어와서 하기
-        if(!paidCheck()){
+        System.out.println("하려는 기능을 선택하세요. (1. 결제상태 확인 / 2. 결제하기)");
+        int selection = sc.nextInt();
+        if(selection == 1){
+            paidCheck();
+        }
+        if(selection==2 && !paidCheck()){
             displayBill();
+            System.out.println("납부 방법을 선택하세요 (1.계좌이체 / 2.카드결제)");
+            selection = sc.nextInt();
+            String account = null, name = null, bank = null, cardNum = null, cardCompany = null;
+            if(selection == 1){
+                System.out.println("보내는 이의 계좌번호, 계좌주이름, 은행명을 띄어쓰기로 구분하여 입력하세요");
+                account = sc.next();
+                name = sc.next();
+                bank = sc.next();
+            } else if(selection == 2){
+                System.out.println("카드번호, 카드사를 띄어쓰기로 구분하여 입력하세요");
+                cardNum = sc.next();
+                cardCompany = sc.next();
+            } else {
+                return;
+            }
             System.out.println("납부 후, \"납부\" 글자를 입력해주시면 결제상태가 완료로 바뀝니다 : ");
             String text = sc.next();
-            if(text.trim().equals("납부")){
-                // 납부 상태 변경 요청
-                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_AMOUNT,0);
-                Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
-                Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-                Protocol<?> protocol = new Protocol<>();
-                protocol.setHeader(header);
-                protocol.addChild(tlv);
 
-                // 응답 메시지로 할건지 ? 페이드체크 메서드 호출로 완료 안내줄건지?
+            if(!text.trim().equals("납부")){
+                return;
+            }
+
+            Protocol<?> resProtocol = null;
+            Protocol<?> protocol = new Protocol<>();
+            if(selection == 1){
+                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BANK_TRANSFER,0);
+                protocol.setHeader(header);
+
+                for(int i = 0; i < 5; i++){
+                    Protocol<String> tlv = null;
+                    Header tlvHeader = null;
+
+                    switch (i){
+                        case 0: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_NUMBER, 0);
+                            tlv = new Protocol<>(tlvHeader, text);
+                            break;
+                        case 1: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_HOLDER_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, account);
+                            break;
+                        case 2: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.BANK_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, name);
+                            break;
+                        case 3: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, bank);
+                            break;
+                        case 4: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+                            tlv = new Protocol<>(tlvHeader, sessionID);
+                            break;
+                    }
+
+                    protocol.addChild(tlv);
+                }
+                try {
+                    resProtocol = PaymentController.payByBankTransfer(protocol);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.CARD_MOVEMENT,0);
+                protocol.setHeader(header);
+
+                for(int i = 0; i < 4; i++){
+                    Protocol<String> tlv = null;
+                    Header tlvHeader = null;
+
+                    switch (i){
+                        case 0: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.CARE_NUMBER, 0);
+                            tlv = new Protocol<>(tlvHeader, cardNum);
+                            break;
+                        case 1: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.CARD_ISSUER, 0);
+                            tlv = new Protocol<>(tlvHeader, cardCompany);
+                            break;
+                        case 2: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0);
+                            tlv = new Protocol<>(tlvHeader, text);
+                            break;
+                        case 3: tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+                            tlv = new Protocol<>(tlvHeader, sessionID);
+                            break;
+                    }
+
+                    protocol.addChild(tlv);
+                }
+                resProtocol = PaymentController.payByCard(protocol);
+            }
+
+            if(resProtocol.getHeader().getType() == Type.RESPONSE){
+                System.out.println("정상적으로 납부되었습니다.");
+            } else {
+                System.out.println("결제가 완료되지 않았습니다. 다시 시도해주세요.");
             }
         }
 
@@ -256,8 +375,28 @@ public class ApplicantPage {
         Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
-        //
-        // 결제 상태 따라서 불리언 값 리턴
+
+        Protocol<?> resultProtocol;
+        Type resType;
+
+        try {
+            resultProtocol = PaymentController.getPaymentStatus(protocol);
+            resType = resultProtocol.getHeader().getType();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resType == Type.RESPONSE){
+            return true;
+        } else if(resType == Type.ERROR){
+            Code code = resultProtocol.getHeader().getCode();
+            if(code == Code.ResponseCode.ErrorCode.INVALID_REQUEST){
+                System.out.println("미납 상태입니다.");
+            } else{
+                System.out.println("세션 만료. 재로그인하세요.");
+            }
+        }
+
         return false;
     }
 }
