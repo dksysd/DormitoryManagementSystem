@@ -51,9 +51,8 @@ public class Auth {
             throw new RuntimeException(e);
         }
 
-        List<?> list = resProtocol.getChildren();
-        sessionID = (String) list.get(0);
-        String type = (String) list.get(1);
+        sessionID = (String) resProtocol.getChildren().get(0).getData();;
+        String type = (String) resProtocol.getChildren().get(1).getData();;
 
         if(type.equals("관리자"))
             return 0;

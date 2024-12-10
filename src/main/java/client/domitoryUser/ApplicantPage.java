@@ -1,4 +1,5 @@
 package client.domitoryUser;
+import server.controller.DormitoryUserController;
 import server.controller.PaymentController;
 import server.controller.UserController;
 import shared.protocol.persistence.*;
@@ -54,6 +55,7 @@ public class ApplicantPage {
         System.out.println();
     }
 
+    //민성이가 슬쩍 보면 됨
     public void displayInfo(){
         // 선발 일정 요청 - sessionId
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0);
@@ -64,6 +66,30 @@ public class ApplicantPage {
         protocol.addChild(tlv);
 
         // 선발 일정 받기 - String 들로 받아와짐. -> 일정, 일정, 일정 이런 방식으로
+        Protocol<?> resProtocol = null;
+        try {
+            resProtocol = DormitoryUserController.getSelectionSchedule(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getType() == Type.ERROR){
+            System.out.println("재시도 하세요");
+            return;
+
+        }
+
+        List<?> list = resProtocol.getChildren();
+        String priority, normal, latest;
+        priority = (String) resProtocol.getChildren().get(0).getData();
+        normal = (String) resProtocol.getChildren().get(1).getData();
+        latest = (String) resProtocol.getChildren().get(2).getData();
+
+        System.out.println("우선선발과 일반선발은 14일간 진행됩니다.");
+        System.out.println("우선선발 시작일 : " + priority);
+        System.out.println("일반선발 시작일 : " + normal);
+        System.out.println("\n 추가선발은 선착순으로 완료되며, 공실이 생길때마다 진행됩니다.");
+        System.out.println("추가선발 : " + latest);
     }
 
     public void applicate(){
@@ -78,9 +104,7 @@ public class ApplicantPage {
         Protocol<?> resProtocol = UserController.getUserInfo(protocol);
         String sexuality = null;
         if(resProtocol.getHeader().getType() == Type.RESPONSE){
-            List<?> list = resProtocol.getChildren();
-            Protocol<?> childProtocol = (Protocol<?>) list.get(3);
-            sexuality = (String) childProtocol.getData();
+            sexuality = (String) resProtocol.getChildren().get(3).getData();;
         } else {
             System.out.println("학생 정보를 가져올 수 없습니다. 재로그인 해주세요");
             return;
@@ -202,7 +226,7 @@ public class ApplicantPage {
                 }
 
                 // 메시지 받고 환불 완료 안내 띄우기 - 여기 좀 봐죠!!!!! 응답메시지 어떻게 오는지 몰라서!! 안에 밸류는 필요 없을 것 같아서 이러케 함
-                if(resProtocol.getHeader().getType() == Type.RESPONSE){
+                if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
                     System.out.println("환불과 퇴사신청이 정상적으로 완료되었습니다.");
                     System.out.println("환불 상태를 다시 확인하고 싶으시다면 학생페이지 7번 결제 상태 확인을 참고 하세요.");
                 }
@@ -261,10 +285,7 @@ public class ApplicantPage {
         }
 
         if(resType == Type.RESPONSE){
-
-            List<Protocol<?>> list = resultProtocol.getChildren();
-            Protocol<?> childProtocol = list.getFirst();
-            int value = (int) childProtocol.getData();
+            int value = (int) resultProtocol.getChildren().get(0).getData();;
             System.out.println("납부해야할 금액 : " + value + "원입니다.");
 
         } else{
@@ -367,7 +388,7 @@ public class ApplicantPage {
                 resProtocol = PaymentController.payByCard(protocol);
             }
 
-            if(resProtocol.getHeader().getType() == Type.RESPONSE){
+            if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
                 System.out.println("정상적으로 납부되었습니다.");
             } else {
                 System.out.println("결제가 완료되지 않았습니다. 다시 시도해주세요.");
