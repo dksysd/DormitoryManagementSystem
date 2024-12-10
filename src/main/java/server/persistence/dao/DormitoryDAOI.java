@@ -8,6 +8,7 @@ import java.util.List;
 public interface DormitoryDAOI {
     DormitoryDTO findById(Integer id) throws SQLException;
     List<DormitoryDTO> findAll() throws SQLException;
+    List<String> findAllIntoString() throws SQLException;
     void save(DormitoryDTO dormitoryDTO) throws SQLException;
     void update(DormitoryDTO dormitoryDTO) throws SQLException;
     void delete(Integer id) throws SQLException;

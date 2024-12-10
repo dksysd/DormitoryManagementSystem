@@ -114,16 +114,16 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *data :
-     *children <
-     *1 ( header ( type : value, dataType : string, code : dormitory_room_type, dataLength :, ))
-     * 2 ...(이렇게 끝까지 반복되서 옴)
+     *         data :
+     *         children <
+     *         1 ( header ( type : value, dataType : string, code : dormitory_room_type, dataLength :, ))
+     *         2 ...(이렇게 끝까지 반복되서 옴)
      * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
-     * data: null
+     *          data: null
      */
     public static Protocol<?> getDormitoryRooms(Protocol<?> protocol) throws SQLException {
         Header header = protocol.getHeader();
-        RoomTypeDAO dao = new RoomTypeDAO();
+        DormitoryDAO dao = new DormitoryDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
@@ -210,7 +210,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            dao.updateRoommate(getIdBySessionId(id), (Integer) protocol.getChildren().getFirst().getData());
+            dao.updateRoommate(getIdBySessionId(id), (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
 
@@ -222,6 +222,20 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: apply_meal, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1( header(type: value, dataType: string, code: meal_plan, dataLength:,)
+     *                 data: 세션아이디
+     *                 2 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data : null
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> applyMeal(Protocol<?> protocol) throws SQLException {
         Header header = new Header();
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
@@ -229,7 +243,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            dao.updateMealPlan(id, (String) protocol.getChildren().get(1).getData());
+            dao.updateMealPlan(id, (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
@@ -240,6 +254,20 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: apply_room, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1( header(type: value, dataType: string, code: dormitory_room_type, dataLength:,)
+     *                 data: 세션아이디
+     *                 2 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data : null
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> applyRoom(Protocol<?> protocol) throws SQLException {
         Header header = new Header();
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
@@ -247,7 +275,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            dao.updateRoomType(id, (String) protocol.getChildren().get(1).getData());
+            dao.updateRoomType(id, (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
@@ -257,6 +285,21 @@ public class DormitoryUserController {
         result.setHeader(resultHeader);
         return result;
     }
+
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: get_selection_result, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *         data :
+     *         children <
+     *         1 ( header ( type : value, dataType : string, code : selection_status, dataLength :, ))
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *          data: null
+     */
 
     public static Protocol<?> getSelectionResult(Protocol<?> protocol) throws SQLException {
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
