@@ -47,7 +47,7 @@ public class ApplicantPage {
         System.out.println("2. 입사신청하기"); // 손도 안댐
         System.out.println("3. 퇴사 신청 / 확인"); // 퇴사 확인 기능 추가 필요
         System.out.println("4. 선발 결과 확인"); // 손도 안댐
-        System.out.println("5. 상벌점 확인"); // 손도 안댐
+        System.out.println("5. 상벌점 확인"); // ok 확인은 필요
         System.out.println("6. 명세서 확인"); // 0k
         System.out.println("7. 결제 / 결제상태 확인"); //0k
         System.out.println("8. 로그아웃");
@@ -246,6 +246,7 @@ public class ApplicantPage {
         }
     }
 
+    //민성이가 확인 좀 해주셈
     public void displaySelectionResult(){
         // 합격했는지 확인 요청
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_RESULT,0);
@@ -269,9 +270,28 @@ public class ApplicantPage {
         protocol.addChild(tlv);
 
         //상벌점 불러오기
+        Protocol<?> resProtocol;
+        try {
+            resProtocol = DormitoryUserController.getMeritAndDemeritPoints(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-        int point = 0;
-        System.out.println("총 점수 : " + point);
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("상벌점 내역을 불러올 수 없습니다. 재시도 하세요.");
+            return;
+        }
+
+        int size = resProtocol.getChildren().size();
+        int strSize;
+        String temp, reason, point;
+        for(int i = 0; i < size; i++){
+            temp = (String) resProtocol.getChildren().get(i).getData();
+            strSize = temp.length();
+            reason = temp.substring(0, strSize - 2);
+            point = temp.substring(strSize - 1);
+            System.out.println("상벌점 내역 : " + reason + " / " + point);
+        }
         System.out.println("자세한 사항은 관리자에게 문의하세요.");
     }
 
