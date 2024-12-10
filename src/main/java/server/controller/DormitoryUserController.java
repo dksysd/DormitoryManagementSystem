@@ -270,12 +270,12 @@ public class DormitoryUserController {
      */
     public static Protocol<?> applyRoom(Protocol<?> protocol) throws SQLException {
         Header header = new Header();
-        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        DormitoryRoomTypeDAO dao = new DormitoryRoomTypeDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            dao.updateRoomType(id, (String) protocol.getChildren().getFirst().getData());
+            dao.updateDormitory(id, (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {

@@ -85,6 +85,34 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     }
 
     @Override
+    public void updateDormitory(String uid, String dormitoryName) throws SQLException {
+        String query = "SELECT drt.id, d.id FROM dormitory_room_types drt" +
+                "INNER JOIN dormitories d ON d.name = ?" +
+                "INNER JOIN selection_applications sa ON drt.id = sa.dormitory_room_type_id" +
+                "INNER JOIN users u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        int dormitory_id;
+        int id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, dormitoryName);
+            preparedStatement.setString(2, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            id = resultSet.getInt(1);
+            dormitory_id = resultSet.getInt(2);
+        }
+
+        query = "UPDATE dormitory_room_types SET dormitory_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, dormitory_id);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM dormitory_room_types WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();

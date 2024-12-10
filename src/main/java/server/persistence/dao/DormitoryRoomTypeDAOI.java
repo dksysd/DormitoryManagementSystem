@@ -10,5 +10,6 @@ public interface DormitoryRoomTypeDAOI {
     List<DormitoryRoomTypeDTO> findAll() throws SQLException;
     void save(DormitoryRoomTypeDTO dormitoryRoomTypeDTO) throws SQLException;
     void update(DormitoryRoomTypeDTO dormitoryRoomTypeDTO) throws SQLException;
+    void updateDormitory(String uid, String dormitoryName) throws SQLException;
     void delete(Integer id) throws SQLException;
 }
