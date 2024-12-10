@@ -42,7 +42,7 @@ public class ApplicantPage {
         System.out.println("4. 선발 결과 확인");
         System.out.println("5. 상벌점 확인");
         System.out.println("6. 명세서 확인"); // 0k
-        System.out.println("7. 결제 / 결제상태 확인"); // 결제부분 수정 필요
+        System.out.println("7. 결제 / 결제상태 확인");
         System.out.println("8. 로그아웃");
         System.out.println();
         System.out.println();
