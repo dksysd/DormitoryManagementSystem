@@ -11,6 +11,12 @@ import java.util.Scanner;
 public class ApplicantPage {
     private static Scanner sc = new Scanner(System.in);
     private String sessionID;
+
+    public ApplicantPage(){}
+    public ApplicantPage(String sessionID){
+        this.sessionID = sessionID;
+    }
+
     public void applicantFunction(){
         int option = 0;
 
@@ -131,7 +137,8 @@ public class ApplicantPage {
         // 응답메시지 받고 결과 출력
     }
 
-    // 퇴사 확인 부문만 추가하면 됨! 퇴사신청(환불신청) 부분서현이가 봐죠
+    // 서현이가 봐죠 - 퇴사신청(환불신청) 부분
+    // 퇴사 확인 부문만 추가하면 됨!
     public void moveOutApplicate(){
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();

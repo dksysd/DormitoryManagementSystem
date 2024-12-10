@@ -4,6 +4,12 @@ import java.util.Scanner;
 
 public class AdminPage {
     private static Scanner sc = new Scanner(System.in);
+    private String sessionID;
+
+    public AdminPage(){}
+    public AdminPage(String sessionID){
+        this.sessionID = sessionID;
+    }
 
     //스위치문 있는 선택지별로 결과 돌리는 메서드 만들깅 >> 로그아웃 전까지 반복.
     public static void adminFunction(){

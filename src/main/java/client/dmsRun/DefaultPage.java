@@ -14,11 +14,11 @@ public class DefaultPage {
         //<로그인 후 선택하는 화면>
         if(identity == 0){
             //관리자 화면
-            AdminPage.adminFunction();
+            new AdminPage(auth.getSessionID()).adminFunction();
         }
         else if(identity == 1){
             //학생 화면
-            new ApplicantPage().applicantFunction();
+            new ApplicantPage(auth.getSessionID()).applicantFunction();
         }
         else {
             System.out.println("=============로그인 실패!=============");
