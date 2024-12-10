@@ -43,13 +43,13 @@ public class ApplicantPage {
 
     public static void applicantFunctionInfo(){
         System.out.println("============= 학생 페이지입니다 =============");
-        System.out.println("1. 선발 일정 확인");
-        System.out.println("2. 입사신청하기");
-        System.out.println("3. 퇴사 신청 / 확인");
-        System.out.println("4. 선발 결과 확인");
-        System.out.println("5. 상벌점 확인");
+        System.out.println("1. 선발 일정 확인"); // 민성이가 설명해줘야함
+        System.out.println("2. 입사신청하기"); // 손도 안댐
+        System.out.println("3. 퇴사 신청 / 확인"); // 퇴사 확인 기능 추가 필요
+        System.out.println("4. 선발 결과 확인"); // 손도 안댐
+        System.out.println("5. 상벌점 확인"); // 손도 안댐
         System.out.println("6. 명세서 확인"); // 0k
-        System.out.println("7. 결제 / 결제상태 확인");
+        System.out.println("7. 결제 / 결제상태 확인"); //0k
         System.out.println("8. 로그아웃");
         System.out.println();
         System.out.println();
