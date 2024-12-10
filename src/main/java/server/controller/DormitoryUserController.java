@@ -21,13 +21,11 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data:
-     *                children <
-     *                1 (header (type: value, dataType: string, code: selection_schedule, dataLength:,))
-     *                2 ...(이렇게 끝까지 반복되서 옴)
-     *
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : selection_schedule, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
     public static Protocol<?> getSelectionSchedule(Protocol<?> protocol) throws SQLException {
@@ -59,6 +57,7 @@ public class DormitoryUserController {
 
         return result;
     }
+
     /**
      * @param protocol header(type:request, dataType: TLV, code: get_meal_plan, dataLength:)
      *                 data:
@@ -67,13 +66,11 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data:
-     *                children <
-     *                1 (header (type: value, dataType: string, code: meal_plan, dataLength:,))
-     *                2 ...(이렇게 끝까지 반복되서 옴)
-     *
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : meal_plan, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
     public static Protocol<?> getMealPlan(Protocol<?> protocol) throws SQLException {
@@ -117,16 +114,14 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data:
-     *                children <
-     *                1 (header (type: value, dataType: string, code: dormitory_room_type, dataLength:,))
-     *                2 ...(이렇게 끝까지 반복되서 옴)
-     *
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : dormitory_room_type, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
-    public static Protocol<?> getDormitoryRooms(Protocol <?> protocol) throws SQLException {
+    public static Protocol<?> getDormitoryRooms(Protocol<?> protocol) throws SQLException {
         Header header = protocol.getHeader();
         RoomTypeDAO dao = new RoomTypeDAO();
         Protocol<?> result = new Protocol<>();
@@ -168,9 +163,8 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data: null
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data : null
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
     public static Protocol<?> selectPriorityApplication(Protocol<?> protocol) throws SQLException {
@@ -204,9 +198,8 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data: null
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data : null
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
 
@@ -254,7 +247,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            dao.updateRoomType(id,(String) protocol.getChildren().get(1).getData());
+            dao.updateRoomType(id, (String) protocol.getChildren().get(1).getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
@@ -292,6 +285,7 @@ public class DormitoryUserController {
         result.setHeader(resultHeader);
         return result;
     }
+
     /**
      * @param protocol header(type:request, dataType: TLV, code: get_merit_and_demerit_point, dataLength:)
      *                 data:
@@ -300,13 +294,11 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data:
-     *                children <
-     *                1 (header (type: value, dataType: string, code: demerit_point, dataLength:,))
-     *                2 ...(이렇게 끝까지 반복되서 옴)
-     *
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : demerit_point, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
     public static Protocol<?> getMeritAndDemeritPoints(Protocol<?> protocol) throws SQLException {
@@ -339,7 +331,7 @@ public class DormitoryUserController {
         return result;
     }
 
-    public static Protocol<?> uploadTuberReport (Protocol<?> protocol) throws SQLException {
+    public static Protocol<?> uploadTuberReport(Protocol<?> protocol) throws SQLException {
         UserDAO dao = new UserDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -359,16 +351,14 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *                data:
-     *                children <
-     *                1 (header (type: value, dataType: string, code: demerit_point, dataLength:,))
-     *                2 ...(이렇게 끝까지 반복되서 옴)
-     *
-     *
-     * @return ( 에러의 경우 ) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : demerit_point, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */
-    public static Protocol<?> getFileForProof (Protocol<?> protocol) throws SQLException {
+    public static Protocol<?> getFileForProof(Protocol<?> protocol) throws SQLException {
         SelectionDAO dao = new SelectionDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -393,5 +383,7 @@ public class DormitoryUserController {
         return result;
     }
 
-
+    public static Protocol<?> uploadFileForProof(Protocol<?> protocol) throws SQLException {
+        return null;
+    }
 }
