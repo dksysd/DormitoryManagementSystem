@@ -40,6 +40,22 @@ public class DormitoryDAO implements DormitoryDAOI {
     }
 
     @Override
+    public List<String> findAllIntoString() throws SQLException {
+        List<String> dormitories = new ArrayList<>();
+        String query = "SELECT id, name, description FROM dormitories";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                dormitories.add(resultSet.getString(2));
+            }
+        }
+
+        return dormitories;
+    }
+
+    @Override
     public void save(DormitoryDTO dormitoryDTO) throws SQLException {
         String query = "INSERT INTO dormitories (name, description) VALUES (?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();

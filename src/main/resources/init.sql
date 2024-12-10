@@ -246,7 +246,8 @@ create table if not exists selection_schedules
 (
     id         int primary key auto_increment,
     title      varchar(100) not null unique,
-    created_at timestamp    not null default now()
+    created_at timestamp    not null default now(),
+    stated_at  timestamp    not null
 );
 
 create table if not exists selection_quotas

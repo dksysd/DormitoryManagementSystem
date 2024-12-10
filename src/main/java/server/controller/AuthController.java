@@ -1,8 +1,10 @@
 package server.controller;
 
+import server.core.SessionManager;
 import server.persistence.dao.UserDAO;
 import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
+
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -24,42 +26,43 @@ public class AuthController implements Controller {
      *                 >
      * @return 성공 header(type: response, dataType: TLV, code: OK, dataLength:
      * children<
-     *          1 header(type:value, dataType: String, code: SessionId, dataLength:)
-     *          data: 세션아이디,
-     *          2 header(type:value, dataType: String, code: USER_TYPE_ID, dataLength:)
-     *          data: 사용자 유형 아이디(관리자 or 학생)
-     *          >
+     * 1 header(type:value, dataType: String, code: SessionId, dataLength:)
+     * data: 세션아이디,
+     * 2 header(type:value, dataType: String, code: USER_TYPE_ID, dataLength:)
+     * data: 사용자 유형 아이디(관리자 or 학생)
+     * >
      * 실패 header(type: response, dataType: TLV, code: 에러코드(개중 보고 에러원인 판단), dataLength: 0)
      * data:
-     *
      */
     public static Protocol<?> login(Protocol<?> protocol) throws SQLException {
 
         Protocol<?> resProtocol = new Protocol<>();
         Protocol<String> childProtocol1 = new Protocol<>();
         Protocol<String> childProtocol2 = new Protocol<>();
-        Header header = new Header();
-        UserDAO userDAO = new UserDAO();
-        String sessionId = "";
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
+        SessionManager sessionManager = SessionManager.getINSTANCE();
+
+        String sessionId = (String) protocol.getChildren().getLast().getData();
         try {
             String id = (String) protocol.getChildren().get(0).getData();
             String pw = (String) protocol.getChildren().get(1).getData();
+            UserDAO userDAO = new UserDAO();
             UserDTO userDTO = userDAO.findByUid(id);
-            header.setType(Type.RESPONSE);
-            header.setDataType(DataType.TLV);
+            String userType = userDTO.getUserTypeDTO().getTypeName();
 
             if (isValidLoginCredentials(id, pw, header)) {
-                // 세션아이디 발급(세션 저장소에 id,pw 추가)
-                header.setCode(Code.ResponseCode.OK);
-                childProtocol1.setHeader(new Header(Type.VALUE,DataType.STRING,Code.ValueCode.SESSION_ID,0));
-                childProtocol2.setHeader(new Header(Type.VALUE,DataType.STRING,Code.ValueCode.USER_TYPE_ID,0));
+                sessionManager.getSession(sessionId).setAttribute("ID", id);
+                sessionManager.getSession(sessionId).setAttribute("PW", pw);
+                sessionManager.getSession(sessionId).setAttribute("USER_TYPE", userType);
+                childProtocol1.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0));
+                childProtocol2.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.USER_TYPE_ID, 0));
                 childProtocol1.setData(sessionId);
-                childProtocol2.setData(userDTO.getUserTypeDTO().getTypeName());
+                childProtocol2.setData(userType);
                 resProtocol.addChild(childProtocol1);
                 resProtocol.addChild(childProtocol2);
             }
         } catch (SQLException e) {
-            header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR); // SQL 에러 발생 시 처리
+            header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
         resProtocol.setHeader(header);
         return resProtocol;
@@ -79,17 +82,48 @@ public class AuthController implements Controller {
         Protocol<?> resProtocol = new Protocol<>();
         Header header = new Header();
         String sessionId;
+        SessionManager sessionManager = SessionManager.getINSTANCE();
         try {
             sessionId = (String) protocol.getChildren().getFirst().getData();
             header.setType(Type.RESPONSE);
             header.setDataType(DataType.TLV);
-            if (verifySessionId(sessionId)) {//세션아이디 검증 및 처리
+            if (verifySessionId(sessionId)) {
                 header.setCode(Code.ResponseCode.OK);
+                sessionManager.removeSession(sessionId);
             } else header.setCode(Code.ErrorCode.UNAUTHORIZED);
             resProtocol.setHeader(header);
         } catch (Exception e) {
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
+        return resProtocol;
+    }
+
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: REFRESH_SESSION, dataLength:)
+     *                 data:
+     *                 children<
+     *                 1 header(type: value, dataType: string, code: SessionId, dataLength:)
+     *                 data: sessionId
+     *                 >
+     * @return header(type : response, dataType : TLV, code : OK ( 실패시 에러코드), dataLength :
+     * data:
+     **/
+    public static Protocol<?> refreshSession(Protocol<?> protocol) {
+        Protocol<?> resProtocol = new Protocol<>();
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
+        try {
+            String sessionId = (String) protocol.getChildren().getFirst().getData();
+
+            if (verifySessionId(sessionId)) {
+                SessionManager sessionManager = SessionManager.getINSTANCE();
+                sessionManager.getSession(sessionId).touch();
+            } else {
+                header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            header.setCode(Code.ResponseCode.ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+        resProtocol.setHeader(header);
         return resProtocol;
     }
 
@@ -132,9 +166,7 @@ public class AuthController implements Controller {
         UserDAO userDAO = new UserDAO();
         UserDTO userDTO = userDAO.findByUid(id);
 
-        // 사용자 존재 여부 및 비밀번호 확인
-        return userDTO != null && Objects.equals(password, userDTO.getPassword());
-        //userDTO에 getPassword() -> getLoginPassword
-        //+LoginDTO 지워도 됨
+        return userDTO != null && Objects.equals(password, userDTO.getLoginPassword());
     }
+
 }

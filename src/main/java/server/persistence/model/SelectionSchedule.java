@@ -16,6 +16,7 @@ public class SelectionSchedule implements Model {
     private Integer id;
     private String title;
     private LocalDateTime createdAt;
+    private LocalDateTime statedAt;
 
     @Override
     public DTO toDTO() {
@@ -23,6 +24,7 @@ public class SelectionSchedule implements Model {
                 .id(id)
                 .title(title)
                 .createdAt(createdAt)
+                .startedAt(statedAt)
                 .build();
     }
 }

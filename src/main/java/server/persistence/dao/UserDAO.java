@@ -125,12 +125,13 @@ public class UserDAO implements UserDAOI {
     }
 
     @Override
-    public void updateRoommate(String uid, int roommate) throws SQLException {
+    public void updateRoommate(String uid, String roommate) throws SQLException {
         String query = "SELECT sa.id AS id, u.id AS userId AS roommate_id FROM users u " +
                 "INNER JOIN selection_applications sa ON u.id = sa.user_id" +
                 "WHERE u.uid = ?";
         int id;
         int userId;
+        int roommateId;
 
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -142,10 +143,20 @@ public class UserDAO implements UserDAOI {
             userId = resultSet.getInt("userId");
         }
 
+        query = "SELECT id FROM users WHERE uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, roommate);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            roommateId = resultSet.getInt(1);
+        }
+
         query = "UPDATE selection_applications sa SET roommate_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, roommate);
+            preparedStatement.setInt(1, roommateId);
             preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
         }
@@ -154,7 +165,7 @@ public class UserDAO implements UserDAOI {
         try (Connection connection = DatabaseConnectionPool.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, userId);
-            preparedStatement.setInt(2, roommate);
+            preparedStatement.setInt(2, roommateId);
             preparedStatement.executeUpdate();
         }
     }

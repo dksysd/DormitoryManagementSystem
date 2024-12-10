@@ -6,6 +6,7 @@ import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
+
 import static server.util.ProtocolValidator.getIdBySessionId;
 
 
@@ -36,32 +37,18 @@ public class UserController {
      * data: 상세주소
      * >
      */
-    public static Protocol<?> getUserInfo(Protocol<?> protocol) throws SQLException {
-        Header header = new Header();
+    public static Protocol<?> getUserInfo(Protocol<?> protocol) {
+
         Protocol<?> resProtocol = new Protocol<>();
         UserDAO userDAO = new UserDAO();
+        Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ErrorCode.UNAUTHORIZED, 0);
         try {
             String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
-
-            if (id == null) {
-                header.setType(Type.RESPONSE);
-                header.setDataType(DataType.TLV);
-                header.setCode(Code.ErrorCode.UNAUTHORIZED);
-                resProtocol.setHeader(header);
-                return resProtocol;
-            }
-
             UserDTO userDTO = userDAO.findByUid(id);
-            if (userDTO == null) {
-                header.setType(Type.RESPONSE);
-                header.setDataType(DataType.TLV);
-                header.setCode(Code.ErrorCode.UNAUTHORIZED);
+            if (id == null) {
                 resProtocol.setHeader(header);
                 return resProtocol;
             }
-
-            header.setType(Type.RESPONSE);
-            header.setDataType(DataType.TLV);
             header.setCode(Code.ResponseCode.OK);
             resProtocol.setHeader(header);
 
@@ -74,7 +61,6 @@ public class UserController {
 
         } catch (Exception e) {
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
-            e.printStackTrace();
         }
         resProtocol.setHeader(header);
         return resProtocol;
@@ -83,7 +69,6 @@ public class UserController {
     private static void addChildToProtocol(Protocol<?> protocol, Code.ValueCode code, String data) {
         protocol.addChild(new Protocol<>(new Header(Type.VALUE, DataType.STRING, code, 0), data));
     }
-
 
 
 }

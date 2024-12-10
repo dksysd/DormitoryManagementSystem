@@ -40,15 +40,17 @@ public class DemeritPointDAO implements DemeritPointDAOI {
     }
 
     @Override
-    public List<Integer> findAllPointIntoInt() throws SQLException {
-        List<Integer> demeritPoints = new ArrayList<>();
-        String query = "SELECT point FROM demerit_points";
+    public List<String> findAllPointIntoString() throws SQLException {
+        List<String> demeritPoints = new ArrayList<>();
+        String query = "SELECT u.uid AS uid, dp.point AS point FROM demerit_points dp" +
+                "INNER JOIN users u ON dp.user_id = u.id" +
+                "WHERE u.uid = ?";
         try(Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                demeritPoints.add(resultSet.getInt(1));
+                demeritPoints.add(resultSet.getString(1) + " : " +  resultSet.getInt(1));
             }
         }
 
