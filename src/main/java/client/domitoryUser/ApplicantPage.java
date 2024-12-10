@@ -50,7 +50,7 @@ public class ApplicantPage {
 
     public void displayInfo(){
         // 선발 일정 요청 - sessionId
-        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.SELECTION_SCHEDULE,0);
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
         Protocol<?> protocol = new Protocol();
