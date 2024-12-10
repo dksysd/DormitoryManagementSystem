@@ -28,7 +28,7 @@ public class ApplicantPage {
             System.out.println("=======================================");
 
             switch (option){
-                case 1:
+                case 1: displayInfo(); break;
                 case 2:
                 case 3:
                 case 4:
@@ -43,13 +43,13 @@ public class ApplicantPage {
 
     public static void applicantFunctionInfo(){
         System.out.println("============= 학생 페이지입니다 =============");
-        System.out.println("1. 선발 일정 확인");
-        System.out.println("2. 입사신청하기");
-        System.out.println("3. 퇴사 신청 / 확인");
-        System.out.println("4. 선발 결과 확인");
-        System.out.println("5. 상벌점 확인");
+        System.out.println("1. 선발 일정 확인"); // 0k - 확인은 필요
+        System.out.println("2. 입사신청하기"); // 손도 안댐
+        System.out.println("3. 퇴사 신청 / 확인"); // 퇴사 확인 기능 추가 필요
+        System.out.println("4. 선발 결과 확인"); // 손도 안댐
+        System.out.println("5. 상벌점 확인"); // 손도 안댐
         System.out.println("6. 명세서 확인"); // 0k
-        System.out.println("7. 결제 / 결제상태 확인");
+        System.out.println("7. 결제 / 결제상태 확인"); //0k
         System.out.println("8. 로그아웃");
         System.out.println();
         System.out.println();
@@ -76,14 +76,25 @@ public class ApplicantPage {
         if(resProtocol.getHeader().getType() == Type.ERROR){
             System.out.println("재시도 하세요");
             return;
-
         }
 
-        List<?> list = resProtocol.getChildren();
-        String priority, normal, latest;
-        priority = (String) resProtocol.getChildren().get(0).getData();
-        normal = (String) resProtocol.getChildren().get(1).getData();
-        latest = (String) resProtocol.getChildren().get(2).getData();
+        int size = resProtocol.getChildren().size() ;
+
+        String priority = "미정", normal = "미정", latest = "미정", temp, date, name;
+
+        for(int i = 0; i < size; i++){
+            temp = (String) resProtocol.getChildren().get(i).getData();
+            date = temp.substring(7);
+            name = temp.substring(0,3);
+
+            if(name.equals("우선선발"))
+                priority = date;
+            else if(name.equals("일반선발")){
+                normal = date;
+            }
+            else
+                latest = date;
+        }
 
         System.out.println("우선선발과 일반선발은 14일간 진행됩니다.");
         System.out.println("우선선발 시작일 : " + priority);
