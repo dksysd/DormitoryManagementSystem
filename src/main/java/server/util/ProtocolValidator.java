@@ -17,13 +17,15 @@ public class ProtocolValidator {
         return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("ID", String.class);
     }
     public static String getUserType(String sessionId) {
-       return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("UserType", String.class);
+       return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("type_name", String.class);
         //UserType은 Student/Admin으로 나뉨
     }
     public static boolean isStudent(String sessionId) {
-       return Objects.equals(getIdBySessionId(sessionId), "Student");
+        System.out.println(getUserType(sessionId));
+       return Objects.equals(getUserType(sessionId), "student");
     }
     public static boolean isAdmin(String sessionId) {
-        return Objects.equals(getIdBySessionId(sessionId), "Admin");
+        System.out.println(getUserType(sessionId));
+        return Objects.equals(getUserType(sessionId), "admin");
     }
 }

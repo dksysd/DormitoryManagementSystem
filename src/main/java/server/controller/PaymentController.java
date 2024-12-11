@@ -253,7 +253,7 @@ public class PaymentController {
 
                 int totalAmount = paymentDTO.getPaymentAmount();
                 int refundAmount = (int) ((remainingDays / (double) totalDays) * totalAmount);
-                paymentDTO.getPaymentStatusDTO().setStatusName("환불 대기");
+                paymentDTO.getPaymentStatusDTO().setStatusName("환불대기");
                 paymentDAO.update(paymentDTO);
                 respProtocol.addChild(new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.REFUND_AMOUNT, 0), refundAmount));
                 moveOutRequestDTO.setPaymentRefundDTO(paymentRefundDTO);

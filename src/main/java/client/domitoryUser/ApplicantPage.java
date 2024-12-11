@@ -31,17 +31,37 @@ public class ApplicantPage {
             System.out.println("=======================================");
 
             switch (option) {
-                case 1: displayInfo(asyncRequest); break;
-                case 2: applicate(asyncRequest); break;
-                case 3: moveOutApplicate(asyncRequest); break;
-                case 4: displaySelectionResult(asyncRequest); break;
-                case 5: displayMeritPoint(asyncRequest); break;
-                case 6: displayBill(asyncRequest); break;
-                case 7: payment(asyncRequest); break;
-                case 8: appliyTuber(asyncRequest); break;
+                case 1:
+                    displayInfo(asyncRequest);
+                    break;
+                case 2:
+                    applicate(asyncRequest);
+                    break;
+                case 3:
+                    moveOutApplicate(asyncRequest);
+                    break;
+                case 4:
+                    displaySelectionResult(asyncRequest);
+                    break;
+                case 5:
+                    displayMeritPoint(asyncRequest);
+                    break;
+                case 6:
+                    displayBill(asyncRequest);
+                    break;
+                case 7:
+                    payment(asyncRequest);
+                    break;
+                case 8:
+                    appliyTuber(asyncRequest);
+                    break;
                 case 9:
-                case 10: System.out.println("종료합니다."); break;
-                default: System.out.println("유효하지 않은 선택입니다. 다시 시도하세요."); break;
+                case 10:
+                    System.out.println("종료합니다.");
+                    break;
+                default:
+                    System.out.println("유효하지 않은 선택입니다. 다시 시도하세요.");
+                    break;
             }
         } while (option != 10); // 8번을 선택하면 루프 종료
     }
@@ -72,16 +92,51 @@ public class ApplicantPage {
         protocol.addChild(tlv);
         Protocol<?> resProtocol = asyncRequest.sendAndReceive(protocol);
 
-        // 선발 일정 받기 - String 들로 받아와짐. -> 일정, 일정, 일정 이런 방식으로
 
         if (resProtocol.getHeader().getType() == Type.ERROR) {
             System.out.println("잘못된 요청입니다. 재시도 하세요");
             return;
         }
+        String priority ="";
+        String normal = "";
+        String extra = "";
+        String first = (String) resProtocol.getChildren().getFirst().getData();
+        String second = (String) resProtocol.getChildren().get(1).getData();
+        String third = (String) resProtocol.getChildren().getLast().getData();
 
-        String priority = (String) resProtocol.getChildren().getLast().getData();
-        String normal = (String) resProtocol.getChildren().get(1).getData();
-        String extra = (String) resProtocol.getChildren().getFirst().getData();
+        String[] firstParts = first.split("\\s+");
+        String[] secondParts = second.split("\\s+");
+        String[] thirdParts = third.split("\\s+");
+
+        if (firstParts.length > 0) {
+            if (firstParts[0].equals("우선선발")) {
+                priority = first;
+            } else if (firstParts[0].equals("일반선발")) {
+                normal = first;
+            } else {
+                extra = first;
+            }
+        }
+
+        if (secondParts.length > 0) {
+            if (secondParts[0].equals("우선선발")) {
+                priority = second;
+            } else if (secondParts[0].equals("일반선발")) {
+                normal = second;
+            } else {
+                extra = second;
+            }
+        }
+
+        if (thirdParts.length > 0) {
+            if (thirdParts[0].equals("우선선발")) {
+                priority = third;
+            } else if (thirdParts[0].equals("일반선발")) {
+                normal = third;
+            } else {
+                extra = third;
+            }
+        }
 
         printSchedule(priority);
         printSchedule(normal);
@@ -108,10 +163,10 @@ public class ApplicantPage {
             throw new RuntimeException(e);
         }
 
-        String sexuality = null;
+        String sexuality ;
         if (resProtocol.getHeader().getType() == Type.RESPONSE) {
             sexuality = (String) resProtocol.getChildren().get(3).getData();
-            ;
+
         } else {
             System.out.println("학생 정보를 가져올 수 없습니다. 재로그인 해주세요");
             return;
@@ -125,23 +180,23 @@ public class ApplicantPage {
 
         boolean pureum_1, pureum_2, pureum_3;
 
-        if (sexuality.equals("F")) {
-            System.out.println("(푸름1/ 푸름3 / 오름1 )");
+        if (sexuality.equals("female")) {
+            System.out.println("( 푸름1 / 푸름3 / 오름1 )");
         } else {
-            System.out.println("(푸름2 / 푸름4 / 오름2 / 오름3)");
+            System.out.println("( 푸름2 / 푸름4 / 오름2 )");
         }
-        System.out.println(">> 예시 : 오름1 푸름3 아름관 (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 아름관)");
+        System.out.println(">> 예시 : 오름1 푸름3 푸름1 (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 푸름3)");
         System.out.println();
         System.out.println(">> 지망 순위 입력 : ");
         String first = sc.next();
         String second = sc.next();
         String third = sc.next();
-        String domi1, domi2, domi3;
 
-        if (sexuality.equals("F")) {
-            pureum_1 = (!first.equals("오름1"));
-            pureum_2 = (!second.equals("오름1"));
-            pureum_3 = (!third.equals("오름1"));
+
+        if (sexuality.equals("female")) {
+            pureum_1 = (first.equals("푸름3"));
+            pureum_2 = (second.equals("푸름3"));
+            pureum_3 = (third.equals("푸름3"));
 
         } else {
             pureum_1 = (!first.equals("오름2") && !first.equals("오름3"));
@@ -295,8 +350,6 @@ public class ApplicantPage {
 
     }
 
-    // 서현이가 봐죠 - 퇴사신청(환불신청) 부분
-    // 퇴사 확인 부문만 추가하면 됨!
     public void moveOutApplicate(AsyncRequest asyncRequest) {
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
@@ -326,6 +379,8 @@ public class ApplicantPage {
             // 환불신청 > 결과 확인은 학생 페이지 7번 결제확인 기능을 사용하라고 안내
             System.out.println("환불 완료 시, 자동으로 퇴사 신청이 됩니다. \"환불\" 입력 시 환불절차가 시작됩니다. : ");
             String text = sc.next();
+            System.out.println("환불 사유를 말씀해 주세요.");
+            String reason = sc.next();
             System.out.println("환불 받을 계좌번호, 계좌주 이름, 은행명을 띄어쓰기로 구분하여 입력해주세요 : ");
             String account = sc.next();
             String name = sc.next();
@@ -347,18 +402,22 @@ public class ApplicantPage {
                             tlv = new Protocol<>(tlvHeader, text);
                             break;
                         case 1:
+                            tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.REFUND_REASON, 0);
+                            tlv = new Protocol<>(tlvHeader, reason);
+                            break;
+                        case 2:
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_NUMBER, 0);
                             tlv = new Protocol<>(tlvHeader, account);
                             break;
-                        case 2:
+                        case 3:
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_HOLDER_NAME, 0);
                             tlv = new Protocol<>(tlvHeader, name);
                             break;
-                        case 3:
+                        case 4:
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.BANK_NAME, 0);
                             tlv = new Protocol<>(tlvHeader, bank);
                             break;
-                        case 4:
+                        case 5:
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
                             tlv = new Protocol<>(tlvHeader, sessionID);
                             break;
@@ -378,6 +437,9 @@ public class ApplicantPage {
                 if (resProtocol.getHeader().getCode() == Code.ResponseCode.OK) {
                     System.out.println("환불과 퇴사신청이 정상적으로 완료되었습니다.");
                     System.out.println("환불 상태를 다시 확인하고 싶으시다면 학생페이지 7번 결제 상태 확인을 참고 하세요.");
+                }else{
+                    System.out.println("환불 및 퇴사신청이 비정상적으로 종료되었습니다. 다시 시도해 주세요.");
+
                 }
 
             }
@@ -540,6 +602,8 @@ public class ApplicantPage {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
                             tlv = new Protocol<>(tlvHeader, sessionID);
                             break;
+
+
                     }
 
                     protocol.addChild(tlv);

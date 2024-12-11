@@ -51,7 +51,7 @@ public class UserController {
             }
             header.setCode(Code.ResponseCode.OK);
             resProtocol.setHeader(header);
-
+            addChildToProtocol(resProtocol, Code.ValueCode.ID, userDTO.getUid());
             addChildToProtocol(resProtocol, Code.ValueCode.USER_NAME, userDTO.getUserName());
             addChildToProtocol(resProtocol, Code.ValueCode.PHONE_NUMBER, userDTO.getPhoneNumber());
             addChildToProtocol(resProtocol, Code.ValueCode.GENDER_NAME, userDTO.getGenderCodeDTO().getCodeName());
