@@ -25,7 +25,7 @@ public class ProtocolParser {
             case INTEGER -> new Protocol<>(header, dataBuffer.getInt());
             case FLOAT -> new Protocol<>(header, dataBuffer.getFloat());
             case DOUBLE -> new Protocol<>(header, dataBuffer.getDouble());
-//            case BOOLEAN -> new Protocol<>(header, dataBuffer.get() == 1);
+            case BOOLEAN -> new Protocol<>(header, dataBuffer.get() == 1);
             case STRING -> {
                 byte[] data = new byte[header.getDataLength()];
                 dataBuffer.get(data);
@@ -42,9 +42,11 @@ public class ProtocolParser {
                 if (header.getDataLength() == 0) {
                     yield protocol;
                 } else {
-                    Header innerHeader = parseHeader(dataBuffer);
-                    Protocol<?> innerProtocol = parseProtocol(innerHeader, dataBuffer);
-                    protocol.addChild(innerProtocol);
+                    while (dataBuffer.position() < header.getDataLength()) {
+                        Header innerHeader = parseHeader(dataBuffer);
+                        Protocol<?> innerProtocol = parseProtocol(innerHeader, dataBuffer);
+                        protocol.addChild(innerProtocol);
+                    }
                     yield protocol;
                 }
             }
