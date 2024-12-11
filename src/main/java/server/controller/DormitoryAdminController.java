@@ -174,8 +174,7 @@ public class DormitoryAdminController {
         SelectionApplicationDAO selectionApplicationDAO= new SelectionApplicationDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        //todo paymentRefundDao findByUid()만들어주세요
-        PaymentRefundDTO PRDto = PRDao.findByUid();
+        PaymentRefundDTO PRDto = PRDao.findByUid(id);
         if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             MORDao.findByUid(id).getMoveOutRequestStatusDTO().setStatusName("퇴사완료");
             PRDto.getPaymentDTO().getPaymentStatusDTO().setStatusName("환불완료");
