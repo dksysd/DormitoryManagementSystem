@@ -45,7 +45,7 @@ public class ProtocolSerializer {
             }
             case RAW -> {
                 dataBuffer = ByteBuffer.wrap((byte[]) checkDataIsNull(protocol.getData()));
-                dataBuffer.flip();
+//                dataBuffer.flip();
             }
             case TLV -> {
                 int dataLength = 0;
