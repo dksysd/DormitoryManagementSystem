@@ -136,7 +136,7 @@ public class AuthController implements Controller {
     private static boolean isValidLoginCredentials(String id, String password, Header header) throws SQLException {
         try {
             // ID 형식 검증 (8자리 숫자)
-            if (!isValidId(id) && !isValidPassword(password)) {
+            if (isValidId(id) && isValidPassword(password)) {
                 // 실제 데이터베이스 검증
                 if (authenticateUser(id, password)) {
                     return true;
