@@ -15,7 +15,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     public DormitoryRoomTypeDTO findById(Integer id) throws SQLException {
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, " +
                 "drt.dormitory_id, " +
-                "rt.type_name AS typeName, rt.max_person," +
+                "rt.type_name AS type_name, rt.max_person AS max_person," +
                 "d.name AS dormitoryName " +
                 "FROM dormitory_room_types drt " +
                 "LEFT JOIN room_types rt ON drt.room_type_id = rt.id " +
