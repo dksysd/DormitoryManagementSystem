@@ -16,16 +16,16 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public SelectionApplicationDTO findById(Integer id) throws SQLException {
-        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
+        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year_room, sa.created_at, sa.updated_at, " +
                 "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
                 "sa.roommate_user_id, sa.user_id, " +
                 "sas.id AS status_id, sas.status_name, " +
-                "ss.id AS schedule_id, ss.schedule_name, " +
-                "drt.id AS room_type_id, drt.room_type_name, " +
-                "mp.id AS meal_plan_id, mp.meal_plan_name, " +
+                "ss.id AS schedule_id, ss.title, " +
+                "drt.id AS room_type_id, drt.room_type_id, " +
+                "mp.id AS meal_plan_id, mp.meal_plan_type_id, " +
                 "u.id AS user_id, u.user_name " +
                 "FROM selection_applications sa " +
-                "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
+                "LEFT JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
                 "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
                 "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
                 "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
@@ -45,20 +45,20 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public SelectionApplicationDTO findByUid(String uid) throws SQLException {
-        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
+        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year_room, sa.created_at, sa.updated_at, " +
                 "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
-                "sa.roommate_user_id AS rommate_user_id, sa.user_id, " +
+                "sa.roommate_user_id, sa.user_id, " +
                 "sas.id AS status_id, sas.status_name, " +
-                "ss.id AS schedule_id, ss.schedule_name, " +
-                "drt.id AS room_type_id, drt.room_type_name, " +
-                "mp.id AS meal_plan_id, mp.meal_plan_name, " +
+                "ss.id AS schedule_id, ss.title, " +
+                "drt.id AS room_type_id, drt.room_type_id, " +
+                "mp.id AS meal_plan_id, mp.meal_plan_type_id, " +
                 "u.id AS user_id, ru.user_name AS roommate_user_name " +
                 "FROM selection_applications sa " +
-                "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
+                "LEFT JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
                 "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
                 "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
                 "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
-                "LEFT JOIN users ru ON sa.roommate_user_id = u.id " +
+                "LEFT JOIN users ru ON sa.roommate_user_id = ru.id " +
                 "LEFT JOIN users u ON sa.user_id = u.id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -77,20 +77,20 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     @Override
     public List<SelectionApplicationDTO> findAll() throws SQLException {
         List<SelectionApplicationDTO> selectionApplications = new ArrayList<>();
-        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year, sa.created_at, sa.updated_at, " +
+        String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year_room, sa.created_at, sa.updated_at, " +
                 "sa.selection_application_status_id, sa.selection_schedule_id, sa.dormitory_room_type_id, sa.meal_plan_id, " +
-                "sa.roommate_user_id, sa.user_id AS user_id, " +
+                "sa.roommate_user_id, sa.user_id, " +
                 "sas.id AS status_id, sas.status_name, " +
-                "ss.id AS schedule_id, ss.schedule_name, " +
-                "drt.id AS room_type_id, drt.room_type_name, " +
-                "mp.id AS meal_plan_id, mp.meal_plan_name, " +
-                "u.id AS user_id, u.user_name AS user_name " +
+                "ss.id AS schedule_id, ss.title, " +
+                "drt.id AS room_type_id, drt.room_type_id, " +
+                "mp.id AS meal_plan_id, mp.meal_plan_type_id, " +
+                "u.id AS user_id, u.user_name " +
                 "FROM selection_applications sa " +
-                "LEFT JOIN selection_application_status sas ON sa.selection_application_status_id = sas.id " +
+                "LEFT JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
                 "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
                 "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
                 "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
-                "LEFT JOIN users ru ON sa.roommate_user_id = u.id " +
+                "LEFT JOIN users ru ON sa.roommate_user_id = ru.id " +
                 "LEFT JOIN users u ON sa.user_id = u.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -105,7 +105,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public void save(SelectionApplicationDTO selectionApplicationDTO) throws SQLException {
-        String query = "INSERT INTO selection_applications (preference, has_sleep_habit, is_year, created_at, updated_at, " +
+        String query = "INSERT INTO selection_applications (preference, has_sleep_habit, is_year_room, created_at, updated_at, " +
                 "selection_application_status_id, selection_schedule_id, dormitory_room_type_id, meal_plan_id, roommate_user_id, user_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -128,7 +128,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public void update(SelectionApplicationDTO selectionApplicationDTO) throws SQLException {
-        String query = "UPDATE selection_applications SET preference = ?, has_sleep_habit = ?, is_year = ?, " +
+        String query = "UPDATE selection_applications SET preference = ?, has_sleep_habit = ?, is_year_room = ?, " +
                 "created_at = ?, updated_at = ?, selection_application_status_id = ?, selection_schedule_id = ?, " +
                 "dormitory_room_type_id = ?, meal_plan_id = ?, roommate_user_id = ?, user_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -177,7 +177,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public void updateMealPlan(String uid, String mealPlanName) throws SQLException {
-        String query = "SELECT s.id FROM selection_applications s" +
+        String query = "SELECT s.id FROM selection_applications s " +
                 "LEFT JOIN users u ON u.uid = ?";
         int user_id;
 
@@ -209,10 +209,11 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public void updateSelectionApplication(String uid, String statusName) throws SQLException {
-        String query = "SELECT sa.id, sas.id FROM selection_applications sa" +
-                "INNER JOIN selection_application_statuses sas ON sas.name = ?" +
-                "INNER JOIN user u ON u.id = sa.user_id" +
-                "WHERE = u.uid = ?";
+        String query = "SELECT sa.id, sas.id " +
+                "FROM selection_applications sa " +
+                "INNER JOIN selection_application_statuses sas ON sas.status_name = ? " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
+                "WHERE u.uid = ?";
         int id;
         int status_id;
 
@@ -240,7 +241,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
 
     @Override
     public void updateRoomType(String uid, String roomTypeName) throws SQLException {
-        String query = "SELECT s.id FROM selection_applications s" +
+        String query = "SELECT s.id FROM selection_applications s " +
                 "LEFT JOIN users u ON u.uid = ?";
         int user_id;
 
@@ -251,7 +252,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
             user_id = resultSet.getInt(1);
         }
 
-        query = "SELECT drt.id FROM dormitory_room_types drt" +
+        query = "SELECT drt.id FROM dormitory_room_types drt " +
                 "INNER JOIN room_types rt ON rt.type_name = ?";
         int drt_id;
 

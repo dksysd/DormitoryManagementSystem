@@ -15,12 +15,12 @@ public class PaymentDAO implements PaymentDAOI {
     @Override
     public PaymentDTO findById(Integer id) throws SQLException {
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
-                "ps.status_name AS payment_status, pc.payment_code" +
-                "pm.method_name AS method" +
+                "ps.status_name AS payment_status, pc.payment_code, " +
+                "pm.method_name AS method " +
                 " FROM payments p " +
-                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
-                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
-                "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id" +
+                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id " +
+                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id " +
+                "LEFT JOIN payment_methods pm ON p.payment_method_id = pm.id " +
                 "WHERE p.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -37,13 +37,15 @@ public class PaymentDAO implements PaymentDAOI {
     @Override
     public PaymentDTO findByUid(String uid) throws SQLException {
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
-                "ps.status_name AS payment_status, pc.payment_code AS code" +
+                "ps.status_name AS payment_status, pc.payment_code AS code, " +
                 "pm.method_name AS method " +
                 "FROM payments p " +
-                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
-                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
-                "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id" +
-                "WHERE p.uid = ?";
+                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id " +
+                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id " +
+                "LEFT JOIN payment_methods pm ON p.payment_method_id = pm.id " +
+                "INNER JOIN payment_histories ph ON ph.payment_id = p.id " +
+                "INNER JOIN users u ON u.id = ph.user_id " +
+                "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -60,12 +62,12 @@ public class PaymentDAO implements PaymentDAOI {
     public List<PaymentDTO> findAll() throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
-                "ps.status_name AS payment_status, pc.payment_code AS code" +
+                "ps.status_name AS payment_status, pc.payment_code AS code, " +
                 "pm.method_name AS method " +
                 "FROM payments p " +
-                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id" +
-                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id" +
-                "LEFT JOIN payment_method pm ON p.payment_method_id = pm.id";
+                "LEFT JOIN payment_statuses ps ON p.payment_status_id = ps.id " +
+                "LEFT JOIN payment_codes pc ON p.payment_code_id = pc.id " +
+                "LEFT JOIN payment_methods pm ON p.payment_method_id = pm.id";
 
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -111,10 +113,10 @@ public class PaymentDAO implements PaymentDAOI {
 
     @Override
     public void statusUpdate(String uid, String paymentStatusName) throws SQLException {
-        String query = "SELECT p.id AS payment_id, ps.id AS ps_id FROM payments p" +
-                "INNER JOIN payment_history ph ON ph.payment_id = p.id" +
-                "INNER JOIN users u ON u.uid = ph.user_id" +
-                "INNER JOIN payment_statuses ps ON ps.status_name = ?" +
+        String query = "SELECT p.id AS payment_id, ps.id AS ps_id FROM payments p " +
+                "INNER JOIN payment_histories ph ON ph.payment_id = p.id " +
+                "INNER JOIN users u ON u.uid = ph.user_id " +
+                "INNER JOIN payment_statuses ps ON ps.status_name = ? " +
                 "WHERE u.uid = ?";
         int id;
         int paymentStatusId;
@@ -128,7 +130,7 @@ public class PaymentDAO implements PaymentDAOI {
             paymentStatusId = resultSet.getInt("ps_id");
         }
 
-        query = "UPDATE payments SET payment_status_id = ? WHERE payment_id = ?";
+        query = "UPDATE payments SET payment_status_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, paymentStatusId);
