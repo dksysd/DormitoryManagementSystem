@@ -32,7 +32,7 @@ public class DefaultPage {
         }
         else {
             System.out.println("=============로그인 실패!=============");
-            return;
+            run(host, port);
         }
 
         auth.logOut(asyncRequest);

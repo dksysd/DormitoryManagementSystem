@@ -169,6 +169,7 @@ public class AuthController implements Controller {
         if (password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) validationCount++; // 특수문자 포함
 
         return validationCount >= 3;
+
     }
 
     private static boolean authenticateUser(String id, String password) throws SQLException {
