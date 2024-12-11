@@ -1,7 +1,8 @@
 package client.domitoryAdmin;
-
+import server.controller.DormitoryAdminController;
 import shared.protocol.persistence.*;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class AdminPage {
@@ -38,10 +39,10 @@ public class AdminPage {
 
     public static void adminFunctionInfo(){
         System.out.println("============= 관리자 페이지입니다 =============");
-        System.out.println("1. 선발 일정 등록"); // 다듬기
+        System.out.println("1. 선발 일정 등록"); // ok - 확인만
         System.out.println("2. 입사 신청자 목록 확인");
-        System.out.println("3. 입사자 선발하기"); // 다듬기
-        System.out.println("4. 상벌점 관리"); // 다듬기
+        System.out.println("3. 입사자 선발하기"); // ok - 확인만
+        System.out.println("4. 상벌점 관리"); // ok - 확인만
         System.out.println("5. 결핵진단서 진위 확인");
         System.out.println("6. 퇴사 승인");
         System.out.println("7. 우선선발 증빙서 진위 확인");
@@ -102,7 +103,11 @@ public class AdminPage {
 
             Protocol<?> resProtocol = null;
 
-            //resProtocol = DomitoryAdminController.(protocol);
+            try {
+                resProtocol = DormitoryAdminController.registerSelectionInfo(protocol);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
             if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
                 System.out.println("일정등록이 완료되었습니다");
@@ -135,7 +140,11 @@ public class AdminPage {
 
         Protocol<?> resProtocol = null;
 
-        //resProtocol = DomitoryAdminController.(protocol);
+        try {
+            resProtocol = DormitoryAdminController.selectApplicants(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
             System.out.println("선발/배정이 완료되었습니다");
@@ -147,6 +156,9 @@ public class AdminPage {
     public void ManagementMeritPoint(){
         System.out.print("관리하려는 학생의 학번을 입력하세요 : ");
         String student = sc.next();
+        System.out.println("상벌점 사유를 입력하세요 : ");
+        String reason = sc.nextLine();
+        sc.nextLine();
         System.out.println("상점/벌점 입력 (벌점의 경우 음수로 입력하세요) : ");
         int point = sc.nextInt();
 
@@ -158,6 +170,10 @@ public class AdminPage {
         Protocol<String> tlv = new Protocol<>(tlvHeader, student);
         protocol.addChild(tlv);
 
+        Header tlvHeader4 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DEMERIT_REASON, 0);
+        Protocol<String> tlv4 = new Protocol<>(tlvHeader4, reason);
+        protocol.addChild(tlv4);
+
         Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SUM_OF_MERIT_POINTS, 0);
         Protocol<Integer> tlv2 = new Protocol<>(tlvHeader2, point);
         protocol.addChild(tlv2);
@@ -168,7 +184,11 @@ public class AdminPage {
 
         Protocol<?> resProtocol = null;
 
-        //resProtocol = DomitoryAdminController.(protocol);
+        try {
+            resProtocol = DormitoryAdminController.managementMeritPoint(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
             System.out.println("상벌점 입력이 정상적으로 완료되었습니다");
