@@ -13,12 +13,14 @@ import server.persistence.model.CardIssuer;
 public class CardIssuerDTO implements DTO {
     private Integer id;
     private String issuerName;
+    private String issuerCode;
 
     @Override
     public Model toModel() {
         return (Model) CardIssuer.builder()
                 .id(id)
                 .issuerName(issuerName)
+                .issuerCode(issuerCode)
                 .build();
     }
 }
