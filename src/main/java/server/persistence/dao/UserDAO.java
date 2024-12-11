@@ -83,7 +83,7 @@ public class UserDAO implements UserDAOI {
         String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
                 "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image," +
                 "ut.type_name AS user_type_name, gc.code_name AS gender_code, gc.code_name AS code_name, a.detail_address AS user_address," +
-                "a.postal_name AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address," +
+                "a.postal_name AS postal_code, a.do AS address_do, a.si AS address_si, a.detail_address AS detail_address," +
                 "i.name AS image_name, i.extension AS extension " +
                 "FROM users u " +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
