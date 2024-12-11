@@ -1,4 +1,6 @@
-DROP TABLE IF EXISTS address;
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS addresses;
 DROP TABLE IF EXISTS bank_transfer_payments;
 DROP TABLE IF EXISTS banks;
 DROP TABLE IF EXISTS card_issuers;
@@ -18,12 +20,12 @@ DROP TABLE IF EXISTS payment_codes;
 DROP TABLE IF EXISTS payment_history;
 DROP TABLE IF EXISTS payment_methods;
 DROP TABLE IF EXISTS payment_refunds;
-DROP TABLE IF EXISTS payment_statues;
+DROP TABLE IF EXISTS payment_statuses;
 DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS room_assignments;
 DROP TABLE IF EXISTS room_types;
 DROP TABLE IF EXISTS rooms;
-DROP TABLE IF EXISTS selection_application_statues;
+DROP TABLE IF EXISTS selection_application_statuses;
 DROP TABLE IF EXISTS selection_applications;
 DROP TABLE IF EXISTS selection_payments;
 DROP TABLE IF EXISTS selection_phases;
@@ -34,3 +36,4 @@ DROP TABLE IF EXISTS subjects;
 DROP TABLE IF EXISTS user_types;
 DROP TABLE IF EXISTS users;
 
+SET FOREIGN_KEY_CHECKS = 1;
