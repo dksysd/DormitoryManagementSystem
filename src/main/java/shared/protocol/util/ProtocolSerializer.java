@@ -33,12 +33,12 @@ public class ProtocolSerializer {
                 dataBuffer.putDouble((double) checkDataIsNull(protocol.getData()));
                 dataBuffer.flip();
             }
-            case BOOLEAN -> {
+/*            case BOOLEAN -> {
                 dataBuffer = ByteBuffer.allocate(1);
                 boolean data = (boolean) checkDataIsNull(protocol.getData());
                 dataBuffer.put((byte) (data ? 1 : 0));
                 dataBuffer.flip();
-            }
+            }*/
             case STRING -> {
                 String data = (String) checkDataIsNull(protocol.getData());
                 dataBuffer = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
