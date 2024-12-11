@@ -72,40 +72,37 @@ public class AdminPage {
             String deadLine = sc.next();
 
             Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.REGISTER_SELECTION_INFO,0);
-            Protocol<?> protocol = new Protocol();
+            Protocol<?> protocol = new Protocol<>();
             protocol.setHeader(header);
 
             Header tlvHeader, tlvHeader2;
-            Protocol<String> tlv, tlv2;
+            Protocol<String> tlv, tlv2,tlv3;
             //각 선발별로 메시지 보내기
             switch (selection){
                 case 1 :
                     tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_INFO, 0);
                     tlv = new Protocol<>(tlvHeader, "우선선발");
                     protocol.addChild(tlv);
-                    tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_SCHEDULE, 0);
-                    tlv2 = new Protocol<>(tlvHeader2, day);
-                    protocol.addChild(tlv2);
                     break;
                 case 2 :
                     tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_INFO, 0);
                     tlv = new Protocol<>(tlvHeader, "일반선발");
                     protocol.addChild(tlv);
-                    tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_SCHEDULE, 0);
-                    tlv2 = new Protocol<>(tlvHeader2, day);
-                    protocol.addChild(tlv2);
                     break;
                 case 3 :
                     tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_INFO, 0);
                     tlv = new Protocol<>(tlvHeader, "추가선발");
                     protocol.addChild(tlv);
-                    tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_SCHEDULE, 0);
-                    tlv2 = new Protocol<>(tlvHeader2, day);
-                    protocol.addChild(tlv2);
                     break;
             }
 
-            Protocol<?> resProtocol = null;
+            tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SELECTION_SCHEDULE, 0);
+            tlv2 = new Protocol<>(tlvHeader2, day);
+            tlv3= new Protocol<>(tlvHeader2, deadLine);
+            protocol.addChild(tlv2);
+            protocol.addChild(tlv3);
+            protocol.addChild(new Protocol<>( new Header(Type.VALUE,DataType.STRING,Code.ValueCode.SESSION_ID,0),sessionID));
+            Protocol<?> resProtocol;
 
             try {
                 resProtocol = asyncRequest.sendAndReceive(protocol);
