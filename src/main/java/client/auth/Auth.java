@@ -61,4 +61,21 @@ public class Auth {
             return 1;
         else return -1;
     }
+
+    public void logOut(AsyncRequest asyncRequest){
+        Protocol<?> protocol = new Protocol<>();
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.LOGOUT,0);
+        protocol.setHeader(header);
+
+        Protocol<?> resProtocol = null;
+        try {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
+            System.out.println("로그아웃 합니다.");
+        }
+    }
 }
