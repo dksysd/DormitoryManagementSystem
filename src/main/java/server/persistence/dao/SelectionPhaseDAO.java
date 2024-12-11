@@ -27,7 +27,7 @@ public class SelectionPhaseDAO implements SelectionPhaseDAOI {
 
     @Override
     public SelectionPhaseDTO findByName(String name) throws SQLException {
-        String query = "Select id, phase_name, description, start_at, end_at, created_at, updated_at, selection_schedule_id FROM selection_phases WHERE name = ?";
+        String query = "Select id, phase_name, description, start_at, end_at, created_at, updated_at, selection_schedule_id FROM selection_phases WHERE phase_name = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, name);

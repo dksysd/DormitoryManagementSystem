@@ -39,8 +39,8 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
                 "FROM payment_refunds pr " +
                 "LEFT JOIN banks b ON pr.bank_id = b.id " +
                 "LEFT JOIN payments p ON pr.payment_id = p.id " +
-                "INNER JOIN payment_history ph ON ph.payment_id = p.id" +
-                "INNER JOIN users u ON u.id = ph.user_id" +
+                "INNER JOIN payment_histories ph ON ph.payment_id = p.id " +
+                "INNER JOIN users u ON u.id = ph.user_id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {

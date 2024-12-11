@@ -14,20 +14,36 @@ import static server.util.ProtocolValidator.*;
 
 public class DormitoryAdminController {
 
-
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: REGISTER_SELECTION_INFO, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: SELECTION_INFO, dataLength:,)
+     *                 data: 우선선발 )
+     *                 2 ( header(type: value, dataType: string, code: SELECTION_SCHEDULE, dataLength:,)
+     *                 data: 시작일 ),
+     *                 3 ( header(type: value, dataType: string, code: SELECTION_SCHEDULE, dataLength:,)
+     *                 data: 종료일 )
+     *                 4 ( header(type: value, dataType: string, code: SESSIONID, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> registerSelectionInfo(Protocol<?> protocol) throws SQLException {
         SelectionScheduleDAO dao = new SelectionScheduleDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String sessionId = (String) protocol.getChildren().getLast().getData();
-        String id = getIdBySessionId(sessionId);
         String title = (String) protocol.getChildren().getFirst().getData();
         String day = (String) protocol.getChildren().get(1).getData();
+        String finish = (String)protocol.getChildren().get(2).getData();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             SelectionScheduleDTO dto = SelectionScheduleDTO.builder()
                     .startedAt(LocalDateTime.parse(day, formatter))
+                    .endedAt(LocalDateTime.parse(finish,formatter))
                     .title(title)
                     .createdAt(LocalDateTime.now())
                     .build();

@@ -26,7 +26,7 @@ public class PaymentCodeDAO implements PaymentCodeDAOI {
 
     @Override
     public PaymentCodeDTO findByCode(String code) throws SQLException {
-        String query = "SELECT id, payment_code, description FROM payment_codes WHERE code = ?";
+        String query = "SELECT id, payment_code, description FROM payment_codes WHERE payment_code = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, code);

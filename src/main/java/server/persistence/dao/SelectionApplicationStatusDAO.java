@@ -26,7 +26,7 @@ public class SelectionApplicationStatusDAO implements SelectionApplicationStatus
 
     @Override
     public SelectionApplicationStatusDTO findByName(String name) throws SQLException {
-        String query = "SELECT id, status_name, description FROM selection_application_statuses WHERE status = ?";
+        String query = "SELECT id, status_name, description FROM selection_application_statuses WHERE status_name = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, name);

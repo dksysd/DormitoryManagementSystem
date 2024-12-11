@@ -17,7 +17,7 @@ public class SelectionDTO implements DTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private SelectionApplicationStatusDTO selectionApplicationStatusDTO;
+    private SelectionApplicationDTO selectionApplicationDTO;
     private ImageDTO tuberculosisCertificateFileDTO;
     private ImageDTO additionalProofFileDTO;
 
@@ -28,7 +28,7 @@ public class SelectionDTO implements DTO {
                 .isFinalApproved(isFinalApproved)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .selectionApplicationStatusDTO(selectionApplicationStatusDTO)
+                .selectionApplicationDTO(selectionApplicationDTO)
                 .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO)
                 .build();
     }
