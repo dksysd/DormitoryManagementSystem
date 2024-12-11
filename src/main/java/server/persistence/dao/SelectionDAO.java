@@ -78,7 +78,7 @@ public class SelectionDAO implements SelectionDAOI {
                 .build();
         imageDAO.save(imageDTO);
 
-        query = "UPDATE selections SET tuber";
+
 
     }
     @Override

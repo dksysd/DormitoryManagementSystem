@@ -160,5 +160,8 @@ public class DormitoryAdminController {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
 
+
+        result.setHeader(resultHeader);
+        return result;
     }
 }

@@ -172,7 +172,7 @@ public class PaymentController {
                 CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
                 cardPaymentDAO.save(new CardPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
                         LocalDateTime.now(),
-                        new CardIssuerDTO(0, protocol.getChildren().get(1).getData()),
+                        new CardIssuerDTO(0, (String) protocol.getChildren().get(1).getData()),
                         paymentDAO.findByUid(id)
                 ));
                 paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(2).getData());
