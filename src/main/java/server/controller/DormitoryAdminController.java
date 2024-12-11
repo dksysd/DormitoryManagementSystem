@@ -23,7 +23,7 @@ public class DormitoryAdminController {
         String day = (String) protocol.getChildren().get(1).getData();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-        if (verifySessionId(sessionId)) {
+        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
             SelectionScheduleDTO dto = SelectionScheduleDTO.builder()
                     .startedAt(LocalDateTime.parse(day, formatter))
                     .title(title)
@@ -50,7 +50,7 @@ public class DormitoryAdminController {
         UserDAO dao = new UserDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)) {
+        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
             List<String> list = dao.findAllOfSelection();
 
             for (String s : list) {
@@ -84,7 +84,7 @@ public class DormitoryAdminController {
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)) {
+        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
             dao.updateSelectionApplication(id, (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
@@ -105,9 +105,9 @@ public class DormitoryAdminController {
         DemeritPointDAO dao = new DemeritPointDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)) {
+        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
             dao.savePoint((String) protocol.getChildren().getFirst().getData()
-                    ,(String) protocol.getChildren().get(1).getData(),
+                    , (String) protocol.getChildren().get(1).getData(),
                     (Integer) protocol.getChildren().get(2).getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
@@ -129,7 +129,7 @@ public class DormitoryAdminController {
         List<String> list;
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)) {
+        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
             list = dao.findAllOfMoveOut();
             for (String s : list) {
                 Protocol<String> child = new Protocol<>();
@@ -154,10 +154,26 @@ public class DormitoryAdminController {
         return result;
     }
 
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: APPROVE_MOVEOUT, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: Id, dataLength:,)
+     *                 data: 학생 uid )
+     *                 2 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> approveMoveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
+MoveOutRequestDAO MORDao = new MoveOutRequestDAO();
+        String sessionId = (String) protocol.getChildren().getLast().getData();
+        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
 
+        }
 
         result.setHeader(resultHeader);
         return result;

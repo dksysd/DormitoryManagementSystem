@@ -119,12 +119,12 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *         data :
-     *         children <
-     *         1 ( header ( type : value, dataType : string, code : dormitory_room_type, dataLength :, ))
-     *         2 ...(이렇게 끝까지 반복되서 옴)
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : dormitory_room_type, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
      * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
-     *          data: null
+     * data: null
      */
     public static Protocol<?> getDormitoryRooms(Protocol<?> protocol) throws SQLException {
         Header header = protocol.getHeader();
@@ -307,11 +307,11 @@ public class DormitoryUserController {
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
-     *         data :
-     *         children <
-     *         1 ( header ( type : value, dataType : string, code : selection_status, dataLength :, ))
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : selection_status, dataLength :, ))
      * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
-     *          data: null
+     * data: null
      */
 
     public static Protocol<?> getSelectionResult(Protocol<?> protocol) throws SQLException {
@@ -350,7 +350,7 @@ public class DormitoryUserController {
                 int roomAssignment_id = roomAssignmentDAO.findByUid(getIdBySessionId(id)).getRoomDTO().getId();
                 RoomDAO roomDAO = new RoomDAO();
                 String room_number = roomDAO.findById(roomAssignment_id).getRoomNumber();
-                Protocol <String> childRoomNum = new Protocol<>();
+                Protocol<String> childRoomNum = new Protocol<>();
                 childHeader = new Header();
                 childHeader.setType(Type.VALUE);
                 childHeader.setDataType(DataType.STRING);
@@ -360,7 +360,7 @@ public class DormitoryUserController {
                 result.addChild(childRoomNum);
 
                 int bedNumber = roomAssignmentDAO.findByUid(getIdBySessionId(id)).getBedNumber();
-                Protocol <Integer> childBedNum = new Protocol<>();
+                Protocol<Integer> childBedNum = new Protocol<>();
                 childHeader = new Header();
                 childHeader.setType(Type.VALUE);
                 childHeader.setDataType(DataType.INTEGER);
@@ -512,29 +512,36 @@ public class DormitoryUserController {
 
     public static Protocol<?> moveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
-        Header resultHeader = new Header();
-        UserDAO userDAO = new UserDAO();
+        Header resultHeader = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         SelectionApplicationDAO selectionApplicationDAO = new SelectionApplicationDAO();
         MoveOutRequestDAO requestDAO = new MoveOutRequestDAO();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            requestDAO.updateStatus(getIdBySessionId(id), "퇴사대기");
-            SelectionDAO selectionDAO = new SelectionDAO();
+            if (Objects.equals(selectionApplicationDAO.findByUid(id).getSelectionApplicationStatusDTO().getStatusName(), "선발")) {
+                requestDAO.updateStatus(getIdBySessionId(id), "퇴사대기");
+                SelectionDAO selectionDAO = new SelectionDAO();
 
-            SelectionDTO selectionDTO = selectionDAO.findByUid(getIdBySessionId(id));
-            MoveOutRequestDTO dto = MoveOutRequestDTO.builder()
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now())
-                    .selectionDTO(selectionDTO)
-                    .build();
-            requestDAO.save(dto);
+                SelectionDTO selectionDTO = selectionDAO.findByUid(getIdBySessionId(id));
+                MoveOutRequestDTO dto = MoveOutRequestDTO.builder()
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .selectionDTO(selectionDTO)
+                        .build();
+                requestDAO.save(dto);
 
-            UserDTO userDTO = selectionApplicationDAO.findByUid(getIdBySessionId(id)).getRoommateUserDTO();
-            SelectionApplicationDTO roommateDTO = selectionApplicationDAO.findByUid(userDTO.getUid());
-            roommateDTO.setRoommateUserDTO(null);
-            selectionApplicationDAO.update(roommateDTO);
-        }
+                UserDTO userDTO = selectionApplicationDAO.findByUid(getIdBySessionId(id)).getRoommateUserDTO();
+                SelectionApplicationDTO roommateDTO = selectionApplicationDAO.findByUid(userDTO.getUid());
+                roommateDTO.setRoommateUserDTO(null);
+                selectionApplicationDAO.update(roommateDTO);
+            }else {
+                resultHeader.setType(Type.ERROR);
+                resultHeader.setCode(Code.ErrorCode.INVALID_REQUEST);
+            }
 
+        }else{
+            resultHeader.setType(Type.ERROR);
+        resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);}
+        result.setHeader(resultHeader);
         return result;
     }
 }

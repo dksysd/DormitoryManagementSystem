@@ -9,25 +9,25 @@ public interface RequestHandlerInitializer {
         requestHandler.clearRequestHandlers();
 
 //        // todo 여기에 request 함수 mapping 하면 됨
-        requestHandler.addRequestHandler(Code.RequestCode.LOGIN, (request) -> {
-            Protocol<Protocol<String>> response = new Protocol<>();
-            Header header = new Header();
-            header.setType(Type.RESPONSE);
-            header.setCode(Code.ResponseCode.OK);
-            header.setDataType(DataType.TLV);
-            response.setHeader(header);
-
-            Protocol<String> innerProtocol = new Protocol<>();
-            Header innerHeader = new Header();
-            innerHeader.setType(Type.VALUE);
-            innerHeader.setCode(Code.ValueCode.MESSAGE);
-            innerHeader.setDataType(DataType.STRING);
-            innerProtocol.setHeader(innerHeader);
-            innerProtocol.setData("Hello World");
-            response.addChild(innerProtocol);
-            return response;
-        });
-       // requestHandler.addRequestHandler(Code.RequestCode.LOGIN,AuthController::login);
+//        requestHandler.addRequestHandler(Code.RequestCode.LOGIN, (request) -> {
+//            Protocol<Protocol<String>> response = new Protocol<>();
+//            Header header = new Header();
+//            header.setType(Type.RESPONSE);
+//            header.setCode(Code.ResponseCode.OK);
+//            header.setDataType(DataType.TLV);
+//            response.setHeader(header);
+//
+//            Protocol<String> innerProtocol = new Protocol<>();
+//            Header innerHeader = new Header();
+//            innerHeader.setType(Type.VALUE);
+//            innerHeader.setCode(Code.ValueCode.MESSAGE);
+//            innerHeader.setDataType(DataType.STRING);
+//            innerProtocol.setHeader(innerHeader);
+//            innerProtocol.setData("Hello World");
+//            response.addChild(innerProtocol);
+//            return response;
+//        });
+        requestHandler.addRequestHandler(Code.RequestCode.LOGIN,AuthController::login);
         requestHandler.addRequestHandler(Code.RequestCode.LOGOUT, AuthController::logout);
         requestHandler.addRequestHandler(Code.RequestCode.REFRESH_SESSION, AuthController::refreshSession);//authController
 
@@ -44,6 +44,7 @@ public interface RequestHandlerInitializer {
         requestHandler.addRequestHandler(Code.RequestCode.GET_MEAL_PLAN, DormitoryUserController::getMeritAndDemeritPoints);
         requestHandler.addRequestHandler(Code.RequestCode.GET_FILE_FOR_PROOF, DormitoryUserController::getFileForProof);
         requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_FILE_FOR_PROOF,DormitoryUserController::uploadFileForProof);
+        requestHandler.addRequestHandler(Code.RequestCode.MOVE_OUT,DormitoryUserController::moveOut);
         requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_TUBER_REPORT,DormitoryUserController::uploadTuberReport);//DormitoryUserController
 
         requestHandler.addRequestHandler(Code.RequestCode.REGISTER_SELECTION_INFO, DormitoryAdminController::registerSelectionInfo);

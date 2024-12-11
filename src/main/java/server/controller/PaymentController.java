@@ -220,10 +220,13 @@ public class PaymentController {
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
         PaymentDAO paymentDAO = new PaymentDAO();
+
         Protocol<?> respProtocol = new Protocol<>(new Header(Type.VALUE, DataType.TLV, Code.ResponseCode.OK, 0), "");
         if (id != null&&ProtocolValidator.isStudent(sessionId)) {
+
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
+
                 RoomAssignmentDAO roomAssignmentDAO = new RoomAssignmentDAO();
                 MoveOutRequestDAO moveOutRequestDAO = new MoveOutRequestDAO();
                 RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);

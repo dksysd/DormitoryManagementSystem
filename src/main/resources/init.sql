@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 # create image storage
 create table if not exists images
 (
@@ -7,6 +8,7 @@ create table if not exists images
     width     int          not null,
     height    int          not null,
     extension varchar(5)   not null,
+    user_id   int          not null,
     foreign key (user_id) references users (id) on delete cascade,
     check ( width > 0 and height > 0 )
 );
@@ -40,7 +42,6 @@ create table if not exists users
 (
     id             int primary key auto_increment,
     uid            varchar(10)  not null unique,
-    login_id       varchar(20)  not null unique,
     login_password varchar(255) not null comment 'hashed with salt',
     salt           varchar(255) not null,
     user_name      varchar(50)  not null,
@@ -358,6 +359,7 @@ create table if not exists move_out_requests
     move_out_status_id int         not null,
     selection_id       int         not null unique,
     bank_id            int         not null,
+    payment_refund_id  int         not null,
     foreign key (move_out_status_id) references move_out_request_statuses (id) on delete restrict,
     foreign key (selection_id) references selections (id) on delete cascade,
     foreign key (payment_refund_id) references payment_refunds (id) on delete restrict

@@ -8,10 +8,10 @@ import client.domitoryUser.ApplicantPage;
 import java.util.concurrent.ExecutionException;
 
 public class DefaultPage {
-    public static void run(){
+    public static void run(String host, int port) throws ExecutionException, InterruptedException {
         AsyncRequest asyncRequest;
         try {
-            asyncRequest = new AsyncRequest("localhost",4_000);
+            asyncRequest = new AsyncRequest(host,port);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
