@@ -7,6 +7,7 @@ import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Auth {
@@ -57,11 +58,12 @@ public class Auth {
             return -1;
         } else {
             sessionID = (String) resProtocol.getChildren().getLast().getData();
-            int type = (int) resProtocol.getChildren().getFirst().getData();
-            if (type == 1)
-                return 0;
-            else if (type == 2)
+
+            String type = (String) resProtocol.getChildren().getFirst().getData();
+            if (Objects.equals(type, "student"))
                 return 1;
+            else if (Objects.equals(type, "admin"))
+                return 0;
             else return -1;
         }
     }

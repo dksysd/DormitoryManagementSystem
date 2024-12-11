@@ -45,7 +45,8 @@ public interface RequestHandlerInitializer {
         requestHandler.addRequestHandler(Code.RequestCode.GET_FILE_FOR_PROOF, DormitoryUserController::getFileForProof);
         requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_FILE_FOR_PROOF,DormitoryUserController::uploadFileForProof);
         requestHandler.addRequestHandler(Code.RequestCode.MOVE_OUT,DormitoryUserController::moveOut);
-        requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_TUBER_REPORT,DormitoryUserController::uploadTuberReport);//DormitoryUserController
+        requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_TUBER_REPORT,DormitoryUserController::uploadTuberReport);
+        requestHandler.addRequestHandler(Code.RequestCode.APPLICATION,DormitoryUserController::application);//DormitoryUserController
 
         requestHandler.addRequestHandler(Code.RequestCode.REGISTER_SELECTION_INFO, DormitoryAdminController::registerSelectionInfo);
         requestHandler.addRequestHandler(Code.RequestCode.GET_APPLICANTS,DormitoryAdminController::getApplicant);
