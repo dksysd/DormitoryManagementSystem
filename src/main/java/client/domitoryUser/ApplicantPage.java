@@ -228,7 +228,6 @@ public class ApplicantPage {
         if(temp.toLowerCase().equals("n")){
             snore = false;
         }
-
         //선호도 -> 잠버릇(bool) -> 1년호실 (bool) -> 어디 기숙사인지 -> 밥-> 룸메이트
         Protocol<Boolean> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.ONEYEAR_LASTING,0), oneYear);
         Protocol<Boolean> snoring = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.SNORE,0), snore);
