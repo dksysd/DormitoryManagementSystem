@@ -262,7 +262,7 @@ public class ApplicantPage {
         if (temp.toLowerCase().equals("y")) {
             oneYear = true;
         }
-        System.out.print("잠버릇 여부를 체크해주세요. 잘못 입력 시 잠버릇 있는 것으로 간주됩니다. (y/n)");
+        System.out.print("잠버릇 여부를 체크해주세요. 잘못 입력 시 잠버릇 있는 것으로 간주됩니다. (y/n) : ");
         temp = sc.next();
         boolean snore = true;
         if (temp.toLowerCase().equals("n")) {

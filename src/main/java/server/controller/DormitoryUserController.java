@@ -76,12 +76,12 @@ public class DormitoryUserController {
             MealPlanDTO mealPlanDTO = MealPlanDTO.builder()
                     .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
                     .build();
-
+            SelectionApplicationDTO selectionApplicationDTO;
             if (protocol.getHeader().getDataLength() >= 7) {
                 UserDAO userDAO = new UserDAO();
                 UserDTO userDTO = userDAO.findByUid((String) protocol.getChildren().get(5).getData());
 
-                SelectionApplicationDTO selectionApplicationDTO = SelectionApplicationDTO.builder()
+                selectionApplicationDTO = SelectionApplicationDTO.builder()
                         .preference((int) protocol.getChildren().getFirst().getData())
                         .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
                         .isYear((boolean) protocol.getChildren().get(2).getData())
@@ -89,14 +89,15 @@ public class DormitoryUserController {
                         .mealPlanDTO(mealPlanDTO)
                         .roommateUserDTO(userDTO)
                         .build();
+            } else {
+                selectionApplicationDTO = SelectionApplicationDTO.builder()
+                        .preference((int) protocol.getChildren().getFirst().getData())
+                        .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
+                        .isYear((boolean) protocol.getChildren().get(2).getData())
+                        .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
+                        .mealPlanDTO(mealPlanDTO)
+                        .build();
             }
-            SelectionApplicationDTO selectionApplicationDTO = SelectionApplicationDTO.builder()
-                    .preference((int) protocol.getChildren().getFirst().getData())
-                    .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
-                    .isYear((boolean) protocol.getChildren().get(2).getData())
-                    .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
-                    .mealPlanDTO(mealPlanDTO)
-                    .build();
 
             dao.save(selectionApplicationDTO);
 
@@ -466,6 +467,34 @@ public class DormitoryUserController {
         } else {
             resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> checkMoveOut(Protocol<?> protocol) throws SQLException {
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getLast().getData();
+        if (verifySessionId(id) && isStudent(id)) {
+            UserDAO dao = new UserDAO();
+            String check = dao.checkMoveOut(getIdBySessionId(id));
+            Protocol<String> child = new Protocol<>();
+            Header childHeader = new Header();
+            childHeader.setType(Type.VALUE);
+            childHeader.setDataType(DataType.STRING);
+            childHeader.setCode(Code.ValueCode.MOVE_OUT_STATUS);
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setDataType(DataType.TLV);
+            child.setHeader(childHeader);
+            child.setData(check);
+            result.addChild(child);
+        } else {
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+            resultHeader.setDataType(DataType.TLV);
         }
 
         result.setHeader(resultHeader);

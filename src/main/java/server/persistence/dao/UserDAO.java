@@ -60,6 +60,29 @@ public class UserDAO implements UserDAOI {
         }
         return null;
     }
+
+    @Override
+    public String checkMoveOut(String uid) throws SQLException {
+        String query = "SELECT mors.status_name FROM users u " +
+                "INNER JOIN selection_applications sa ON sa.user_id = u.id " +
+                "INNER JOIN selections s ON s.selection_application_id = sa.id " +
+                "INNER JOIN move_out_requests mor ON s.id = mor.selection_id " +
+                "INNER JOIN move_out_request_statuses mors ON mors.id = mor.move_out_status_id " +
+                "WHERE u.uid = ?";
+        String check = "NULL";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                check = resultSet.getString(1);
+            }
+        }
+
+        return check;
+    }
+
     @Override
     public List<String> findAllOfSelection() throws SQLException {
         List<String> users = new ArrayList<>();

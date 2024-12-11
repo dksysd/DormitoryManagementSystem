@@ -9,6 +9,7 @@ public interface UserDAOI {
     UserDTO findById(Integer id) throws SQLException;
     UserDTO findByUid(String uid) throws SQLException;
     List<UserDTO> findAll() throws SQLException;
+    String checkMoveOut(String uid) throws SQLException;
     List<String> findAllOfSelection() throws SQLException;
     void save(UserDTO userDTO) throws SQLException;
     void update(UserDTO userDTO) throws SQLException;
