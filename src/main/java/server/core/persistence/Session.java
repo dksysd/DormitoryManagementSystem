@@ -81,8 +81,9 @@ public class Session {
     }
 
     public boolean isExpired() {
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastAccessedTime) > expirationTime;
+        /*long currentTime = System.currentTimeMillis();
+        return (currentTime - lastAccessedTime) < expirationTime;*/
+        return false;
     }
 
     public void touch() {

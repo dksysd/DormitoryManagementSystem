@@ -38,7 +38,7 @@ public class AuthController implements Controller {
     public static Protocol<?> login(Protocol<?> protocol) throws SQLException {
 
         Protocol<?> resProtocol = new Protocol<>();
-        Protocol<Integer> childProtocol1 = new Protocol<>();
+        Protocol<String > childProtocol1 = new Protocol<>();
         Protocol<String> childProtocol2 = new Protocol<>();
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         SessionManager sessionManager = SessionManager.getINSTANCE();
@@ -49,14 +49,14 @@ public class AuthController implements Controller {
             String pw = (String) protocol.getChildren().get(1).getData();
             UserDAO userDAO = new UserDAO();
             UserDTO userDTO = userDAO.findByUid(id);
-            int userType = userDTO.getUserTypeDTO().getId();
+            String userType = userDTO.getUserTypeDTO().getTypeName();
 
             if (isValidLoginCredentials(id, pw, header)) {
                 sessionManager.getSession(sessionId).setAttribute("ID", id);
                 sessionManager.getSession(sessionId).setAttribute("PW", pw);
                 sessionManager.getSession(sessionId).setAttribute("USER_TYPE", userType);
-                childProtocol1.setHeader(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.SESSION_ID, 0));
-                childProtocol2.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.USER_TYPE_ID, 0));
+                childProtocol1.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.USER_NAME, 0));
+                childProtocol2.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0));
                 childProtocol1.setData(userType);
                 childProtocol2.setData(sessionId);
                 resProtocol.addChild(childProtocol1);

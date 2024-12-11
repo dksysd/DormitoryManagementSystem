@@ -6,6 +6,7 @@ import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,10 +42,11 @@ public class DormitoryUserController {
                 String s = list.get(i);
 
                 Protocol<String> child = new Protocol<>();
-                Header childHeader = child.getHeader();
+                Header childHeader = new Header();
                 childHeader.setType(Type.VALUE);
                 childHeader.setDataType(DataType.STRING);
                 childHeader.setCode(Code.ResponseCode.ValueCode.SELECTION_SCHEDULE);
+                child.setHeader(childHeader);
                 child.setData(s);
 
                 result.addChild(child);
@@ -425,8 +427,12 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
-            Byte[] bytes = (Byte[]) protocol.getChildren().getFirst().getData();
-            dao.updateTuber(getIdBySessionId(id), bytes);
+            byte[] bytes = (byte[]) protocol.getChildren().getFirst().getData();
+            Byte[] Bytes = new Byte[bytes.length];
+            for (int b = 0; b < bytes.length; b++) {
+                Bytes[b] = bytes[b];
+            }
+            dao.updateTuber(getIdBySessionId(id), Bytes);
 
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setCode(Code.ResponseCode.OK);
