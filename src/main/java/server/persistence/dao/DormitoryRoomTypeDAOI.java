@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface DormitoryRoomTypeDAOI {
     DormitoryRoomTypeDTO findById(Integer id) throws SQLException;
+    DormitoryRoomTypeDTO findByUid(String uid) throws SQLException;
     List<DormitoryRoomTypeDTO> findAll() throws SQLException;
     void save(DormitoryRoomTypeDTO dormitoryRoomTypeDTO) throws SQLException;
     void update(DormitoryRoomTypeDTO dormitoryRoomTypeDTO) throws SQLException;
