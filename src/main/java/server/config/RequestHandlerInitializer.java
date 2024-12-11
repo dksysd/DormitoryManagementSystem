@@ -1,6 +1,5 @@
 package server.config;
 
-import lombok.SneakyThrows;
 import server.controller.AuthController;
 import server.controller.DormitoryUserController;
 import server.controller.PaymentController;
@@ -9,8 +8,7 @@ import server.core.handler.RequestHandler;
 import shared.protocol.persistence.*;
 
 public interface RequestHandlerInitializer {
-    @SneakyThrows
-    static void init(RequestHandler requestHandler) {
+    static void init(RequestHandler requestHandler)  {
         requestHandler.clearRequestHandlers();
 
         // todo 여기에 request 함수 mapping 하면 됨

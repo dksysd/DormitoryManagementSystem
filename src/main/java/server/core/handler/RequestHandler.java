@@ -1,27 +1,27 @@
 package server.core.handler;
 
 import lombok.Getter;
+import server.core.persistence.ThrowingFunction;
 import server.exception.IllegalRequestException;
 import shared.protocol.persistence.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public class RequestHandler {
     @Getter
     private static final RequestHandler INSTANCE = new RequestHandler();
 
-    private final Map<Code.RequestCode, Function<Protocol<?>, Protocol<?>>> requestMap = new HashMap<>();
+    private final Map<Code.RequestCode, ThrowingFunction<Protocol<?>, Protocol<?>>> requestMap = new HashMap<>();
 
     private RequestHandler() {
     }
 
-    public Protocol<?> request(Protocol<?> protocol) {
+    public Protocol<?> request(Protocol<?> protocol) throws Exception {
         if (!(protocol.getHeader().getCode() instanceof Code.RequestCode code)) {
             throw new IllegalRequestException("Invalid request code " + protocol.getHeader().getCode());
         }
-        Function<Protocol<?>, Protocol<?>> function = requestMap.get(code);
+        ThrowingFunction<Protocol<?>, Protocol<?>> function = requestMap.get(code);
         if (function == null) {
             Protocol<Protocol<String>> response = new Protocol<>();
             Header header = new Header();
@@ -44,7 +44,7 @@ public class RequestHandler {
         return function.apply(protocol);
     }
 
-    public void addRequestHandler(Code.RequestCode code, Function<Protocol<?>, Protocol<?>> function) {
+    public void addRequestHandler(Code.RequestCode code, ThrowingFunction<Protocol<?>, Protocol<?>> function) {
         INSTANCE.requestMap.put(code, function);
     }
 

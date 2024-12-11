@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class AsyncRequest {
-    private AsynchronousSocketChannel client;
+    private final AsynchronousSocketChannel client;
 
     public AsyncRequest(String host, int port) throws ExecutionException, InterruptedException {
         client = AsyncClientConnector.connect(host, port).get();

@@ -75,7 +75,13 @@ public class Server {
         // todo session 기능 만들기
         checkSessionId(workItem.getRequestProtocol());
         System.out.println("Working " + workItem);
-        Protocol<?> protocol = requestHandler.request(workItem.getRequestProtocol());
+        Protocol<?> protocol;
+        try {
+            protocol = requestHandler.request(workItem.getRequestProtocol());
+        } catch (Exception e) {
+            protocol = createErrorProtocol();
+            e.printStackTrace();
+        }
         workItem.setResponseProtocol(protocol);
         ByteBuffer buffer = ProtocolSerializer.serialize(protocol);
         buffer.flip();
@@ -97,6 +103,17 @@ public class Server {
 
             protocol.addChild(sessionValueProtocol);
         }
+    }
+
+    private Protocol<?> createErrorProtocol() {
+        Protocol<String> protocol = new Protocol<>();
+        Header header = new Header();
+        header.setType(Type.ERROR);
+        header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
+        header.setDataType(DataType.STRING);
+        protocol.setHeader(header);
+        protocol.setData(Code.ErrorCode.INTERNAL_SERVER_ERROR.toString());
+        return protocol;
     }
 
     private void closeClient(AsynchronousSocketChannel client) {
