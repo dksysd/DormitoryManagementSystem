@@ -41,7 +41,7 @@ public class Auth {
         protocol.addChild(tlv);
 
         Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PASSWORD, 0);
-        Protocol<String> tlv2 = new Protocol<>(tlvHeader, pw);
+        Protocol<String> tlv2 = new Protocol<>(tlvHeader2, pw);
         protocol.addChild(tlv2);
 
         Protocol<?> resProtocol = null;

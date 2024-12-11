@@ -199,15 +199,15 @@ public class PaymentController {
      *                 data: "환불" ),
      *                 2 ( header(type: value, dataType: string, code:Refund_reason, dataLength:,)
      *      *                 data: "환불 사유" ),
-     *                 2 ( header(type: value, dataType: string, code:ACCOUNT_NUMBER, dataLength:,)
+     *                 3 ( header(type: value, dataType: string, code:ACCOUNT_NUMBER, dataLength:,)
      *                 data: "계좌번호" ),
-     *                 3 ( header(type: value, dataType: string, code:ACCOUNT_HOLDER_NAME, dataLength:,)
+     *                 4 ( header(type: value, dataType: string, code:ACCOUNT_HOLDER_NAME, dataLength:,)
      *                 data: "계좌주 이름" ),
-     *                 4 ( header(type: value, dataType: string, code:BANK_NAME, dataLength:,)
+     *                 5 ( header(type: value, dataType: string, code:BANK_NAME, dataLength:,)
      *                 data: "은행명" ),
-     *                 5 ( header(type: value, dataType: string, code:bank_code, dataLength:,)
+     *                 6 ( header(type: value, dataType: string, code:bank_code, dataLength:,)
      *      *                 data: "은행 코드" ),
-     *                 6 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 7 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
      * @return protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)

@@ -11,7 +11,7 @@ public interface RequestHandlerInitializer {
     static void init(RequestHandler requestHandler)  {
         requestHandler.clearRequestHandlers();
 
-        // todo 여기에 request 함수 mapping 하면 됨
+//        // todo 여기에 request 함수 mapping 하면 됨
         requestHandler.addRequestHandler(Code.RequestCode.LOGIN, (request) -> {
             Protocol<Protocol<String>> response = new Protocol<>();
             Header header = new Header();
@@ -30,6 +30,7 @@ public interface RequestHandlerInitializer {
             response.addChild(innerProtocol);
             return response;
         });
+       // requestHandler.addRequestHandler(Code.RequestCode.LOGIN,AuthController::login);
         requestHandler.addRequestHandler(Code.RequestCode.LOGOUT, AuthController::logout);
         requestHandler.addRequestHandler(Code.RequestCode.REFRESH_SESSION, AuthController::refreshSession);//authCOntroller
 
@@ -53,7 +54,7 @@ public interface RequestHandlerInitializer {
         requestHandler.addRequestHandler(Code.RequestCode.BANK_TRANSFER, PaymentController::payByBankTransfer);
         requestHandler.addRequestHandler(Code.RequestCode.CARD_MOVEMENT, PaymentController::payByCard);
         requestHandler.addRequestHandler(Code.RequestCode.REFUND_REQUEST, PaymentController::requestRefund);
-//        requestHandler.addRequestHandler(Code.RequestCode.REFUND_CONFIRM, PaymentController::confirmRefund);
+//  //    requestHandler.addRequestHandler(Code.RequestCode.REFUND_CONFIRM, PaymentController::confirmRefund);
         requestHandler.addRequestHandler(Code.RequestCode.GET_REFUND_STATEMENT, PaymentController::getRefundStatus);//paymentController
 
 

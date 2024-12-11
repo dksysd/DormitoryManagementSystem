@@ -1,4 +1,5 @@
 package client.domitoryUser;
+import client.core.util.AsyncRequest;
 import server.controller.DormitoryUserController;
 import server.controller.PaymentController;
 import server.controller.UserController;
@@ -8,6 +9,7 @@ import shared.protocol.persistence.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 public class ApplicantPage {
     private static Scanner sc = new Scanner(System.in);
@@ -18,28 +20,39 @@ public class ApplicantPage {
         this.sessionID = sessionID;
     }
 
-    public void applicantFunction(){
-        int option = 0;
-
-        do{
+    public void applicantFunction(String host,int port) throws ExecutionException, InterruptedException {
+        int option;
+        AsyncRequest asyncRequest= new AsyncRequest(host,port);
+        do {
             applicantFunctionInfo();
-            System.out.print("실행하려는 기능을 선택하세요 : ");
+            System.out.print("실행하려는 기능을 선택하세요: ");
             option = sc.nextInt();
             System.out.println("=======================================");
 
-            switch (option){
-                case 1: displayInfo(); break;
+            switch (option) {
+                case 1:
+                    displayInfo(asyncRequest);
+                    break;
                 case 2:
                 case 3:
                 case 4:
                 case 5:
-                case 6: displayBill(); break;
-                case 7: payment(); break;
+                case 6:
+                    displayBill();
+                    break;
+                case 7:
+                    payment();
+                    break;
                 case 8:
-                default: break;
+                    System.out.println("종료합니다.");
+                    break;
+                default:
+                    System.out.println("유효하지 않은 선택입니다. 다시 시도하세요.");
+                    break;
             }
-        } while (option != 7);
+        } while (option != 8); // 8번을 선택하면 루프 종료
     }
+
 
     public static void applicantFunctionInfo(){
         System.out.println("============= 학생 페이지입니다 =============");
@@ -56,25 +69,18 @@ public class ApplicantPage {
     }
 
     //민성이가 슬쩍 보면 됨
-    public void displayInfo(){
+    public void displayInfo(AsyncRequest asyncRequest) throws ExecutionException, InterruptedException {
         // 선발 일정 요청 - sessionId
-        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0);
-        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
-        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
-        protocol.setHeader(header);
+        Protocol<String> tlv = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
+        Protocol<?> protocol = new Protocol<>();
+        protocol.setHeader(new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0));
         protocol.addChild(tlv);
+        Protocol<?> resProtocol = asyncRequest.sendAndReceive(protocol);
 
         // 선발 일정 받기 - String 들로 받아와짐. -> 일정, 일정, 일정 이런 방식으로
-        Protocol<?> resProtocol = null;
-        try {
-            resProtocol = DormitoryUserController.getSelectionSchedule(protocol);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
         if(resProtocol.getHeader().getType() == Type.ERROR){
-            System.out.println("재시도 하세요");
+            System.out.println("잘못된 요청입니다. 재시도 하세요");
             return;
         }
 
