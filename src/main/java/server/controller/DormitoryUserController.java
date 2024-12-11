@@ -8,6 +8,7 @@ import shared.protocol.persistence.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static server.util.ProtocolValidator.*;
 
@@ -333,6 +334,42 @@ public class DormitoryUserController {
             child.setHeader(childHeader);
             child.setData(statusName);
             result.addChild(child);
+            if (Objects.equals(statusName, "선발")) {
+                DormitoryRoomTypeDAO dormitoryRoomTypeDAO = new DormitoryRoomTypeDAO();
+                String room_type_name = dormitoryRoomTypeDAO.findByUid(getIdBySessionId(id)).getRoomTypeDTO().getTypeName();
+                Protocol<String> childDormitoryRoomType = new Protocol<>();
+                childHeader = new Header();
+                childHeader.setType(Type.VALUE);
+                childHeader.setDataType(DataType.STRING);
+                childHeader.setCode(Code.ResponseCode.ValueCode.DORMITORY_ROOM_TYPE);
+                childDormitoryRoomType.setHeader(childHeader);
+                childDormitoryRoomType.setData(room_type_name);
+                result.addChild(childDormitoryRoomType);
+
+                RoomAssignmentDAO roomAssignmentDAO = new RoomAssignmentDAO();
+                int roomAssignment_id = roomAssignmentDAO.findByUid(getIdBySessionId(id)).getRoomDTO().getId();
+                RoomDAO roomDAO = new RoomDAO();
+                String room_number = roomDAO.findById(roomAssignment_id).getRoomNumber();
+                Protocol <String> childRoomNum = new Protocol<>();
+                childHeader = new Header();
+                childHeader.setType(Type.VALUE);
+                childHeader.setDataType(DataType.STRING);
+                childHeader.setCode(Code.ResponseCode.ValueCode.ROOM_NUMBER);
+                childRoomNum.setHeader(childHeader);
+                childRoomNum.setData(room_number);
+                result.addChild(childRoomNum);
+
+                int bedNumber = roomAssignmentDAO.findByUid(getIdBySessionId(id)).getBedNumber();
+                Protocol <Integer> childBedNum = new Protocol<>();
+                childHeader = new Header();
+                childHeader.setType(Type.VALUE);
+                childHeader.setDataType(DataType.INTEGER);
+                childHeader.setCode(Code.ResponseCode.ValueCode.BED_NUMBER);
+                childBedNum.setHeader(childHeader);
+                childBedNum.setData(bedNumber);
+                result.addChild(childBedNum);
+            }
+
         } else {
             resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
@@ -476,6 +513,8 @@ public class DormitoryUserController {
     public static Protocol<?> moveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
+        UserDAO userDAO = new UserDAO();
+        SelectionApplicationDAO selectionApplicationDAO = new SelectionApplicationDAO();
         MoveOutRequestDAO requestDAO = new MoveOutRequestDAO();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
@@ -489,6 +528,11 @@ public class DormitoryUserController {
                     .selectionDTO(selectionDTO)
                     .build();
             requestDAO.save(dto);
+
+            UserDTO userDTO = selectionApplicationDAO.findByUid(getIdBySessionId(id)).getRoommateUserDTO();
+            SelectionApplicationDTO roommateDTO = selectionApplicationDAO.findByUid(userDTO.getUid());
+            roommateDTO.setRoommateUserDTO(null);
+            selectionApplicationDAO.update(roommateDTO);
         }
 
         return result;

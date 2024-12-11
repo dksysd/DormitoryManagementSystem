@@ -33,6 +33,23 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     }
 
     @Override
+    public DormitoryRoomTypeDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
+                "rt.type_name AS typeName, rt.maxPerson" +
+                "d.name AS dormitoryName " +
+                "FROM dormitory_room_types drt " +
+                "INNER JOIN selection_applications sa ON sa.dormitory_room_type_id = drt.id" +
+                "INNER JOIN users u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?" ;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return mapRowToDormitoryRoomTypeDTO(resultSet);
+        }
+    }
+
+    @Override
     public List<DormitoryRoomTypeDTO> findAll() throws SQLException {
         List<DormitoryRoomTypeDTO> roomTypes = new ArrayList<>();
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
