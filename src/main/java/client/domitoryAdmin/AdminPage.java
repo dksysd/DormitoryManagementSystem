@@ -27,14 +27,15 @@ public class AdminPage {
             System.out.println("=======================================");
 
             switch (option){
-                case 1: registerSelectionInfo(asyncRequest);
-                case 2: displayApplicants(asyncRequest);
-                case 3: selectApplicant(asyncRequest);
-                case 4: managementMeritPoint(asyncRequest);
-                case 5: confirmTuberReport(asyncRequest);
-                case 6: displayMoveOutApplicant(asyncRequest);
-                case 7: confirmFIleForProof(asyncRequest);
-                default: break;
+                case 1: registerSelectionInfo(asyncRequest); break;
+                case 2: displayApplicants(asyncRequest); break;
+                case 3: selectApplicant(asyncRequest); break;
+                case 4: managementMeritPoint(asyncRequest); break;
+                case 5: confirmTuberReport(asyncRequest); break;
+                case 6: displayMoveOutApplicant(asyncRequest); break;
+                case 7: confirmFIleForProof(asyncRequest); break;
+                case 8: System.out.println("종료합니다."); break;
+                default: System.out.println("유효하지 않은 선택입니다. 다시 시도하세요."); break;
             }
         } while (option != 8);
     }
