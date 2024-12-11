@@ -12,5 +12,6 @@ public interface SelectionDAOI {
     void save(SelectionDTO selectionDTO) throws SQLException;
     void update(SelectionDTO selectionDTO) throws SQLException;
     void updateTuber(String uid, Byte[] data) throws SQLException;
+    void updateProof(String uid, Byte[] data) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

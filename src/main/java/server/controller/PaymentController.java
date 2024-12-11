@@ -221,7 +221,6 @@ public class PaymentController {
         String id = getIdBySessionId(sessionId);
         PaymentDAO paymentDAO = new PaymentDAO();
         Protocol<?> respProtocol = new Protocol<>(new Header(Type.VALUE, DataType.TLV, Code.ResponseCode.OK, 0), "");
-        //todo payment_refunds 테이블에서 환불 사유 지워주세요 & Banks 테이블에서 BankCode 지워주세요
         if (id != null&&ProtocolValidator.isStudent(sessionId)) {
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {

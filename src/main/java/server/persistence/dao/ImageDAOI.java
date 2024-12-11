@@ -8,7 +8,7 @@ import java.util.List;
 public interface ImageDAOI {
     ImageDTO findById(Integer id) throws SQLException;
     List<ImageDTO> findAll() throws SQLException;
-    void save(ImageDTO imageDTO) throws SQLException;
+    int save(ImageDTO imageDTO) throws SQLException;
     void update(ImageDTO imageDTO) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

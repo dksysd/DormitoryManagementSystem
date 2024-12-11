@@ -4,6 +4,7 @@ import server.persistence.dto.SelectionDTO;
 import server.persistence.dto.SelectionApplicationStatusDTO;
 import server.persistence.dto.ImageDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.UserDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -54,12 +55,13 @@ public class SelectionDAO implements SelectionDAOI {
 
     @Override
     public void updateTuber(String uid, Byte[] data) throws SQLException {
-        String query = "SELECT s.id AS id, u.user_name AS name" +
+        String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id" +
                 "FROM selections s " +
                 "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
                 "LEFT JOIN users u ON u.id = sa.user_id" +
                 "WHERE u.uid = ?";
         int id;
+        int user_id;
         String name;
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -67,20 +69,73 @@ public class SelectionDAO implements SelectionDAOI {
             ResultSet resultSet = preparedStatement.executeQuery();
             id = resultSet.getInt("id");
             name = resultSet.getString("name");
+            user_id = resultSet.getInt("user_id");
         }
+
+        UserDAO dao = new UserDAO();
         ImageDAO imageDAO = new ImageDAO();
+        UserDTO userDTO = dao.findById(user_id);
         ImageDTO imageDTO = ImageDTO.builder()
                 .name(name + "_tuber")
                 .data(data)
                 .width(16)
                 .height(16)
                 .extension("jpg")
+                .userDTO(userDTO)
                 .build();
-        imageDAO.save(imageDTO);
+        int imageId = imageDAO.save(imageDTO);
 
-
-
+        query = "UPDATE selections s SET tuberculosis_certificate_file_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, imageId);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
     }
+
+    @Override
+    public void updateProof(String uid, Byte[] data) throws SQLException {
+        String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id" +
+                "FROM selections s " +
+                "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        int id;
+        int user_id;
+        String name;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            id = resultSet.getInt("id");
+            name = resultSet.getString("name");
+            user_id = resultSet.getInt("user_id");
+        }
+
+        UserDAO dao = new UserDAO();
+        ImageDAO imageDAO = new ImageDAO();
+        UserDTO userDTO = dao.findById(user_id);
+        ImageDTO imageDTO = ImageDTO.builder()
+                .name(name + "_proof")
+                .data(data)
+                .width(16)
+                .height(16)
+                .extension("jpg")
+                .userDTO(userDTO)
+                .build();
+        int imageId = imageDAO.save(imageDTO);
+
+        query = "UPDATE selections s SET additional_proof_file_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, imageId);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+
     @Override
     public List<SelectionDTO> findAll() throws SQLException {
         List<SelectionDTO> selections = new ArrayList<>();

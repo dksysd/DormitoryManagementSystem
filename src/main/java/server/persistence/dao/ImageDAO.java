@@ -40,10 +40,11 @@ public class ImageDAO implements ImageDAOI {
     }
 
     @Override
-    public void save(ImageDTO imageDTO) throws SQLException {
+    public int save(ImageDTO imageDTO) throws SQLException {
+        int id;
         String query = "INSERT INTO images (name, data, width, height, extension) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, imageDTO.getName());
             preparedStatement.setBytes(2, toPrimitiveByteArray(imageDTO.getData())); // Byte[]를 byte[]로 변환
@@ -51,7 +52,10 @@ public class ImageDAO implements ImageDAOI {
             preparedStatement.setInt(4, imageDTO.getHeight());
             preparedStatement.setString(5, imageDTO.getExtension());
             preparedStatement.executeUpdate();
+
+            id = preparedStatement.getGeneratedKeys().getInt(1);
         }
+        return id;
     }
 
     @Override

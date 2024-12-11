@@ -389,14 +389,24 @@ public class DormitoryUserController {
     }
 
     public static Protocol<?> uploadTuberReport(Protocol<?> protocol) throws SQLException {
-        UserDAO dao = new UserDAO();
+        SelectionDAO dao = new SelectionDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
+            Byte[] bytes = (Byte[]) protocol.getChildren().getFirst().getData();
+            dao.updateTuber(id, bytes);
 
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setDataType(DataType.TLV);
+        } else {
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+            resultHeader.setDataType(DataType.TLV);
         }
 
+        result.setHeader(resultHeader);
         return result;
     }
 
@@ -442,6 +452,24 @@ public class DormitoryUserController {
     }
 
     public static Protocol<?> uploadFileForProof(Protocol<?> protocol) throws SQLException {
-        return null;
+        SelectionDAO dao = new SelectionDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String id = (String) protocol.getChildren().getLast().getData();
+        if (verifySessionId(id)) {
+            Byte[] bytes = (Byte[]) protocol.getChildren().getFirst().getData();
+            dao.updateProof(id, bytes);
+
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setDataType(DataType.TLV);
+        } else {
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+            resultHeader.setDataType(DataType.TLV);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
     }
 }
