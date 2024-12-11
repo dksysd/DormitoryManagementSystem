@@ -1,7 +1,9 @@
 package client.domitoryAdmin;
-
+import server.controller.DormitoryAdminController;
 import shared.protocol.persistence.*;
 
+import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class AdminPage {
@@ -38,12 +40,12 @@ public class AdminPage {
 
     public static void adminFunctionInfo(){
         System.out.println("============= 관리자 페이지입니다 =============");
-        System.out.println("1. 선발 일정 등록"); // 다듬기
-        System.out.println("2. 입사 신청자 목록 확인");
-        System.out.println("3. 입사자 선발하기"); // 다듬기
-        System.out.println("4. 상벌점 관리"); // 다듬기
+        System.out.println("1. 선발 일정 등록"); // ok - 확인만
+        System.out.println("2. 입사 신청자 목록 확인"); // ok - 확인만
+        System.out.println("3. 입사자 선발하기"); // ok - 확인만
+        System.out.println("4. 상벌점 관리"); // ok - 확인만
         System.out.println("5. 결핵진단서 진위 확인");
-        System.out.println("6. 퇴사 승인");
+        System.out.println("6. 퇴사 승인");// ok - 확인만
         System.out.println("7. 우선선발 증빙서 진위 확인");
         System.out.println("8. 로그아웃");
         System.out.println();
@@ -102,7 +104,11 @@ public class AdminPage {
 
             Protocol<?> resProtocol = null;
 
-            //resProtocol = DomitoryAdminController.(protocol);
+            try {
+                resProtocol = DormitoryAdminController.registerSelectionInfo(protocol);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
             if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
                 System.out.println("일정등록이 완료되었습니다");
@@ -115,8 +121,38 @@ public class AdminPage {
     }
 
     public void displayApplicants(){
-        // 반복문으로 메시지 계속 받을 거 가틍데요 ~ 사용자 입력이 없그든여
-        // 메시지 안에 내용 가꼬 와서 출력 형식만 다듬으면 됨
+
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_APPLICANTS,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        Protocol<?> resProtocol;
+
+        try {
+            resProtocol = DormitoryAdminController.getApplicant(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("재시도해주세요");
+            return;
+        }
+
+        System.out.println("=================== 입사 신청자 학번 목록 =====================");
+        int cnt = resProtocol.getChildren().size();
+        String student;
+        for(int i = 0; i < cnt; i++){
+            student = (String) resProtocol.getChildren().get(i).getData();
+            System.out.println(student + "   ");
+            if(i % 5 == 0){
+                System.out.println();
+            }
+        }
+
     }
 
     public void selectApplicant(){
@@ -133,9 +169,13 @@ public class AdminPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        Protocol<?> resProtocol = null;
+        Protocol<?> resProtocol;
 
-        //resProtocol = DomitoryAdminController.(protocol);
+        try {
+            resProtocol = DormitoryAdminController.selectApplicants(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
             System.out.println("선발/배정이 완료되었습니다");
@@ -147,6 +187,9 @@ public class AdminPage {
     public void ManagementMeritPoint(){
         System.out.print("관리하려는 학생의 학번을 입력하세요 : ");
         String student = sc.next();
+        System.out.println("상벌점 사유를 입력하세요 : ");
+        String reason = sc.nextLine();
+        sc.nextLine();
         System.out.println("상점/벌점 입력 (벌점의 경우 음수로 입력하세요) : ");
         int point = sc.nextInt();
 
@@ -158,6 +201,10 @@ public class AdminPage {
         Protocol<String> tlv = new Protocol<>(tlvHeader, student);
         protocol.addChild(tlv);
 
+        Header tlvHeader4 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DEMERIT_REASON, 0);
+        Protocol<String> tlv4 = new Protocol<>(tlvHeader4, reason);
+        protocol.addChild(tlv4);
+
         Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SUM_OF_MERIT_POINTS, 0);
         Protocol<Integer> tlv2 = new Protocol<>(tlvHeader2, point);
         protocol.addChild(tlv2);
@@ -168,7 +215,11 @@ public class AdminPage {
 
         Protocol<?> resProtocol = null;
 
-        //resProtocol = DomitoryAdminController.(protocol);
+        try {
+            resProtocol = DormitoryAdminController.managementMeritPoint(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
             System.out.println("상벌점 입력이 정상적으로 완료되었습니다");
@@ -188,10 +239,56 @@ public class AdminPage {
     }
 
     public void DisplayMoveOutApplicant(){
-        //메시지 보내서 퇴사신청한놈들 불러오는 메서드
-        // 그놈들 환불상태 불러오는 메서드
-        // 그럼 그거 보고 퇴사승인 누르기
-        // 승인하면 또 메시지 보내서 학생들 상태 바꾸기
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MOVE_OUT_APPLICANTS,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        Protocol<?> resProtocol;
+        try {
+            resProtocol = DormitoryAdminController.getMoveOutApplicants(protocol);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("재시도해주세요");
+            return;
+        }
+
+        System.out.println("=================== 퇴사 신청자 학번 목록 =====================");
+
+        String student;
+        int cnt = resProtocol.getChildren().size();
+
+        for(int i = 0; i < cnt; i++){
+            student = (String) resProtocol.getChildren().get(i).getData();
+            System.out.println(student);
+        }
+
+        System.out.println("==========================================================");
+        String selection = " ";
+        cnt = 0;
+        Header header2 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPROVE_MOVE_OUT,0);
+        for( ; !selection.equals("Q"); cnt++){
+            System.out.print("퇴사 승인하려는 학생의 학번을 입력하세요 (종료는 Q입력) : ");
+            selection = sc.next();
+            selection = selection.toUpperCase();
+
+            if(!selection.equals("Q")){
+                Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ID, 0);
+                Protocol<String> tlv2 = new Protocol<>(tlvHeader2, selection);
+                protocol.addChild(tlv2);
+            }
+        }
+
+        Header tlvHeader3 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv3 = new Protocol<>(tlvHeader3, sessionID);
+        protocol.addChild(tlv3);
+
+
     }
 
     public void ConfirmFIleForProof(){
