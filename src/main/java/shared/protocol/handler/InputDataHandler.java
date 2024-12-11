@@ -33,8 +33,8 @@ public class InputDataHandler implements CompletionHandler<Integer, ByteBuffer> 
 //        Protocol<?> protocol = ProtocolParser.parseProtocol(header, buffer);
 //        inputHeaderHandler.getCompleteConsumer().accept(inputHeaderHandler.getClient(), protocol);
 
-        headerBuffer.clear();
-        inputHeaderHandler.getClient().read(headerBuffer, headerBuffer, inputHeaderHandler);
+//        headerBuffer.clear();
+//        inputHeaderHandler.getClient().read(headerBuffer, headerBuffer, inputHeaderHandler);
     }
 
     @Override

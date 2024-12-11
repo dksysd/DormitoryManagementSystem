@@ -5,7 +5,6 @@ import shared.protocol.persistence.Protocol;
 import shared.protocol.util.ProtocolParser;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.CompletableFuture;
 
 public class InputDataHandler extends shared.protocol.handler.InputDataHandler {

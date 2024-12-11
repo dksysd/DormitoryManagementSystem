@@ -28,6 +28,9 @@ public class InputDataHandler extends shared.protocol.handler.InputDataHandler {
             WorkItem workItem = new WorkItem(inputHeaderHandler.getClient(), protocol, System.currentTimeMillis());
             workQueue.add(workItem);
             System.out.println("Data received from " + RemoteAddressResolver.getRemoteAddress(inputHeaderHandler.getClient()) + " : " + protocol);
+
+            headerBuffer.clear();
+            inputHeaderHandler.getClient().read(headerBuffer, headerBuffer, inputHeaderHandler);
         }
     }
 }

@@ -26,8 +26,9 @@ public class InputHeaderHandler extends shared.protocol.handler.InputHeaderHandl
         if (result != -1) {
             buffer.flip();
             Header header = ProtocolParser.parseHeader(buffer);
+            System.out.println(header);
             ByteBuffer dataBuffer = ByteBuffer.allocate(header.getDataLength());
-            client.read(dataBuffer,dataBuffer, new InputDataHandler(header, buffer, this, resultFuture));
+            client.read(dataBuffer, dataBuffer, new InputDataHandler(header, buffer, this, resultFuture));
         }
     }
 }
