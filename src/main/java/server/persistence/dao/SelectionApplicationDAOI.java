@@ -14,5 +14,6 @@ public interface SelectionApplicationDAOI {
     void updateMealPlan(String uid, String mealPlanName) throws SQLException;
     void updatePreference(String uid, Integer preference) throws SQLException;
     void updateRoomType(String uid, String roomTypeName) throws SQLException;
+    void updateSelectionApplication(String uid, String statusName) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

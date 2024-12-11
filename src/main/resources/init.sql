@@ -2,11 +2,12 @@
 create table if not exists images
 (
     id        int primary key auto_increment,
-    name      varchar(200) not null,
+    name      varchar(200) not null unique,
     data      mediumblob   not null,
     width     int          not null,
     height    int          not null,
     extension varchar(5)   not null,
+    foreign key (user_id) references users (id) on delete cascade,
     check ( width > 0 and height > 0 )
 );
 

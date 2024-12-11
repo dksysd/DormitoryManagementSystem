@@ -18,6 +18,7 @@ public class Image implements Model {
     private Integer height;
     private String extension;
 
+    private UserDTO userDTO;
     @Override
     public DTO toDTO() {
         return (DTO) ImageDTO.builder()
@@ -27,6 +28,7 @@ public class Image implements Model {
                 .width(width)
                 .height(height)
                 .extension(extension)
+                .userDTO(userDTO)
                 .build();
     }
 }

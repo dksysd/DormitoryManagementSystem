@@ -111,11 +111,13 @@ public class PaymentController {
      *                 data: 계좌번호),
      *                 2 ( header(type: value, dataType: string, code: accountHolderName, dataLength:,)
      *                 data: 계좌주이름 ),
-     *                 3 ( header(type: value, dataType: string, code: bankName, dataLength:,)
+     *                 3 ( header(type: value, dataType: string, code: bank_name, dataLength:,)
      *                 data: 은행명)
-     *                 4 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
+     *                 4 ( header(type: value, dataType: string, code: bank_code, dataLength:,)
+     *      *                 data: 은행코드)
+     *                 5 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
      *                 data: "납부")
-     *                 5 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 6 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 ),
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
@@ -132,8 +134,8 @@ public class PaymentController {
         if (id != null&&ProtocolValidator.isStudent(sessionId)) {
             BTPaymentDAO.save(new BankTransferPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
                     (String) protocol.getChildren().get(1).getData(), LocalDateTime.now(), paymentDAO.findByUid(id),
-                    new BankDTO(0, (String) protocol.getChildren().get(2).getData())));
-            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(3).getData());
+                    new BankDTO(0, (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData())));
+            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(4).getData());
         } else header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         resProtocol.setHeader(header);
         return resProtocol;
@@ -147,9 +149,11 @@ public class PaymentController {
      *                 data: 카드번호),
      *                 2 ( header(type: value, dataType: string, code: card_issuer, dataLength:,)
      *                 data: 카드사 이름),
-     *                 3 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
+     *                 3 ( header(type: value, dataType: string, code: card_code, dataLength:,)
+     *      *                 data: 카드사 코드),
+     *                 4 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
      *                 data: "납부"),
-     *                 4 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 5 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
      * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
@@ -158,7 +162,6 @@ public class PaymentController {
     public static Protocol<?> payByCard(Protocol<?> protocol) {
         Protocol<?> resProtocol = new Protocol<>();
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
-//todo cardIssuer 테이블에서 code 지워주세요
         try {
             String sessionId = (String) protocol.getChildren().getLast().getData();
             String id = getIdBySessionId(sessionId);
@@ -172,10 +175,10 @@ public class PaymentController {
                 CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
                 cardPaymentDAO.save(new CardPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
                         LocalDateTime.now(),
-                        new CardIssuerDTO(0, protocol.getChildren().get(1).getData()),
+                        new CardIssuerDTO(0, (String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData()),
                         paymentDAO.findByUid(id)
                 ));
-                paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(2).getData());
+                paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(3).getData());
 
 
         }catch (SQLException e) {
@@ -194,13 +197,17 @@ public class PaymentController {
      *                 children <
      *                 1 ( header(type: value, dataType: string, code:PAYMENT_STATUS, dataLength:,)
      *                 data: "환불" ),
+     *                 2 ( header(type: value, dataType: string, code:Refund_reason, dataLength:,)
+     *      *                 data: "환불 사유" ),
      *                 2 ( header(type: value, dataType: string, code:ACCOUNT_NUMBER, dataLength:,)
      *                 data: "계좌번호" ),
      *                 3 ( header(type: value, dataType: string, code:ACCOUNT_HOLDER_NAME, dataLength:,)
      *                 data: "계좌주 이름" ),
      *                 4 ( header(type: value, dataType: string, code:BANK_NAME, dataLength:,)
      *                 data: "은행명" ),
-     *                 5 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 5 ( header(type: value, dataType: string, code:bank_code, dataLength:,)
+     *      *                 data: "은행 코드" ),
+     *                 6 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
      * @return protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
@@ -223,8 +230,10 @@ public class PaymentController {
                 RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
                 PaymentRefundDAO paymentRefundDAO = new PaymentRefundDAO();
-                PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0, protocol.getChildren().get(1).getData(), protocol.getChildren().get(2).getData(), LocalDateTime.now(),
-                        new BankDTO(0, (String) protocol.getChildren().get(3).getData()), paymentDTO);
+                PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0,(String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData(),
+                        (String) protocol.getChildren().get(3).getData(), LocalDateTime.now(),
+                        new BankDTO(0, (String) protocol.getChildren().get(4).getData(),
+                                (String) protocol.getChildren().get(5).getData()), paymentDTO);
                 paymentRefundDAO.save(paymentRefundDTO);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
                 LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();

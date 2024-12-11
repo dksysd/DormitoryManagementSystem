@@ -58,7 +58,23 @@ public class UserDAO implements UserDAOI {
         }
         return null;
     }
+    @Override
+    public List<String> findAllOfSelection() throws SQLException {
+        List<String> users = new ArrayList<>();
+        String query = "SELECT u.uid AS uid FROM user u" +
+                "INNER JOIN selection_applications sa ON sa.user_id = u.id" +
+                "INNER JOIN selection_applications_status sas ON sas.id = sa.selection_application_status_id" +
+                "WHERE = sas.status_name = " + "'선발대기중'";
+        try(Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                users.add(resultSet.getString(1));
+            }
+        }
 
+        return users;
+    }
     @Override
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
