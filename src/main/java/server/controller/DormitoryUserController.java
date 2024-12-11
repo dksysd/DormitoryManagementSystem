@@ -529,10 +529,7 @@ public class DormitoryUserController {
                         .build();
                 requestDAO.save(dto);
 
-                UserDTO userDTO = selectionApplicationDAO.findByUid(getIdBySessionId(id)).getRoommateUserDTO();
-                SelectionApplicationDTO roommateDTO = selectionApplicationDAO.findByUid(userDTO.getUid());
-                roommateDTO.setRoommateUserDTO(null);
-                selectionApplicationDAO.update(roommateDTO);
+
             }else {
                 resultHeader.setType(Type.ERROR);
                 resultHeader.setCode(Code.ErrorCode.INVALID_REQUEST);

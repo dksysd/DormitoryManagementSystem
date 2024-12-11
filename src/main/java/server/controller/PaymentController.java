@@ -236,7 +236,7 @@ public class PaymentController {
                         (String) protocol.getChildren().get(3).getData(), LocalDateTime.now(),
                         new BankDTO(0, (String) protocol.getChildren().get(4).getData(),
                                 (String) protocol.getChildren().get(5).getData()), paymentDTO);
-                int refund_id = paymentRefundDAO.save(paymentRefundDTO);
+                paymentRefundDAO.save(paymentRefundDTO);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
                 LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
                 LocalDateTime end = moveOutRequestDTO.getCheckoutAt();
@@ -245,9 +245,8 @@ public class PaymentController {
 
                 int totalAmount = paymentDTO.getPaymentAmount();
                 int refundAmount = (int) ((remainingDays / (double) totalDays) * totalAmount);
-                paymentDTO.getPaymentStatusDTO().setStatusName("환불");
+                paymentDTO.getPaymentStatusDTO().setStatusName("환불 대기");
                 paymentDAO.update(paymentDTO);
-                paymentRefundDTO.setId(refund_id);
                 respProtocol.addChild(new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.REFUND_AMOUNT, 0), refundAmount));
                 moveOutRequestDTO.setPaymentRefundDTO(paymentRefundDTO);
                 moveOutRequestDAO.update(moveOutRequestDTO);
@@ -299,27 +298,6 @@ public class PaymentController {
         resProtocol.setHeader(header);
         return resProtocol;
     }
-
-    /**
-     * @param protocol header(type:request, dataType: TLV, code: REFUND_CONFIRM, dataLength:)
-     *                 data:
-     *                 children <
-     *                 header(type: value, dataType: string, code: sessionId, dataLength:,)
-     *                 data: 세션아이디 )
-     *                 >
-     * @return header(type : response, dataType : TLV, code : OK ( 오류면 에러코드), dataLength :)
-     * data:
-     * >
-     */
-//    public static Protocol<?> confirmRefund(Protocol<?> protocol) throws SQLException {
-//        String sessionId = (String) protocol.getChildren().getFirst().getData();
-//        String id = getIdBySessionId(sessionId);
-//        if (id != null&&ProtocolValidator.isAdmin(sessionId)) {
-//
-//        }
-//    }
-
-
 
 
 }

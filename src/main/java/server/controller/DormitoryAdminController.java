@@ -2,7 +2,7 @@ package server.controller;
 
 
 import server.persistence.dao.*;
-import server.persistence.dto.SelectionScheduleDTO;
+import server.persistence.dto.*;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ public class DormitoryAdminController {
         String day = (String) protocol.getChildren().get(1).getData();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
+        if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             SelectionScheduleDTO dto = SelectionScheduleDTO.builder()
                     .startedAt(LocalDateTime.parse(day, formatter))
                     .title(title)
@@ -50,7 +50,7 @@ public class DormitoryAdminController {
         UserDAO dao = new UserDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
+        if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             List<String> list = dao.findAllOfSelection();
 
             for (String s : list) {
@@ -84,7 +84,7 @@ public class DormitoryAdminController {
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
+        if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             dao.updateSelectionApplication(id, (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
@@ -105,7 +105,7 @@ public class DormitoryAdminController {
         DemeritPointDAO dao = new DemeritPointDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
+        if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             dao.savePoint((String) protocol.getChildren().getFirst().getData()
                     , (String) protocol.getChildren().get(1).getData(),
                     (Integer) protocol.getChildren().get(2).getData());
@@ -129,7 +129,7 @@ public class DormitoryAdminController {
         List<String> list;
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
-        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
+        if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             list = dao.findAllOfMoveOut();
             for (String s : list) {
                 Protocol<String> child = new Protocol<>();
@@ -168,11 +168,24 @@ public class DormitoryAdminController {
      */
     public static Protocol<?> approveMoveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
-        Header resultHeader = new Header();
-MoveOutRequestDAO MORDao = new MoveOutRequestDAO();
+        Header resultHeader = new Header(Type.RESPONSE,DataType.TLV,Code.ResponseCode.OK,0);
+        MoveOutRequestDAO MORDao = new MoveOutRequestDAO();
+        PaymentRefundDAO PRDao = new PaymentRefundDAO();
+        SelectionApplicationDAO selectionApplicationDAO= new SelectionApplicationDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
-        if (verifySessionId(sessionId)&&isAdmin(sessionId)) {
-
+        String id = getIdBySessionId(sessionId);
+        //todo paymentRefundDao findByUid()만들어주세요
+        PaymentRefundDTO PRDto = PRDao.findByUid();
+        if (verifySessionId(sessionId) && isAdmin(sessionId)) {
+            MORDao.findByUid(id).getMoveOutRequestStatusDTO().setStatusName("퇴사완료");
+            PRDto.getPaymentDTO().getPaymentStatusDTO().setStatusName("환불완료");
+            UserDTO userDTO = selectionApplicationDAO.findByUid(getIdBySessionId(id)).getRoommateUserDTO();
+            SelectionApplicationDTO roommateDTO = selectionApplicationDAO.findByUid(userDTO.getUid());
+            roommateDTO.setRoommateUserDTO(null);
+            selectionApplicationDAO.update(roommateDTO);
+        }else{
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
         result.setHeader(resultHeader);
