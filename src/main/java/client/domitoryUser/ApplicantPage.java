@@ -192,11 +192,10 @@ public class ApplicantPage {
         String second = sc.next();
         String third = sc.next();
 
-
         if (sexuality.equals("female")) {
-            pureum_1 = (first.equals("푸름3"));
-            pureum_2 = (second.equals("푸름3"));
-            pureum_3 = (third.equals("푸름3"));
+            pureum_1 = (!first.equals("오름1"));
+            pureum_2 = (!second.equals("오름1"));
+            pureum_3 = (!third.equals("오름1"));
 
         } else {
             pureum_1 = (!first.equals("오름2") && !first.equals("오름3"));
@@ -247,7 +246,7 @@ public class ApplicantPage {
 
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 룸메이트 사전 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("두 사람이 모두 신청해야 적용됩니다");
-        System.out.print("룸메이트 사전 신청하시겠습니까? (y/n)");
+        System.out.print("룸메이트 사전 신청하시겠습니까? (y/n) : ");
         String roommateAllow = sc.next();
         String roommate = "";
         boolean haveRoommate = false;
@@ -258,7 +257,7 @@ public class ApplicantPage {
         }
 
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 특이사항 기재 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        System.out.print("1년 호실 신청하시겠습니까? 잘못 입력 시 한 학기만 신쳥됩니다 (y/n)");
+        System.out.print("1년 호실 신청하시겠습니까? 잘못 입력 시 한 학기만 신쳥됩니다 (y/n) : ");
         String temp = sc.next();
         boolean oneYear = false;
         if (temp.toLowerCase().equals("y")) {
@@ -329,9 +328,22 @@ public class ApplicantPage {
         Protocol<?> resProtocol1, resProtocol2, resProtocol3;
         try {
             resProtocol1 = asyncRequest.sendAndReceive(protocol1);
-            resProtocol2 = asyncRequest.sendAndReceive(protocol2);
-            resProtocol3 = asyncRequest.sendAndReceive(protocol3);
         } catch (Exception e) {
+            System.out.println("1순위 전송 오류");
+            throw new RuntimeException(e);
+        }
+
+        try {
+            resProtocol2 = asyncRequest.sendAndReceive(protocol1);
+        } catch (Exception e) {
+            System.out.println("2순위 전송 오류");
+            throw new RuntimeException(e);
+        }
+
+        try {
+            resProtocol3 = asyncRequest.sendAndReceive(protocol1);
+        } catch (Exception e) {
+            System.out.println("2순위 전송 오류");
             throw new RuntimeException(e);
         }
 
