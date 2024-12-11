@@ -13,13 +13,14 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
 
     @Override
     public DormitoryRoomTypeDTO findById(Integer id) throws SQLException {
-        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, " +
-                "drt.dormitory_id, " +
-                "rt.type_name AS type_name, rt.max_person AS max_person," +
+        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
+                ", rt.type_name AS typeName, rt.max_person AS maxPerson, " +
                 "d.name AS dormitoryName " +
                 "FROM dormitory_room_types drt " +
-                "LEFT JOIN room_types rt ON drt.room_type_id = rt.id " +
-                "LEFT JOIN dormitories d ON d.id = drt.dormitory_id " +
+                "INNER JOIN dormitories d ON d.id = drt.dormitory_id " +
+                "INNER JOIN room_types rt ON rt.id = drt.room_type_id " +
+                "INNER JOIN selection_applications sa ON sa.dormitory_room_type_id = drt.id " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
                 "WHERE drt.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -36,11 +37,13 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     @Override
     public DormitoryRoomTypeDTO findByUid(String uid) throws SQLException {
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
-                "rt.type_name AS typeName, rt.maxPerson" +
+                ", rt.type_name AS typeName, rt.max_person AS maxPerson, " +
                 "d.name AS dormitoryName " +
                 "FROM dormitory_room_types drt " +
-                "INNER JOIN selection_applications sa ON sa.dormitory_room_type_id = drt.id" +
-                "INNER JOIN users u ON u.id = sa.user_id" +
+                "INNER JOIN dormitories d ON d.id = drt.dormitory_id " +
+                "INNER JOIN room_types rt ON rt.id = drt.room_type_id " +
+                "INNER JOIN selection_applications sa ON sa.dormitory_room_type_id = drt.id " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?" ;
         try (Connection connection = DatabaseConnectionPool.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -54,11 +57,13 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
     public List<DormitoryRoomTypeDTO> findAll() throws SQLException {
         List<DormitoryRoomTypeDTO> roomTypes = new ArrayList<>();
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
-                "rt.type_name AS typeName, rt.maxPerson" +
+                ", rt.type_name AS typeName, rt.max_person AS maxPerson, " +
                 "d.name AS dormitoryName " +
                 "FROM dormitory_room_types drt " +
-                "LEFT JOIN room_types rt " +
-                "LEFT JOIN dormitories d" +
+                "INNER JOIN dormitories d ON d.id = drt.dormitory_id " +
+                "INNER JOIN room_types rt ON rt.id = drt.room_type_id " +
+                "INNER JOIN selection_applications sa ON sa.dormitory_room_type_id = drt.id " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
                 "WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -104,10 +109,14 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
 
     @Override
     public void updateDormitory(String uid, String dormitoryName) throws SQLException {
-        String query = "SELECT drt.id, d.id FROM dormitory_room_types drt" +
-                "INNER JOIN dormitories d ON d.name = ?" +
-                "INNER JOIN selection_applications sa ON drt.id = sa.dormitory_room_type_id" +
-                "INNER JOIN users u ON u.id = sa.user_id" +
+        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
+                ", rt.type_name AS typeName, rt.max_person AS maxPerson, " +
+                "d.name AS dormitoryName " +
+                "FROM dormitory_room_types drt " +
+                "INNER JOIN dormitories d ON d.id = drt.dormitory_id " +
+                "INNER JOIN room_types rt ON rt.id = drt.room_type_id " +
+                "INNER JOIN selection_applications sa ON sa.dormitory_room_type_id = drt.id " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         int dormitory_id;
         int id;

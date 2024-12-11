@@ -11,7 +11,7 @@ public class GradeDAO implements GradeDAOI {
 
     @Override
     public GradeDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, created_at, updated_at, subject_id, user_id, grade_level_id FROM grades WHERE id = ?";
+        String query = "SELECT id, created_at, updated_at, subject_id, student_user_id, grade_level_id FROM grades WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,7 +27,7 @@ public class GradeDAO implements GradeDAOI {
     @Override
     public List<GradeDTO> findAll() throws SQLException {
         List<GradeDTO> grades = new ArrayList<>();
-        String query = "SELECT id, created_at, updated_at, subject_id, user_id, grade_level_id FROM grades";
+        String query = "SELECT id, created_at, updated_at, subject_id, student_user_id, grade_level_id FROM grades";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -41,7 +41,7 @@ public class GradeDAO implements GradeDAOI {
 
     @Override
     public void save(GradeDTO gradeDTO) throws SQLException {
-        String query = "INSERT INTO grades (created_at, updated_at, subject_id, user_id, grade_level_id) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO grades (created_at, updated_at, subject_id, student_user_id, grade_level_id) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -56,7 +56,7 @@ public class GradeDAO implements GradeDAOI {
 
     @Override
     public void update(GradeDTO gradeDTO) throws SQLException {
-        String query = "UPDATE grades SET created_at = ?, updated_at = ?, subject_id = ?, user_id = ?, grade_level_id = ? WHERE id = ?";
+        String query = "UPDATE grades SET created_at = ?, updated_at = ?, subject_id = ?, student_user_id = ?, grade_level_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
