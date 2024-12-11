@@ -72,7 +72,6 @@ public class Server {
     }
 
     private void work(WorkItem workItem) {
-        // todo session 기능 만들기
         checkSessionId(workItem.getRequestProtocol());
         System.out.println("Working " + workItem);
         Protocol<?> protocol;
