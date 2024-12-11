@@ -2,6 +2,10 @@ package client.domitoryUser;
 import client.core.util.AsyncRequest;
 import server.controller.PaymentController;
 import shared.protocol.persistence.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
@@ -229,8 +233,8 @@ public class ApplicantPage {
             snore = false;
         }
         //선호도 -> 잠버릇(bool) -> 1년호실 (bool) -> 어디 기숙사인지 -> 밥-> 룸메이트
-        Protocol<Boolean> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.ONEYEAR_LASTING,0), oneYear);
-        Protocol<Boolean> snoring = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.SNORE,0), snore);
+        Protocol<Boolean> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.ONEYEAR_LASTING,0), oneYear);
+        Protocol<Boolean> snoring = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.SNORE,0), snore);
         Protocol<String> roommates;
         Protocol<String> session = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
 
@@ -609,5 +613,60 @@ public class ApplicantPage {
         }
 
         return false;
+    }
+
+    public void appliyTuber(AsyncRequest asyncRequest){
+        String imagePath = "/Users/gayeong/Desktop/스크린샷 2024-12-10 오후 7.37.40.png";
+        byte[] bytes;
+        try {
+            bytes = convertImageToByteArray(imagePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        Protocol<?> protocol = new Protocol<>();
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.UPLOAD_TUBER_REPORT,0);
+        protocol.setHeader(header);
+
+        Header tlvHeader = new Header(Type.VALUE, DataType.RAW, Code.ValueCode.TUBER_REPORT, 0);
+        Protocol<?> tlv = new Protocol<>(tlvHeader, bytes);
+        protocol.addChild(tlv);
+
+        Protocol<?> resProtocol;
+        try {
+            resProtocol =  asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("재시도하세요");
+            return;
+        }
+
+        System.out.println("결핵진단서 등록이 완료되었습니다");
+    }
+
+
+    public byte[] convertImageToByteArray(String imagePath) throws IOException {
+        // FileInputStream을 사용하여 이미지 파일 읽기
+        FileInputStream fis = new FileInputStream(imagePath);
+
+        // ByteArrayOutputStream을 사용하여 바이트 배열에 저장
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // 버퍼를 사용하여 데이터를 읽고 쓰기
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            baos.write(buffer, 0, bytesRead);
+        }
+
+        // FileInputStream과 ByteArrayOutputStream을 닫기
+        fis.close();
+        baos.close();
+
+        // 바이트 배열 반환
+        return baos.toByteArray();
     }
 }

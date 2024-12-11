@@ -178,4 +178,6 @@ public class AuthController implements Controller {
         return userDTO != null && Objects.equals(password, userDTO.getLoginPassword());
     }
 
+
+
 }

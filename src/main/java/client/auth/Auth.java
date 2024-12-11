@@ -52,6 +52,9 @@ public class Auth {
             throw new RuntimeException(e);
         }
 
+        if(resProtocol.getHeader().getType() == Type.ERROR){
+            System.out.println("로그인 오류");
+        }
         sessionID = (String) resProtocol.getChildren().get(1).getData();;
         int type = (int) resProtocol.getChildren().get(0).getData();;
 

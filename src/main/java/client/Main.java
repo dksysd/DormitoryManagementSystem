@@ -14,7 +14,5 @@ public class Main {
 
         Thread.currentThread().join();
     }
-
-
-    }
+}
 
