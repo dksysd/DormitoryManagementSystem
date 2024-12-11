@@ -79,9 +79,9 @@ public class ApplicantPage {
             return;
         }
 
-        String priority = (String) resProtocol.getChildren().getFirst().getData();
+        String priority = (String) resProtocol.getChildren().getLast().getData();
         String normal = (String) resProtocol.getChildren().get(1).getData();
-        String extra = (String) resProtocol.getChildren().getLast().getData();
+        String extra = (String) resProtocol.getChildren().getFirst().getData();
 
         printSchedule(priority);
         printSchedule(normal);

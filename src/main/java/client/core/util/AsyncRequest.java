@@ -32,7 +32,7 @@ public class AsyncRequest {
     private CompletableFuture<Protocol<?>> receiveResponse() {
         CompletableFuture<Protocol<?>> responseFuture = new CompletableFuture<>();
         ByteBuffer headerBuffer = ByteBuffer.allocate(Header.BYTES);
-        client.read(headerBuffer, headerBuffer, new InputHeaderHandler(client,this::closeClient, responseFuture));
+        client.read(headerBuffer, headerBuffer, new InputHeaderHandler(client, this::closeClient, responseFuture));
         return responseFuture;
     }
 
