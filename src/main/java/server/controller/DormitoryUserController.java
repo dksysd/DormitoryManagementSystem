@@ -22,8 +22,9 @@ public class DormitoryUserController {
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
      *data :
      *children <
-     *1 ( header ( type : value, dataType : string, code : selection_schedule, dataLength :, ))
-     * 2 ...(이렇게 끝까지 반복되서 옴)
+     *1 ( header ( type : value, dataType : string, code : selection_schedule, dataLength :, ))(우선)
+     * 2 (일반)
+     * 3(추가)
      * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
      */

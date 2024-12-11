@@ -45,7 +45,7 @@ public class Auth {
         Protocol<String> tlv2 = new Protocol<>(tlvHeader2, pw);
         protocol.addChild(tlv2);
 
-        Protocol<?> resProtocol = null;
+        Protocol<?> resProtocol;
         try {
             resProtocol = asyncRequest.sendAndReceive(protocol);
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class Auth {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.LOGOUT,0);
         protocol.setHeader(header);
 
-        Protocol<?> resProtocol = null;
+        Protocol<?> resProtocol;
         try {
             resProtocol = asyncRequest.sendAndReceive(protocol);
         } catch (Exception e) {

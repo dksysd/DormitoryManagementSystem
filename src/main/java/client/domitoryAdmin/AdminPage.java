@@ -126,7 +126,7 @@ public class AdminPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
@@ -166,7 +166,7 @@ public class AdminPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
@@ -195,7 +195,7 @@ public class AdminPage {
         int point = sc.nextInt();
 
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.MANAGEMENT_MERIT_POINT,0);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
 
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ID, 0);
@@ -243,7 +243,7 @@ public class AdminPage {
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MOVE_OUT_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
-        Protocol<?> protocol = new Protocol();
+        Protocol<?> protocol = new Protocol<>();
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
@@ -273,6 +273,8 @@ public class AdminPage {
         String selection = " ";
         cnt = 0;
         Header header2 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPROVE_MOVE_OUT,0);
+        Protocol<?> protocol2 = new Protocol<>();
+        protocol2.setHeader(header2);
         for( ; !selection.equals("Q"); cnt++){
             System.out.print("퇴사 승인하려는 학생의 학번을 입력하세요 (종료는 Q입력) : ");
             selection = sc.next();
@@ -281,13 +283,13 @@ public class AdminPage {
             if(!selection.equals("Q")){
                 Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ID, 0);
                 Protocol<String> tlv2 = new Protocol<>(tlvHeader2, selection);
-                protocol.addChild(tlv2);
+                protocol2.addChild(tlv2);
             }
         }
 
         Header tlvHeader3 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv3 = new Protocol<>(tlvHeader3, sessionID);
-        protocol.addChild(tlv3);
+        protocol2.addChild(tlv3);
 
 
     }

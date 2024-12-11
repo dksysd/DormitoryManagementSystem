@@ -137,7 +137,7 @@ public class DormitoryAdminController {
                 Protocol<String> child = new Protocol<>();
                 Header childHeader = new Header();
                 childHeader.setType(Type.VALUE);
-                childHeader.setCode(Code.ValueCode.USER_ID);
+                childHeader.setCode(Code.ValueCode.ID);
                 childHeader.setDataType(DataType.STRING);
                 child.setHeader(childHeader);
                 result.addChild(child);
