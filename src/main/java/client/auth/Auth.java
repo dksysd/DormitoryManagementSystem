@@ -52,12 +52,12 @@ public class Auth {
             throw new RuntimeException(e);
         }
 
-        sessionID = (String) resProtocol.getChildren().get(0).getData();;
-        String type = (String) resProtocol.getChildren().get(1).getData();;
+        sessionID = (String) resProtocol.getChildren().get(1).getData();;
+        int type = (int) resProtocol.getChildren().get(0).getData();;
 
-        if(type.equals("관리자"))
+        if(type==1)
             return 0;
-        else if (type.equals("학생"))
+        else if (type==2)
             return 1;
         else return -1;
     }
