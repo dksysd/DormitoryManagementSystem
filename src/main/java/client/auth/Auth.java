@@ -57,10 +57,7 @@ public class Auth {
             return -1;
         } else {
             sessionID = (String) resProtocol.getChildren().get(1).getData();
-            ;
             int type = (int) resProtocol.getChildren().get(0).getData();
-            ;
-
             if (type == 1)
                 return 0;
             else if (type == 2)
