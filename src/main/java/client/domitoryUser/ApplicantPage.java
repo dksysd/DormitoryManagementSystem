@@ -2,10 +2,6 @@ package client.domitoryUser;
 import client.core.util.AsyncRequest;
 import server.controller.PaymentController;
 import shared.protocol.persistence.*;
-
-
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
@@ -53,7 +49,7 @@ public class ApplicantPage {
         System.out.println("1. 선발 일정 확인"); // 0k -  확인은 필요
         System.out.println("2. 입사신청하기"); // 손도 안댐 //
         System.out.println("3. 퇴사 신청 / 확인"); // ok 확인 필요
-        System.out.println("4. 선발 결과 확인"); // 손도 안댐 //
+        System.out.println("4. 선발 결과 확인"); // ok 확인 필요
         System.out.println("5. 상벌점 확인"); // ok 확인은 필요
         System.out.println("6. 명세서 확인"); // 0k
         System.out.println("7. 결제 / 결제상태 확인"); //0k
@@ -273,7 +269,24 @@ public class ApplicantPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        //날짜가 안됐다면 오류 메시지가 옴 - 그거 처리
+        Protocol<?> resProtocol;
+        try {
+            resProtocol =  asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("재시도해주세요");
+            return;
+        }
+
+        int size = resProtocol.getChildren().size();
+        String text;
+        for(int i = 0; i < size; i++){
+            text = (String) resProtocol.getChildren().get(i).getData();
+            System.out.println(text + "--");
+        }
 
     }
 
