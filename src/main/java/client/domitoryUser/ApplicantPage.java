@@ -83,8 +83,8 @@ public class ApplicantPage {
         System.out.println();
     }
 
-    //민성이가 슬쩍 보면 됨
-    public void displayInfo(AsyncRequest asyncRequest) throws ExecutionException, InterruptedException, ExecutionException {
+
+    public void displayInfo(AsyncRequest asyncRequest) throws InterruptedException, ExecutionException {
         // 선발 일정 요청 - sessionId
         Protocol<String> tlv = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
         Protocol<?> protocol = new Protocol<>();

@@ -17,7 +17,7 @@ public class ProtocolValidator {
         return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("ID", String.class);
     }
     public static String getUserType(String sessionId) {
-       return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("type_name", String.class);
+       return SessionManager.getINSTANCE().getSession(sessionId).getAttribute("USER_TYPE", String.class);
         //UserType은 Student/Admin으로 나뉨
     }
     public static boolean isStudent(String sessionId) {
