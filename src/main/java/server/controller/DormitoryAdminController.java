@@ -13,6 +13,8 @@ import java.util.List;
 import static server.util.ProtocolValidator.*;
 
 public class DormitoryAdminController {
+
+
     public static Protocol<?> registerSelectionInfo(Protocol<?> protocol) throws SQLException {
         SelectionScheduleDAO dao = new SelectionScheduleDAO();
         Protocol<?> result = new Protocol<>();

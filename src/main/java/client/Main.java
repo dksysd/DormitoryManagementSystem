@@ -11,7 +11,6 @@ public class Main {
         int port = 4_000;
 
         DefaultPage.run(host,port);
-
         Thread.currentThread().join();
     }
 }

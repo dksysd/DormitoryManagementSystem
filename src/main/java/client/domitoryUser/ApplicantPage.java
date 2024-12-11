@@ -28,25 +28,19 @@ public class ApplicantPage {
             System.out.println("=======================================");
 
             switch (option) {
-                case 1:
-                    displayInfo(asyncRequest);
-                    break;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
+                case 1: displayInfo(asyncRequest); break;
+                case 2: applicate(asyncRequest); break;
+                case 3: moveOutApplicate(asyncRequest); break;
+                case 4: displaySelectionResult(asyncRequest); break;
+                case 5: displayMeritPoint(asyncRequest); break;
                 case 6: displayBill(asyncRequest); break;
                 case 7: payment(asyncRequest); break;
-                case 8:
+                case 8: appliyTuber(asyncRequest); break;
                 case 9:
-                case 10:
-                    System.out.println("종료합니다.");
-                    break;
-                default:
-                    System.out.println("유효하지 않은 선택입니다. 다시 시도하세요.");
-                    break;
+                case 10: System.out.println("종료합니다."); break;
+                default: System.out.println("유효하지 않은 선택입니다. 다시 시도하세요."); break;
             }
-        } while (option != 8); // 8번을 선택하면 루프 종료
+        } while (option != 10); // 8번을 선택하면 루프 종료
     }
 
 
