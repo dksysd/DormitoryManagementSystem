@@ -28,7 +28,7 @@ create table if not exists gender_codes
     description varchar(100)
 );
 
-create table if not exists address
+create table if not exists addresses
 (
     id             int primary key auto_increment,
     postal_name    char(5)     not null,
@@ -54,7 +54,7 @@ create table if not exists users
     profile_image  int,
     foreign key (user_type_id) references user_types (id) on delete restrict,
     foreign key (gender_code_id) references gender_codes (id) on delete restrict,
-    foreign key (address_id) references address (id) on delete restrict,
+    foreign key (address_id) references addresses (id) on delete restrict,
     foreign key (profile_image) references images (id) on delete set null,
     index (phone_number)
 );
@@ -157,7 +157,7 @@ create table if not exists meal_plans
 );
 
 # payment system
-create table if not exists payment_statues
+create table if not exists payment_statuses
 (
     id          int primary key auto_increment,
     status_name varchar(20) not null unique,
@@ -187,7 +187,7 @@ create table if not exists payments
     payment_status_id int       not null,
     payment_method_id int       not null,
     foreign key (payment_code_id) references payment_codes (id) on delete restrict,
-    foreign key (payment_status_id) references payment_statues (id) on delete restrict,
+    foreign key (payment_status_id) references payment_statuses (id) on delete restrict,
     foreign key (payment_method_id) references payment_methods (id) on delete restrict,
     check ( payment_amount > -1 )
 );
@@ -280,7 +280,7 @@ create table if not exists selection_phases
     check ( start_at < end_at )
 );
 
-create table if not exists selection_application_statues
+create table if not exists selection_application_statuses
 (
     id          int primary key auto_increment,
     status_name varchar(10) not null unique,
@@ -301,7 +301,7 @@ create table if not exists selection_applications
     meal_plan_id                    int       not null,
     roommate_user_id                int       null,
     user_id                         int       not null,
-    foreign key (selection_application_status_id) references selection_application_statues (id) on delete restrict,
+    foreign key (selection_application_status_id) references selection_application_statuses (id) on delete restrict,
     foreign key (selection_schedule_id) references selection_schedules (id) on delete cascade,
     foreign key (dormitory_room_type_id) references dormitory_room_types (id) on delete restrict,
     foreign key (meal_plan_id) references meal_plans (id) on delete restrict,
@@ -379,7 +379,7 @@ create table if not exists demerit_points
 );
 
 # payments to dormitory selections
-create table if not exists payment_history
+create table if not exists payment_histories
 (
     id         int primary key auto_increment,
     user_id    int not null,
@@ -396,3 +396,5 @@ create table if not exists selection_payments
     foreign key (selection_id) references selections (id) on delete restrict,
     foreign key (payment_id) references payments (id) on delete cascade
 );
+
+SET FOREIGN_KEY_CHECKS = 1;

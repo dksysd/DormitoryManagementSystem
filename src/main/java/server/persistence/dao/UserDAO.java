@@ -41,7 +41,7 @@ public class UserDAO implements UserDAOI {
                 "ut.type_name AS user_type_name, gc.gender_code AS gender_code, gc.code_name AS code_name, a.address AS user_address " +
                 "a.postal_code AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address " +
                 "i.name AS image_name, i.extension AS extension" +
-                "FROM users u " +
+                "FROM users u ," +
                 "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
                 "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
                 "LEFT JOIN addresses a ON u.address_id = a.id " +
