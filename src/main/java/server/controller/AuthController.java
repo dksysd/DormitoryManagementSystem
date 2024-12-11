@@ -26,10 +26,11 @@ public class AuthController implements Controller {
      *                 >
      * @return 성공 header(type: response, dataType: TLV, code: OK, dataLength:
      * children<
-     * 1 header(type:value, dataType: String, code: SessionId, dataLength:)
+ * 1 header(type:value, dataType: INT, code: USER_TYPE_ID, dataLength:)
+* data: 사용자 유형 아이디(관리자 or 학생)
+     * 2 header(type:value, dataType: String, code: SessionId, dataLength:)
      * data: 세션아이디,
-     * 2 header(type:value, dataType: String, code: USER_TYPE_ID, dataLength:)
-     * data: 사용자 유형 아이디(관리자 or 학생)
+
      * >
      * 실패 header(type: response, dataType: TLV, code: 에러코드(개중 보고 에러원인 판단), dataLength: 0)
      * data:
@@ -37,7 +38,7 @@ public class AuthController implements Controller {
     public static Protocol<?> login(Protocol<?> protocol) throws SQLException {
 
         Protocol<?> resProtocol = new Protocol<>();
-        Protocol<String> childProtocol1 = new Protocol<>();
+        Protocol<Integer> childProtocol1 = new Protocol<>();
         Protocol<String> childProtocol2 = new Protocol<>();
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         SessionManager sessionManager = SessionManager.getINSTANCE();
@@ -48,16 +49,16 @@ public class AuthController implements Controller {
             String pw = (String) protocol.getChildren().get(1).getData();
             UserDAO userDAO = new UserDAO();
             UserDTO userDTO = userDAO.findByUid(id);
-            String userType = userDTO.getUserTypeDTO().getTypeName();
+            int userType = userDTO.getUserTypeDTO().getId();
 
             if (isValidLoginCredentials(id, pw, header)) {
                 sessionManager.getSession(sessionId).setAttribute("ID", id);
                 sessionManager.getSession(sessionId).setAttribute("PW", pw);
                 sessionManager.getSession(sessionId).setAttribute("USER_TYPE", userType);
-                childProtocol1.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0));
+                childProtocol1.setHeader(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.SESSION_ID, 0));
                 childProtocol2.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.USER_TYPE_ID, 0));
-                childProtocol1.setData(sessionId);
-                childProtocol2.setData(userType);
+                childProtocol1.setData(userType);
+                childProtocol2.setData(sessionId);
                 resProtocol.addChild(childProtocol1);
                 resProtocol.addChild(childProtocol2);
             }
