@@ -41,23 +41,6 @@ public class RoomDAO implements RoomDAOI {
     }
 
     @Override
-    public List<String> findAllIntoString() throws SQLException {
-        List<String> roomTypes = new ArrayList<>();
-        String query = "SELECT id, room_number FROM rooms";
-        try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                roomTypes.add(resultSet.getString(2) + ", "
-                        + resultSet.getString(4));
-            }
-        }
-
-        return roomTypes;
-    }
-
-    @Override
     public void save(RoomDTO roomDTO) throws SQLException {
         String query = "INSERT INTO rooms (room_number) VALUES (?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
