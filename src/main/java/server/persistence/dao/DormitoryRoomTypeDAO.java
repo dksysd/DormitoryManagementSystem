@@ -13,13 +13,14 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
 
     @Override
     public DormitoryRoomTypeDTO findById(Integer id) throws SQLException {
-        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
-                "rt.type_name AS typeName, rt.maxPerson" +
+        String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, " +
+                "drt.dormitory_id, " +
+                "rt.type_name AS typeName, rt.max_person," +
                 "d.name AS dormitoryName " +
                 "FROM dormitory_room_types drt " +
-                "LEFT JOIN room_types rt " +
-                "LEFT JOIN dormitories d" +
-                "WHERE id = ?";
+                "LEFT JOIN room_types rt ON drt.room_type_id = rt.id " +
+                "LEFT JOIN dormitories d ON d.id = drt.dormitory_id " +
+                "WHERE drt.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 

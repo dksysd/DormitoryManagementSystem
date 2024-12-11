@@ -90,11 +90,11 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
 
     @Override
     public void update(String uid, String accountNumber, String accountHolderName, String bankName) throws SQLException {
-        String query = "SELECT btp.id AS btp_id, b.id AS bank_id FROM bank_transfer_payments btp" +
-                "INNER JOIN payments p ON btp.payment_id = p.id" +
-                "INNER JOIN payment_history ph ON ph.payment_id = p.id" +
-                "INNER JOIN users u ON u.uid = ph.user_id" +
-                "INNER JOIN bank b ON b.bank_name = ?" +
+        String query = "SELECT btp.id AS btp_id, b.id AS bank_id FROM bank_transfer_payments btp " +
+                "INNER JOIN payments p ON btp.payment_id = p.id " +
+                "INNER JOIN payment_histories ph ON ph.payment_id = p.id " +
+                "INNER JOIN users u ON u.uid = ph.user_id " +
+                "INNER JOIN banks b ON b.bank_name = ?" +
                 "WHERE u.uid = ?";
         int btp_id;
         int bank_id;

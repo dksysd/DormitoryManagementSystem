@@ -57,7 +57,7 @@ public class AddressDAO implements AddressDAOI{
 
     @Override
     public void save(AddressDTO address) throws SQLException {
-        String query = "insert into addresses (postal_code, do, si, detail_address, created_at) values (?, ?, ?, ?, ?)";
+        String query = "insert into addresses (postal_name, do, si, detail_address, created_at) values (?, ?, ?, ?, ?)";
         try (Connection con = DatabaseConnectionPool.getConnection();
             PreparedStatement ps = con.prepareStatement(query)) {
 
@@ -72,7 +72,7 @@ public class AddressDAO implements AddressDAOI{
 
     @Override
     public void update(AddressDTO address) throws SQLException {
-        String query = "UPDATE addresses SET postal_code = ?, do = ?, si = ?, detail_address = ?, created_at = ? WHERE  id = ?";
+        String query = "UPDATE addresses SET postal_name = ?, do = ?, si = ?, detail_address = ?, created_at = ? WHERE  id = ?";
         try (Connection con = DatabaseConnectionPool.getConnection();
             PreparedStatement ps = con.prepareStatement(query)) {
 

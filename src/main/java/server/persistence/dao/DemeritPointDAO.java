@@ -43,8 +43,8 @@ public class DemeritPointDAO implements DemeritPointDAOI {
     @Override
     public List<String> findAllPointIntoString() throws SQLException {
         List<String> demeritPoints = new ArrayList<>();
-        String query = "SELECT u.uid AS uid, dp.point AS point FROM demerit_points dp" +
-                "INNER JOIN users u ON dp.user_id = u.id" +
+        String query = "SELECT u.uid AS uid, dp.point AS point FROM demerit_points dp " +
+                "INNER JOIN users u ON dp.user_id = u.id " +
                 "WHERE u.uid = ?";
         try(Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -76,10 +76,10 @@ public class DemeritPointDAO implements DemeritPointDAOI {
     public void savePoint(String uid, String description, int score) throws SQLException{
         int user_id;
         int room_assignment_id;
-        String query = "SELECT u.id AS user_id, ra.id AS room_id FROM users u" +
-                "INNER JOIN selection_applications sa ON u.id = sa.user_id" +
-                "INNER JOIN selections s ON sa.id = s.selection_application_id" +
-                "INNER JOIN room_assignments ra ON s.id = ra.selection_id" +
+        String query = "SELECT u.id AS user_id, ra.id AS room_id FROM users u " +
+                "INNER JOIN selection_applications sa ON u.id = sa.user_id " +
+                "INNER JOIN selections s ON sa.id = s.selection_application_id " +
+                "INNER JOIN room_assignments ra ON s.id = ra.selection_id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {

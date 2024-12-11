@@ -36,8 +36,10 @@ public class UserDAO implements UserDAOI {
 
     @Override
     public UserDTO findByUid(String uid) throws SQLException {
-        String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image, " +
+        String query = "SELECT u.id AS id, u.uid AS uid, u.login_password AS login_password, u.user_name AS user_name, " +
+                "u.phone_number AS phone_number, u.created_at AS created_at, u.updated_at AS updated_at, " +
+                "u.user_type_id AS user_type_id, u.gender_code_id AS gender_code_id, u.address_id AS address_id" +
+                ", u.profile_image AS profile_image, " +
                 "ut.type_name AS user_type_name, gc.code_name AS gender_code, gc.code_name AS code_name, a.detail_address AS user_address, " +
                 "a.postal_name AS postal_code, a.do AS adress_do, a.si AS adress_si, a.detail_address AS detail_address, " +
                 "i.name AS image_name, i.extension AS extension " +
