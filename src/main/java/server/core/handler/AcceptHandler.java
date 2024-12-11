@@ -25,7 +25,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
         System.out.println("Server accepted from " + RemoteAddressResolver.getRemoteAddress(client));
 
         ByteBuffer headerBuffer = ByteBuffer.allocate(Header.BYTES);
-        client.read(headerBuffer, 10, TimeUnit.SECONDS, headerBuffer, new InputHeaderHandler(client, closeClientConsumer, workQueue));
+        client.read(headerBuffer,  headerBuffer, new InputHeaderHandler(client, closeClientConsumer, workQueue));
     }
 
     @Override
