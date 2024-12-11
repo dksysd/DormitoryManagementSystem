@@ -15,10 +15,10 @@ public class MealPlanDAO implements MealPlanDAOI {
     public MealPlanDTO findById(Integer id) throws SQLException {
         String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
                 "mp.type_name AS mealTypeName, " +
-                "d.name AS DormitoryName" +
+                "d.name AS DormitoryName " +
                 "FROM meal_plans m " +
                 "LEFT JOIN meal_plan_types mp ON m.meal_plan_type_id = mp.id " +
-                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE id = ?";
+                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE m.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -36,10 +36,10 @@ public class MealPlanDAO implements MealPlanDAOI {
         List<MealPlanDTO> mealPlans = new ArrayList<>();
         String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
                 "mp.type_name AS mealTypeName, " +
-                "d.name AS DormitoryName" +
+                "d.name AS DormitoryName " +
                 "FROM meal_plans m " +
                 "LEFT JOIN meal_plan_types mp ON m.meal_plan_type_id = mp.id " +
-                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE id = ?";
+                "LEFT JOIN dormitories d ON m.dormitory_id = d.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -56,10 +56,10 @@ public class MealPlanDAO implements MealPlanDAOI {
         List<String> mealPlans = new ArrayList<>();
         String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
                 "mp.type_name AS mealTypeName, " +
-                "d.name AS DormitoryName" +
+                "d.name AS DormitoryName " +
                 "FROM meal_plans m " +
                 "LEFT JOIN meal_plan_types mp ON m.meal_plan_type_id = mp.id " +
-                "LEFT JOIN dormitories d ON m.dormitory_id = d.id WHERE id = ?";
+                "LEFT JOIN dormitories d ON m.dormitory_id = d.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery()) {

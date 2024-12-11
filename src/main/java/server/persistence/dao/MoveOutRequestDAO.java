@@ -12,7 +12,8 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public MoveOutRequestDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests WHERE id = ?";
+        String query = "SELECT id, checkout_at,expect_checkout_at, account_number, created_at, updated_at, " +
+                "move_out_status_id, selection_id, bank_id FROM move_out_requests WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,14 +28,14 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public MoveOutRequestDTO findByUid(String uid) throws SQLException {
-        String query = "SELECT mor.id AS id, mor.checkout_at AS checkout_at, mor.expect_checkout_at AS expect_checkout_at" +
+        String query = "SELECT mor.id AS id, mor.checkout_at AS checkout_at, mor.expect_checkout_at AS expect_checkout_at," +
                 "mor.account_number AS account_number, mor.created_at AS created_at, " +
-                "mor.updated_at AS updated_at , mor.move_out_request_status_id AS move_out_request_status_id" +
-                ", mor.selection_id AS selection_id, mor.bank_id AS bank_id" +
-                "FROM move_out_requests mor" +
-                "INNER JOIN selections s ON s.id = mor.selection_id" +
-                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id" +
-                "INNER JOIN user u ON u.id = sa.user_id" +
+                "mor.updated_at AS updated_at , mor.move_out_status_id AS move_out_status_id" +
+                ", mor.selection_id AS selection_id, mor.bank_id AS bank_id " +
+                "FROM move_out_requests mor " +
+                "INNER JOIN selections s ON s.id = mor.selection_id " +
+                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -51,7 +52,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
     @Override
     public List<MoveOutRequestDTO> findAll() throws SQLException {
         List<MoveOutRequestDTO> moveOutRequests = new ArrayList<>();
-        String query = "SELECT id, checkout_at, expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id FROM move_out_requests";
+        String query = "SELECT id, checkout_at, expect_checkout_at, account_number, created_at, updated_at, move_out_status_id, selection_id, bank_id FROM move_out_requests";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -67,12 +68,13 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
     public List<String> findAllOfMoveOut() throws SQLException {
         List<String> moveOutRequests = new ArrayList<>();
         String query = "SELECT u.uid AS uid, d.name AS dormitory_name " +
-                "FROM move_out_request mor " +
-                "INNER JOIN selections s ON s.id = mor.selection_application_id" +
-                "INNER JOIN selection_applications sa ON s.selection_application_id = sa.id" +
-                "INNER JOIN user u ON sa.user_id = u.id" +
-                "INNER JOIN dormitory_user_types dut ON dut.id = sa.dormitory_room_type_id" +
-                "INNER JOIN dormitory d ON dut.dormitory_id = d.id";
+                "FROM move_out_requests mor " +
+                "INNER JOIN selections s ON s.id = mor.selection_id " +
+                "INNER JOIN selection_applications sa ON s.selection_application_id = sa.id " +
+                "INNER JOIN users u ON sa.user_id = u.id " +
+                "INNER JOIN move_out_request_statuses mors ON mors.id = mor.move_out_status_id " +
+                "INNER JOIN dormitory_room_types drt ON drt.id = sa.dormitory_room_type_id " +
+                "INNER JOIN dormitories d ON drt.dormitory_id = d.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -85,7 +87,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public void save(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
-        String query = "INSERT INTO move_out_requests (checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, payment_refund_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO move_out_requests (checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_status_id, selection_id, payment_refund_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -102,7 +104,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public void update(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
-        String query = "UPDATE move_out_requests SET checkout_at = ?, account_number = ?, created_at = ?, updated_at = ?, move_out_request_status_id = ?, selection_id = ?, payment_refund_id = ? WHERE id = ?";
+        String query = "UPDATE move_out_requests SET checkout_at = ?, account_number = ?, created_at = ?, updated_at = ?, move_out_status_id = ?, selection_id = ?, payment_refund_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
