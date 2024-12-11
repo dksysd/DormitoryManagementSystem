@@ -34,8 +34,7 @@ public class DefaultPage {
                 auth.logOut(asyncRequest);
             }
             else {
-                System.out.println("=============로그인 실패!=============");
-                return;
+                System.out.println("===============로그인 실패!===============\n\n");
             }
         } while (identity == -1);
     }
