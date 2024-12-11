@@ -12,5 +12,6 @@ public interface MoveOutRequestDAOI {
     List<String> findAllOfMoveOut() throws SQLException;
     void save(MoveOutRequestDTO moveOutRequestDTO) throws SQLException;
     void update(MoveOutRequestDTO moveOutRequestDTO) throws SQLException;
+    void updateStatus(String uid, String status) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

@@ -21,7 +21,7 @@ public class MoveOutRequest implements Model {
 
     private MoveOutRequestStatusDTO moveOutRequestStatusDTO;
     private SelectionDTO selectionDTO;
-    private BankDTO bankDTO;
+    private PaymentRefundDTO paymentRefundDTO;
 
     @Override
     public DTO toDTO() {
@@ -33,7 +33,7 @@ public class MoveOutRequest implements Model {
                 .updatedAt(updatedAt)
                 .moveOutRequestStatusDTO(moveOutRequestStatusDTO)
                 .selectionDTO(selectionDTO)
-                .bankDTO(bankDTO)
+                .paymentRefundDTO(paymentRefundDTO)
                 .build();
     }
 }

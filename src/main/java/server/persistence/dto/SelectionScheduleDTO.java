@@ -16,6 +16,7 @@ public class SelectionScheduleDTO implements DTO {
     private String title;
     private LocalDateTime createdAt;
     private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
 
     @Override
     public Model toModel() {
@@ -23,7 +24,8 @@ public class SelectionScheduleDTO implements DTO {
                 .id(id)
                 .title(title)
                 .createdAt(createdAt)
-                .statedAt(startedAt)
+                .startedAt(startedAt)
+                .endedAt(endedAt)
                 .build();
     }
 }

@@ -11,7 +11,7 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
 
     @Override
     public SelectionScheduleDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, title, created_at FROM selection_schedules WHERE id = ?";
+        String query = "SELECT id, title, created_at, started_at, ended_at FROM selection_schedules WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,7 +27,7 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
     @Override
     public List<SelectionScheduleDTO> findAll() throws SQLException {
         List<SelectionScheduleDTO> selectionSchedules = new ArrayList<>();
-        String query = "SELECT id, title, created_at FROM selection_schedules";
+        String query = "SELECT id, title, created_at, started_at, ended_at FROM selection_schedules";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -42,39 +42,44 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
     @Override
     public List<String> findAllTitleIntoString() throws SQLException {
         List<String> selectionSchedules = new ArrayList<>();
-        String query = "SELECT id, title, created_at, started_at FROM selection_schedules";
+        String query = "SELECT id, title, created_at, started_at, ended_at FROM selection_schedules";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                selectionSchedules.add(resultSet.getString(2) + ", "
-                + resultSet.getString(4));
+                selectionSchedules.add(resultSet.getString(2) + " "
+                + resultSet.getString(4) + " "
+                + resultSet.getString(5));
             }
         }
         return selectionSchedules;
     }
     @Override
     public void save(SelectionScheduleDTO selectionScheduleDTO) throws SQLException {
-        String query = "INSERT INTO selection_schedules (title, created_at) VALUES (?, ?)";
+        String query = "INSERT INTO selection_schedules (title, created_at, started_at, ended_at) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, selectionScheduleDTO.getTitle());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(selectionScheduleDTO.getCreatedAt()));
+            preparedStatement.setTimestamp(3, Timestamp.valueOf(selectionScheduleDTO.getStartedAt()));
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(selectionScheduleDTO.getEndedAt()));
             preparedStatement.executeUpdate();
         }
     }
 
     @Override
     public void update(SelectionScheduleDTO selectionScheduleDTO) throws SQLException {
-        String query = "UPDATE selection_schedules SET title = ?, created_at = ? WHERE id = ?";
+        String query = "UPDATE selection_schedules SET title = ?, created_at = ?, started_at = ?, ended_at = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setString(1, selectionScheduleDTO.getTitle());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(selectionScheduleDTO.getCreatedAt()));
             preparedStatement.setInt(3, selectionScheduleDTO.getId());
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(selectionScheduleDTO.getStartedAt()));
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(selectionScheduleDTO.getEndedAt()));
             preparedStatement.executeUpdate();
         }
     }
@@ -95,6 +100,8 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
                 .id(resultSet.getInt("id"))
                 .title(resultSet.getString("title"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .startedAt(resultSet.getTimestamp("started_at").toLocalDateTime())
+                .endedAt(resultSet.getTimestamp("ended_at").toLocalDateTime())
                 .build();
     }
 }
