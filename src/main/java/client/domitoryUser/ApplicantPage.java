@@ -54,7 +54,7 @@ public class ApplicantPage {
         System.out.println("============= 학생 페이지입니다 =============");
         System.out.println("1. 선발 일정 확인"); // 0k -  확인은 필요
         System.out.println("2. 입사신청하기"); // 손도 안댐 //
-        System.out.println("3. 퇴사 신청 / 확인"); // 퇴사 확인 기능 추가 필요 //
+        System.out.println("3. 퇴사 신청 / 확인"); // ok 확인 필요
         System.out.println("4. 선발 결과 확인"); // 손도 안댐 //
         System.out.println("5. 상벌점 확인"); // ok 확인은 필요
         System.out.println("6. 명세서 확인"); // 0k
@@ -180,6 +180,7 @@ public class ApplicantPage {
     public void moveOutApplicate(AsyncRequest asyncRequest){
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
+        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         if(option == 2){
             // 퇴사확인 요청
             Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.CHECK_MOVE_OUT,0);
@@ -189,7 +190,17 @@ public class ApplicantPage {
             protocol.setHeader(header);
             protocol.addChild(tlv);
 
-            // 메시지 받아서 결과만 확인
+            Protocol<?> resProtocol;
+            try {
+                resProtocol = PaymentController.requestRefund(protocol);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
+                String status = (String) resProtocol.getChildren().getFirst().getData();
+                System.out.println(status);
+            }
 
         } else{
             // 환불신청 >> 결과 확인은 학생 페이지 7번 결제확인 기능을 사용하라고 안내

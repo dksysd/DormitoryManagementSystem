@@ -66,8 +66,9 @@ public class AdminPage {
             }
 
             System.out.println("선발 시작일을 입력하세요.");
-            System.out.println("ex : yyyy년 mm월 dd일부터 - (yyyymmdd)");
+            System.out.println("ex : yyyy년 mm월 dd일부터 YYYYMMDD까지- (yyyymmdd YYYYMMDD)");
             String day = sc.next();
+            String deadLine = sc.next();
 
             Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.REGISTER_SELECTION_INFO,0);
             Protocol<?> protocol = new Protocol();
