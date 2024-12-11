@@ -164,7 +164,7 @@ public class ApplicantPage {
         }
 
 
-        // 결핵진단서 어케할거? -> setTuber 머시기 만들 예정.
+        // 결핵진단서 어케할거 -> setTuber 머시기 만들 예정.
         // 날짜에 따라서 우선선발 인증 어쩌고도 넣어야함
 
 
