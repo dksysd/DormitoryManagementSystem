@@ -62,6 +62,7 @@ public class AuthController implements Controller {
                 resProtocol.addChild(childProtocol2);
             }
         } catch (SQLException e) {
+            header.setType(Type.ERROR);
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
         resProtocol.setHeader(header);
@@ -90,9 +91,12 @@ public class AuthController implements Controller {
             if (verifySessionId(sessionId)) {
                 header.setCode(Code.ResponseCode.OK);
                 sessionManager.removeSession(sessionId);
-            } else header.setCode(Code.ErrorCode.UNAUTHORIZED);
+            } else{
+                header.setType(Type.ERROR);
+                header.setCode(Code.ErrorCode.UNAUTHORIZED);}
             resProtocol.setHeader(header);
         } catch (Exception e) {
+            header.setType(Type.ERROR);
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
         return resProtocol;
@@ -119,6 +123,7 @@ public class AuthController implements Controller {
                 sessionManager.getSession(sessionId).touch();
             } else {
                 header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+                header.setType(Type.ERROR);
             }
         } catch (Exception e) {
             header.setCode(Code.ResponseCode.ErrorCode.INTERNAL_SERVER_ERROR);
@@ -136,10 +141,13 @@ public class AuthController implements Controller {
                     return true;
                 }
                 header.setCode(Code.ErrorCode.UNAUTHORIZED);
+                header.setType(Type.ERROR);
             }
             header.setCode(Code.ErrorCode.INVALID_VALUE);
+            header.setType(Type.ERROR);
         } catch (SQLException e) {
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
+            header.setType(Type.ERROR);
         }
         return false;
     }

@@ -46,11 +46,13 @@ public class PaymentController {
                 resProtocol.addChild(childProtocol);
             } else {
                 // 결제 정보가 없는 경우 처리
+                header.setType(Type.ERROR);
                 header.setCode(Code.ResponseCode.ErrorCode.INVALID_VALUE);
             }
 
         } else {
             // 세션 ID가 유효하지 않은 경우
+            header.setType(Type.ERROR);
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         }
 
@@ -91,10 +93,12 @@ public class PaymentController {
                 resProtocol.addChild(childProtocol);
             } else {
                 // 결제 정보가 없는 경우 처리
+                header.setType(Type.ERROR);
                 header.setCode(Code.ResponseCode.ErrorCode.INVALID_REQUEST);
             }
         } else {
             // 세션 ID가 유효하지 않은 경우 처리
+            header.setType(Type.ERROR);
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         }
 
@@ -136,7 +140,10 @@ public class PaymentController {
                     (String) protocol.getChildren().get(1).getData(), LocalDateTime.now(), paymentDAO.findByUid(id),
                     new BankDTO(0, (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData())));
             paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(4).getData());
-        } else header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+        } else {
+            header.setType(Type.ERROR);
+            header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+        }
         resProtocol.setHeader(header);
         return resProtocol;
     }
@@ -183,6 +190,7 @@ public class PaymentController {
 
         }catch (SQLException e) {
             // 데이터베이스 예외 처리
+            header.setType(Type.ERROR);
             header.setCode(Code.ResponseCode.ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
@@ -251,8 +259,11 @@ public class PaymentController {
                 moveOutRequestDTO.setPaymentRefundDTO(paymentRefundDTO);
                 moveOutRequestDAO.update(moveOutRequestDTO);
             }
+            respProtocol.getHeader().setType(Type.ERROR);
             respProtocol.getHeader().setCode(Code.ErrorCode.INVALID_REQUEST);
-        } else respProtocol.getHeader().setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
+        } else {
+            respProtocol.getHeader().setType(Type.ERROR);
+            respProtocol.getHeader().setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);}
         return respProtocol;
     }
 
@@ -287,10 +298,11 @@ public class PaymentController {
                         paymentDTO.getPaymentStatusDTO().getStatusName()
                 ));
             } else {
-
+                header.setType(Type.ERROR);
                 header.setCode(Code.ResponseCode.ErrorCode.INVALID_REQUEST);
             }
         } else {
+            header.setType(Type.ERROR);
             // 세션 ID가 유효하지 않은 경우 UNAUTHORIZED 처리
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         }

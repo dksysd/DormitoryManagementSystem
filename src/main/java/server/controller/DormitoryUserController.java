@@ -33,9 +33,10 @@ public class DormitoryUserController {
         SelectionScheduleDAO dao = new SelectionScheduleDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = result.getHeader();
-        String id = (String) protocol.getChildren().getLast().getData();
+        String sessionId = (String) protocol.getChildren().getLast().getData();
+        String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
 
-        if (verifySessionId(id)) {
+        if (verifySessionId(sessionId)&&isStudent(sessionId)) {
             List<String> list = dao.findAllTitleIntoString();
 
             for (String s : list) {
@@ -81,9 +82,9 @@ public class DormitoryUserController {
         MealPlanDAO dao = new MealPlanDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
-        String id = (String) protocol.getChildren().getLast().getData();
+        String Sessionid = (String) protocol.getChildren().getLast().getData();
 
-        if (verifySessionId(id)) {
+        if (verifySessionId(Sessionid)&&isStudent(Sessionid)) {
             List<String> list = dao.findAllMealTypeIntoString();
 
             for (String s : list) {
@@ -133,7 +134,7 @@ public class DormitoryUserController {
         Header resultHeader = new Header();
         String id = (String) protocol.getChildren().getLast().getData();
 
-        if (verifySessionId(id)) {
+        if (verifySessionId(id)&&isStudent(id)) {
             List<String> list = dao.findAllIntoString();
 
             for (String s : list) {
@@ -183,7 +184,7 @@ public class DormitoryUserController {
         String id = getIdBySessionId(sessionId);
         Integer preference = (Integer) protocol.getChildren().getFirst().getData();
 
-        if (verifySessionId(sessionId)) {
+        if (verifySessionId(sessionId)&&isStudent(id)) {
             dao.updatePreference(id, preference);
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
@@ -212,12 +213,12 @@ public class DormitoryUserController {
      */
 
     public static Protocol<?> applyRoommate(Protocol<?> protocol) throws SQLException {
-        Header header = new Header();
         UserDAO dao = new UserDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
+        resultHeader.setDataType(DataType.TLV);
         String id = (String) protocol.getChildren().getLast().getData();
-        if (verifySessionId(id)) {
+        if (verifySessionId(id)&&isStudent(id)) {
             dao.updateRoommate(getIdBySessionId(id), (String) protocol.getChildren().getFirst().getData());
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
@@ -246,7 +247,6 @@ public class DormitoryUserController {
      * data: null
      */
     public static Protocol<?> applyMeal(Protocol<?> protocol) throws SQLException {
-        Header header = new Header();
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();

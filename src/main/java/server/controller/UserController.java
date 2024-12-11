@@ -60,6 +60,7 @@ public class UserController {
             addChildToProtocol(resProtocol, Code.ValueCode.DETAIL_ADDRESS, userDTO.getAddressDTO().getDetailAddress());
 
         } catch (Exception e) {
+            header.setType(Type.ERROR);
             header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
         }
         resProtocol.setHeader(header);
