@@ -31,10 +31,10 @@ public class Auth {
         pw = sc.next();
     }
 
-    public int logInCheck(AsyncRequest asyncRequest, String id, String pw){
+    public int logInCheck(AsyncRequest asyncRequest, String id, String pw) {
         //관리자 = 0 , 학생 = 1, 로그인 실패 = -1
         Protocol<?> protocol = new Protocol<>();
-        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.LOGIN,0);
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.LOGIN, 0);
         protocol.setHeader(header);
 
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ID, 0);
@@ -52,17 +52,21 @@ public class Auth {
             throw new RuntimeException(e);
         }
 
-        if(resProtocol.getHeader().getType() == Type.ERROR){
+        if (resProtocol.getHeader().getType() == Type.ERROR) {
             System.out.println("로그인 오류");
-        }
-        sessionID = (String) resProtocol.getChildren().get(1).getData();;
-        int type = (int) resProtocol.getChildren().get(0).getData();;
+            return -1;
+        } else {
+            sessionID = (String) resProtocol.getChildren().get(1).getData();
+            ;
+            int type = (int) resProtocol.getChildren().get(0).getData();
+            ;
 
-        if(type==1)
-            return 0;
-        else if (type==2)
-            return 1;
-        else return -1;
+            if (type == 1)
+                return 0;
+            else if (type == 2)
+                return 1;
+            else return -1;
+        }
     }
 
     public void logOut(AsyncRequest asyncRequest){

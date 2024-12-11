@@ -122,6 +122,8 @@ public class DormitoryAdminController {
         return result;
     }
 
+
+
     public static Protocol<?> getMoveOutApplicants(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
