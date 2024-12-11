@@ -1,8 +1,6 @@
 package client.domitoryUser;
 import client.core.util.AsyncRequest;
-import server.controller.DormitoryUserController;
 import server.controller.PaymentController;
-import server.controller.UserController;
 import shared.protocol.persistence.*;
 
 
