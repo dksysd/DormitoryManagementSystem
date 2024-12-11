@@ -34,6 +34,8 @@ public class ApplicantPage {
                 case 6: displayBill(asyncRequest); break;
                 case 7: payment(asyncRequest); break;
                 case 8:
+                case 9:
+                case 10:
                     System.out.println("종료합니다.");
                     break;
                 default:
@@ -47,13 +49,15 @@ public class ApplicantPage {
     public static void applicantFunctionInfo(){
         System.out.println("============= 학생 페이지입니다 =============");
         System.out.println("1. 선발 일정 확인"); // 0k -  확인은 필요
-        System.out.println("2. 입사신청하기"); // 손도 안댐 //
+        System.out.println("2. 입사신청하기"); // ok 확인 필요
         System.out.println("3. 퇴사 신청 / 확인"); // ok 확인 필요
-        System.out.println("4. 선발 결과 확인"); // ok확인 필요
+        System.out.println("4. 선발 결과 확인"); // ok 확인 필요
         System.out.println("5. 상벌점 확인"); // ok 확인은 필요
         System.out.println("6. 명세서 확인"); // 0k
         System.out.println("7. 결제 / 결제상태 확인"); //0k
-        System.out.println("8. 로그아웃");
+        System.out.println("8. 결핵진단서 제출 / 제출상태 확인");
+        System.out.println("9. 우선선발 증빙자료 제출 / 제출상태 확인");
+        System.out.println("10. 로그아웃");
         System.out.println();
         System.out.println();
     }
@@ -129,10 +133,12 @@ public class ApplicantPage {
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 기숙사 지망 순위 설정 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("지망하는 순서대로 기숙사 3개를 띄어쓰기로 구분하여 입력하세요 ");
 
+        boolean pureum_1, pureum_2, pureum_3;
+
         if(sexuality.equals("F")){
-            System.out.println("(a.푸름3 / b.오름1 / c.아름관)");
+            System.out.println("(푸름3 / 오름1 )");
         } else {
-            System.out.println("(a.푸름1 / b.푸름2 / c.푸름4 / d.오름2 / e.오름3");
+            System.out.println("(푸름1 / 푸름2 / 푸름4 / 오름2 / 오름3)");
         }
         System.out.println();
         System.out.println(">> 예시 : e c h (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 아름관)");
@@ -140,33 +146,153 @@ public class ApplicantPage {
         System.out.println("!! 타 성별 기숙사로 잘못 입력할 경우 선발이 취소됩니다 !!");
         System.out.println();
         System.out.println(">> 지망 순위 입력 : ");
-        char first = sc.next().charAt(0);
-        char second = sc.next().charAt(0);
-        char third = sc.next().charAt(0);
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 식사 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        System.out.println("신청안함(0), 5일식(5), 7일식(7) - 잘못 입력 시 푸름관의 경우 신청 안함으로 입력됩니다.");
-        System.out.println("!!오름관의 경우 식사 신청이 필수입니다!! - 잘못 입력 시 5일식으로 신청됨");
-        System.out.println();
-        System.out.print("1지망 기숙사 식사 신청 : ");
-        int meal1 = sc.nextInt();
-        System.out.print("2지망 기숙사 식사 신청 : ");
-        int meal2 = sc.nextInt();
-        System.out.print("3지망 기숙사 식사 신청 : ");
-        int meal3 = sc.nextInt();
-        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 룸메이트 사전 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        System.out.println("두 사람이 모두 신청해야 ????");
-        System.out.print("룸메이트 사전 신청하시겠습니까? (y/n)");
-        String allow = sc.next();
-        String roommate;
-        if(allow.toLowerCase().equals("y")){
-            System.out.println("룸메이트 하려는 학생의 학번 : ");
-            roommate = sc.next();
+        String first = sc.next();
+        String second = sc.next();
+        String third = sc.next();
+        String domi1, domi2, domi3;
+
+        if(sexuality.equals("F")){
+            pureum_1 = (first.equals("푸름3"));
+            pureum_2 = (second.equals("푸름3"));
+            pureum_3 = (third.equals("푸름3"));
+
+        } else {
+            pureum_1 = (!first.equals("오름2") && !first.equals("오름3"));
+            pureum_2 = (!second.equals("오름2") && !second.equals("오름3"));
+            pureum_3 = (!third.equals("오름2") && !third.equals("오름3"));
         }
 
+        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 식사 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+        System.out.println("신청안함, 5일식, 7일식 - 잘못 입력 시 푸름관의 경우 신청 안함으로 입력됩니다.");
+        System.out.println("!!오름관의 경우 식사 신청(5일식 또는 7일식)이 필수입니다!! - 잘못 입력 시 5일식으로 신청됨");
+        System.out.println();
 
-        // 결핵진단서 어케할거 -> setTuber 머시기 만들 예정.
-        // 날짜에 따라서 우선선발 인증 어쩌고도 넣어야함
+        System.out.print("1지망 기숙사 식사 신청 : ");
+        String meal1 = sc.next();
+        if(pureum_1){
+            if(!(meal1.equals("신청안함") || meal1.equals("5일식") || meal1.equals("7일식"))){
+                meal1 = "신청안함";
+            }
+        } else {
+            if(!(meal1.equals("5일식") || meal1.equals("7일식"))){
+                meal1 = "5일식";
+            }
+        }
 
+        System.out.print("2지망 기숙사 식사 신청 : ");
+        String meal2 = sc.next();
+        if(pureum_2){
+            if(!(meal2.equals("신청안함") || meal2.equals("5일식") || meal2.equals("7일식"))){
+                meal2 = "신청안함";
+            }
+        } else {
+            if(!(meal2.equals("5일식") || meal2.equals("7일식"))){
+                meal2 = "5일식";
+            }
+        }
+
+        System.out.print("3지망 기숙사 식사 신청 : ");
+        String meal3 = sc.next();
+        if(pureum_3){
+            if(!(meal3.equals("신청안함") || meal3.equals("5일식") || meal3.equals("7일식"))){
+                meal3 = "신청안함";
+            }
+        } else {
+            if(!(meal3.equals("5일식") || meal3.equals("7일식"))){
+                meal3 = "5일식";
+            }
+        }
+
+        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 룸메이트 사전 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+        System.out.println("두 사람이 모두 신청해야 적용됩니다");
+        System.out.print("룸메이트 사전 신청하시겠습니까? (y/n)");
+        String roommateAllow = sc.next();
+        String roommate = "";
+        boolean haveRoommate = false;
+        if(roommateAllow.toLowerCase().equals("y")){
+            System.out.println("룸메이트 하려는 학생의 학번 : ");
+            roommate = sc.next();
+            haveRoommate = true;
+        }
+
+        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 특이사항 기재 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+        System.out.print("1년 호실 신청하시겠습니까? 잘못 입력 시 한 학기만 신쳥됩니다 (y/n)");
+        String temp = sc.next();
+        boolean oneYear = false;
+        if(temp.toLowerCase().equals("y")){
+            oneYear = true;
+        }
+        System.out.print("잠버릇 여부를 체크해주세요. 잘못 입력 시 잠버릇 있는 것으로 간주됩니다. (y/n)");
+        temp = sc.next();
+        boolean snore = true;
+        if(temp.toLowerCase().equals("n")){
+            snore = false;
+        }
+
+        //선호도 -> 잠버릇(bool) -> 1년호실 (bool) -> 어디 기숙사인지 -> 밥-> 룸메이트
+        Protocol<Boolean> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.ONEYEAR_LASTING,0), oneYear);
+        Protocol<Boolean> snoring = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.SNORE,0), snore);
+        Protocol<String> roommates;
+        Protocol<String> session = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
+
+
+
+        Protocol<?> protocol1 = new Protocol<>();
+        Header header1 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION,0);
+        Protocol<Integer> prefer1 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE,0), 1);
+        Protocol<String> domitory1 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE,0), first);
+        Protocol<String> mealSchedule1 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN,0), meal1);
+        protocol1.setHeader(header1);
+        protocol1.addChild(prefer1); protocol1.addChild(snoring); protocol1.addChild(yearlast); protocol1.addChild(domitory1);
+        protocol1.addChild(mealSchedule1);
+
+        Protocol<?> protocol2 = new Protocol<>();
+        Header header2 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION,0);
+        Protocol<Integer> prefer2 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE,0), 2);
+        Protocol<String> domitory2 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE,0), second);
+        Protocol<String> mealSchedule2 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN,0), meal2);
+        protocol2.setHeader(header2);
+        protocol2.addChild(prefer2); protocol1.addChild(snoring); protocol1.addChild(yearlast); protocol1.addChild(domitory2);
+        protocol1.addChild(mealSchedule2);
+
+
+        Protocol<?> protocol3 = new Protocol<>();
+        Header header3 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION,0);
+        Protocol<Integer> prefer3 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE,0), 3);
+        Protocol<String> domitory3 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE,0), third);
+        Protocol<String> mealSchedule3 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN,0), meal3);
+        protocol1.setHeader(header3);
+        protocol1.addChild(prefer3); protocol1.addChild(snoring); protocol1.addChild(yearlast); protocol1.addChild(domitory3);
+        protocol1.addChild(mealSchedule3);
+
+        if(haveRoommate){
+            roommates = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE,0), roommate);
+            protocol1.addChild(roommates);
+            protocol2.addChild(roommates);
+            protocol3.addChild(roommates);
+        }
+
+        protocol1.addChild(session);
+        protocol2.addChild(session);
+        protocol3.addChild(session);
+
+
+        Protocol<?> resProtocol1, resProtocol2, resProtocol3;
+        try {
+            resProtocol1 =  asyncRequest.sendAndReceive(protocol1);
+            resProtocol2 =  asyncRequest.sendAndReceive(protocol2);
+            resProtocol3 =  asyncRequest.sendAndReceive(protocol3);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if((resProtocol1.getHeader().getCode() != Code.ResponseCode.OK) || (resProtocol2.getHeader().getCode() != Code.ResponseCode.OK) || (resProtocol3.getHeader().getCode() != Code.ResponseCode.OK) ){
+            System.out.println("재시도해주세요");
+            return;
+        }
+
+        System.out.println("입사신청서 등록이 완료되었습니다. 결핵진단서를 제출하지 않으면 합격이 취소되며, \n우선선발의 경우 결핵진단서에 더하여 우선선발 증빙자료를 제출하지 않으면 합격이 취소됩니다");
+        System.out.println("결핵진단서와 우선선발 증빙자료 제출은 각각 학생페이지 9번, 10번 기능입니다.");
 
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
 
@@ -476,7 +602,7 @@ public class ApplicantPage {
             return true;
         } else if(resProtocol.getHeader().getType() == Type.ERROR){
             Code code = resProtocol.getHeader().getCode();
-            if(code == Code.ResponseCode.ErrorCode.INVALID_REQUEST){
+            if(code == Code.ErrorCode.INVALID_REQUEST){
                 System.out.println("미납 상태입니다.");
             } else{
                 System.out.println("세션 만료. 재로그인하세요.");
