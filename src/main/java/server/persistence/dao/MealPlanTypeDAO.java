@@ -25,6 +25,21 @@ public class MealPlanTypeDAO implements MealPlanTypeDAOI {
     }
 
     @Override
+    public MealPlanTypeDTO findByName(String name) throws SQLException {
+        String query = "SELECT id, type_name, description FROM meal_plan_types WHERE type_name = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToMealPlanTypeDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+    @Override
     public List<MealPlanTypeDTO> findAll() throws SQLException {
         List<MealPlanTypeDTO> mealPlanTypes = new ArrayList<>();
         String query = "SELECT id, type_name, description FROM meal_plan_types";

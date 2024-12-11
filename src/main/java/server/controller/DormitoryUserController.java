@@ -60,6 +60,57 @@ public class DormitoryUserController {
         return result;
     }
 
+    public static Protocol<?> application(Protocol<?> protocol) throws SQLException {
+        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        String sessionId = (String) protocol.getChildren().getLast().getData();
+        if (verifySessionId(sessionId)&&isStudent(sessionId)) {
+            RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
+            DormitoryRoomTypeDTO dormitoryRoomTypeDTO = DormitoryRoomTypeDTO.builder()
+                    .roomTypeDTO(roomTypeDAO.findByName((String) protocol.getChildren().get(3).getData()))
+                    .build();
+            MealPlanTypeDAO mealPlanTypeDAO = new MealPlanTypeDAO();
+            MealPlanDTO mealPlanDTO = MealPlanDTO.builder()
+                    .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
+                    .build();
+
+            if (protocol.getHeader().getDataLength() >= 6) {
+                UserDAO userDAO = new UserDAO();
+                UserDTO userDTO = userDAO.findByUid((String) protocol.getChildren().get(5).getData());
+
+                SelectionApplicationDTO selectionApplicationDTO = SelectionApplicationDTO.builder()
+                        .preference((int) protocol.getChildren().getFirst().getData())
+                        .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
+                        .isYear((boolean) protocol.getChildren().get(2).getData())
+                        .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
+                        .mealPlanDTO(mealPlanDTO)
+                        .roommateUserDTO(userDTO)
+                        .build();
+            }
+            SelectionApplicationDTO selectionApplicationDTO = SelectionApplicationDTO.builder()
+                    .preference((int) protocol.getChildren().getFirst().getData())
+                    .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
+                    .isYear((boolean) protocol.getChildren().get(2).getData())
+                    .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
+                    .mealPlanDTO(mealPlanDTO)
+                    .build();
+
+            dao.save(selectionApplicationDTO);
+
+            resultHeader.setCode(Code.ResponseCode.OK);
+            resultHeader.setType(Type.RESPONSE);
+            resultHeader.setDataType(DataType.TLV);
+        } else {
+            resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setDataType(DataType.TLV);
+        }
+
+        result.setHeader(resultHeader);
+        return result;
+    }
+
     /**
      * @param protocol header(type:request, dataType: TLV, code: get_meal_plan, dataLength:)
      *                 data:
