@@ -29,7 +29,7 @@ public interface RequestHandlerInitializer {
         });
        // requestHandler.addRequestHandler(Code.RequestCode.LOGIN,AuthController::login);
         requestHandler.addRequestHandler(Code.RequestCode.LOGOUT, AuthController::logout);
-        requestHandler.addRequestHandler(Code.RequestCode.REFRESH_SESSION, AuthController::refreshSession);//authCOntroller
+        requestHandler.addRequestHandler(Code.RequestCode.REFRESH_SESSION, AuthController::refreshSession);//authController
 
         requestHandler.addRequestHandler(Code.RequestCode.GET_USER_INFO, UserController::getUserInfo);//userController
 
@@ -51,7 +51,7 @@ public interface RequestHandlerInitializer {
         requestHandler.addRequestHandler(Code.RequestCode.SELECT_APPLICANTS,DormitoryAdminController::selectApplicants);
         requestHandler.addRequestHandler(Code.RequestCode.MANAGEMENT_MERIT_POINT,DormitoryAdminController::managementMeritPoint);
         requestHandler.addRequestHandler(Code.RequestCode.GET_MOVE_OUT_APPLICANTS,DormitoryAdminController::getMoveOutApplicants);
-        requestHandler.addRequestHandler(Code.RequestCode.APPROVE_MOVE_OUT,DormitoryAdminController::approveMoveOut);
+        requestHandler.addRequestHandler(Code.RequestCode.APPROVE_MOVE_OUT,DormitoryAdminController::approveMoveOut);//DormitoryAdminController
 
         requestHandler.addRequestHandler(Code.RequestCode.GET_PAYMENT_AMOUNT, PaymentController::getPaymentAmount);
         requestHandler.addRequestHandler(Code.RequestCode.GET_PAYMENT_STATUS, PaymentController::getPaymentStatus);
