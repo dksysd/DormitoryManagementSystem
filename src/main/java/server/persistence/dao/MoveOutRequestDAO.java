@@ -85,7 +85,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public void save(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
-        String query = "INSERT INTO move_out_requests (checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, bank_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO move_out_requests (checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_request_status_id, selection_id, payment_refund_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -95,14 +95,14 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
             preparedStatement.setTimestamp(4, Timestamp.valueOf(moveOutRequestDTO.getUpdatedAt()));
             preparedStatement.setInt(5, moveOutRequestDTO.getMoveOutRequestStatusDTO() != null ? moveOutRequestDTO.getMoveOutRequestStatusDTO().getId() : null);
             preparedStatement.setInt(6, moveOutRequestDTO.getSelectionDTO() != null ? moveOutRequestDTO.getSelectionDTO().getId() : null);
-            preparedStatement.setInt(7, moveOutRequestDTO.getBankDTO() != null ? moveOutRequestDTO.getBankDTO().getId() : null);
+            preparedStatement.setInt(7, moveOutRequestDTO.getPaymentRefundDTO() != null ? moveOutRequestDTO.getPaymentRefundDTO().getId() : null);
             preparedStatement.executeUpdate();
         }
     }
 
     @Override
     public void update(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
-        String query = "UPDATE move_out_requests SET checkout_at = ?, account_number = ?, created_at = ?, updated_at = ?, move_out_request_status_id = ?, selection_id = ?, bank_id = ? WHERE id = ?";
+        String query = "UPDATE move_out_requests SET checkout_at = ?, account_number = ?, created_at = ?, updated_at = ?, move_out_request_status_id = ?, selection_id = ?, payment_refund_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -112,8 +112,43 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
             preparedStatement.setTimestamp(4, Timestamp.valueOf(moveOutRequestDTO.getUpdatedAt()));
             preparedStatement.setInt(5, moveOutRequestDTO.getMoveOutRequestStatusDTO() != null ? moveOutRequestDTO.getMoveOutRequestStatusDTO().getId() : null);
             preparedStatement.setInt(6, moveOutRequestDTO.getSelectionDTO() != null ? moveOutRequestDTO.getSelectionDTO().getId() : null);
-            preparedStatement.setInt(7, moveOutRequestDTO.getBankDTO() != null ? moveOutRequestDTO.getBankDTO().getId() : null);
+            preparedStatement.setInt(7, moveOutRequestDTO.getPaymentRefundDTO() != null ? moveOutRequestDTO.getPaymentRefundDTO().getId() : null);
             preparedStatement.setInt(8, moveOutRequestDTO.getId());
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateStatus(String uid, String status) throws SQLException {
+        String query = "SELECT mor.id AS request_id FROM move_out_requests mor" +
+                "INNER JOIN selections s ON mor.selection_id = s.id" +
+                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id" +
+                "INNER JOIN users u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        int id;
+        int status_id;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            id = resultSet.getInt("request_id");
+        }
+
+        query = "SELECT id FROM move_out_request_statuses" +
+                "WHERE status_name = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,status);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            status_id = resultSet.getInt("id");
+        }
+
+        query = "UPDATE move_out_requests SET move_out_status_id = ? WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, status_id);
+            preparedStatement.setInt(2, id);
             preparedStatement.executeUpdate();
         }
     }

@@ -53,10 +53,11 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
     }
 
     @Override
-    public void save(PaymentRefundDTO paymentRefundDTO) throws SQLException {
+    public int save(PaymentRefundDTO paymentRefundDTO) throws SQLException {
         String query = "INSERT INTO payment_refunds (refund_reason, account_number, account_holder_name, created_at, bank_id, payment_id) VALUES (?, ?, ?, ?, ?, ?)";
+        int id;
         try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query,1)) {
 
             preparedStatement.setString(1, paymentRefundDTO.getRefundReason());
             preparedStatement.setString(2, paymentRefundDTO.getAccountNumber());
@@ -65,7 +66,11 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
             preparedStatement.setInt(5, paymentRefundDTO.getBankDTO() != null ? paymentRefundDTO.getBankDTO().getId() : null);
             preparedStatement.setInt(6, paymentRefundDTO.getPaymentDTO() != null ? paymentRefundDTO.getPaymentDTO().getId() : null);
             preparedStatement.executeUpdate();
+
+            id = preparedStatement.getGeneratedKeys().getInt(1);
         }
+
+        return id;
     }
 
     @Override

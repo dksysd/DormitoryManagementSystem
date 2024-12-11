@@ -1,13 +1,12 @@
 package server.controller;
 
 import server.persistence.dao.*;
-import server.persistence.dto.SelectionApplicationDTO;
-import server.persistence.dto.SelectionDTO;
-import server.persistence.dto.UserDTO;
+import server.persistence.dto.*;
 import server.persistence.model.Selection;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static server.util.ProtocolValidator.*;
@@ -395,7 +394,7 @@ public class DormitoryUserController {
         String id = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(id)) {
             Byte[] bytes = (Byte[]) protocol.getChildren().getFirst().getData();
-            dao.updateTuber(id, bytes);
+            dao.updateTuber(getIdBySessionId(id), bytes);
 
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setCode(Code.ResponseCode.OK);
@@ -470,6 +469,27 @@ public class DormitoryUserController {
         }
 
         result.setHeader(resultHeader);
+        return result;
+    }
+
+    public static Protocol<?> moveOut(Protocol<?> protocol) throws SQLException {
+        Protocol<?> result = new Protocol<>();
+        Header resultHeader = new Header();
+        MoveOutRequestDAO requestDAO = new MoveOutRequestDAO();
+        String id = (String) protocol.getChildren().getLast().getData();
+        if (verifySessionId(id)) {
+            requestDAO.updateStatus(getIdBySessionId(id), "퇴사대기");
+            SelectionDAO selectionDAO = new SelectionDAO();
+
+            SelectionDTO selectionDTO = selectionDAO.findByUid(getIdBySessionId(id));
+            MoveOutRequestDTO dto = MoveOutRequestDTO.builder()
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .selectionDTO(selectionDTO)
+                    .build();
+            requestDAO.save(dto);
+        }
+
         return result;
     }
 }

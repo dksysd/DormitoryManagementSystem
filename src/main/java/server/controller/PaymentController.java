@@ -233,7 +233,7 @@ public class PaymentController {
                         (String) protocol.getChildren().get(3).getData(), LocalDateTime.now(),
                         new BankDTO(0, (String) protocol.getChildren().get(4).getData(),
                                 (String) protocol.getChildren().get(5).getData()), paymentDTO);
-                paymentRefundDAO.save(paymentRefundDTO);
+                int refund_id = paymentRefundDAO.save(paymentRefundDTO);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
                 LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
                 LocalDateTime end = moveOutRequestDTO.getCheckoutAt();
@@ -244,8 +244,10 @@ public class PaymentController {
                 int refundAmount = (int) ((remainingDays / (double) totalDays) * totalAmount);
                 paymentDTO.getPaymentStatusDTO().setStatusName("환불");
                 paymentDAO.update(paymentDTO);
+                paymentRefundDTO.setId(refund_id);
                 respProtocol.addChild(new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.REFUND_AMOUNT, 0), refundAmount));
-
+                moveOutRequestDTO.setPaymentRefundDTO(paymentRefundDTO);
+                moveOutRequestDAO.update(moveOutRequestDTO);
             }
             respProtocol.getHeader().setCode(Code.ErrorCode.INVALID_REQUEST);
         } else respProtocol.getHeader().setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);

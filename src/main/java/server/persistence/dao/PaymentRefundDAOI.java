@@ -8,7 +8,7 @@ import java.util.List;
 public interface PaymentRefundDAOI {
     PaymentRefundDTO findById(Integer id) throws SQLException;
     List<PaymentRefundDTO> findAll() throws SQLException;
-    void save(PaymentRefundDTO paymentRefundDTO) throws SQLException;
+    int save(PaymentRefundDTO paymentRefundDTO) throws SQLException;
     void update(PaymentRefundDTO paymentRefundDTO) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

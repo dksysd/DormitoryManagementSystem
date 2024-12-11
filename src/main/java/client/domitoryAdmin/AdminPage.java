@@ -1,8 +1,10 @@
 package client.domitoryAdmin;
+import client.core.util.AsyncRequest;
 import server.controller.DormitoryAdminController;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class AdminPage {
@@ -15,7 +17,7 @@ public class AdminPage {
     }
 
     //스위치문 있는 선택지별로 결과 돌리는 메서드 만들깅 >> 로그아웃 전까지 반복.
-    public static void adminFunction(){
+    public void adminFunction(AsyncRequest asyncRequest){
         int option = 0;
 
         do{
@@ -25,13 +27,13 @@ public class AdminPage {
             System.out.println("=======================================");
 
             switch (option){
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
+                case 1: registerSelectionInfo(asyncRequest);
+                case 2: displayApplicants(asyncRequest);
+                case 3: selectApplicant(asyncRequest);
+                case 4: managementMeritPoint(asyncRequest);
+                case 5: confirmTuberReport(asyncRequest);
+                case 6: displayMoveOutApplicant(asyncRequest);
+                case 7: confirmFIleForProof(asyncRequest);
                 default: break;
             }
         } while (option != 8);
@@ -40,18 +42,18 @@ public class AdminPage {
     public static void adminFunctionInfo(){
         System.out.println("============= 관리자 페이지입니다 =============");
         System.out.println("1. 선발 일정 등록"); // ok - 확인만
-        System.out.println("2. 입사 신청자 목록 확인");
+        System.out.println("2. 입사 신청자 목록 확인"); // ok - 확인만
         System.out.println("3. 입사자 선발하기"); // ok - 확인만
         System.out.println("4. 상벌점 관리"); // ok - 확인만
         System.out.println("5. 결핵진단서 진위 확인");
-        System.out.println("6. 퇴사 승인");
+        System.out.println("6. 퇴사 승인");// ok - 확인만
         System.out.println("7. 우선선발 증빙서 진위 확인");
         System.out.println("8. 로그아웃");
         System.out.println();
         System.out.println();
     }
 
-    public void registerSelectionInfo(){
+    public void registerSelectionInfo(AsyncRequest asyncRequest){
 
         int selection = 0;
         for( ; ; ){
@@ -104,8 +106,8 @@ public class AdminPage {
             Protocol<?> resProtocol = null;
 
             try {
-                resProtocol = DormitoryAdminController.registerSelectionInfo(protocol);
-            } catch (SQLException e) {
+                resProtocol = asyncRequest.sendAndReceive(protocol);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
@@ -119,12 +121,42 @@ public class AdminPage {
 
     }
 
-    public void displayApplicants(){
-        // 반복문으로 메시지 계속 받을 거 가틍데요 ~ 사용자 입력이 없그든여
-        // 메시지 안에 내용 가꼬 와서 출력 형식만 다듬으면 됨
+    public void displayApplicants(AsyncRequest asyncRequest){
+
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_APPLICANTS,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        Protocol<?> resProtocol;
+
+        try {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("재시도해주세요");
+            return;
+        }
+
+        System.out.println("=================== 입사 신청자 학번 목록 =====================");
+        int cnt = resProtocol.getChildren().size();
+        String student;
+        for(int i = 0; i < cnt; i++){
+            student = (String) resProtocol.getChildren().get(i).getData();
+            System.out.println(student + "   ");
+            if(i % 5 == 0){
+                System.out.println();
+            }
+        }
+
     }
 
-    public void selectApplicant(){
+    public void selectApplicant(AsyncRequest asyncRequest){
         System.out.print("선발/배정을 시작하시겠습니까? Y/N");
         char selection = sc.next().charAt(0);
         if(selection != 'Y' && selection != 'y'){
@@ -138,11 +170,11 @@ public class AdminPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        Protocol<?> resProtocol = null;
+        Protocol<?> resProtocol;
 
         try {
-            resProtocol = DormitoryAdminController.selectApplicants(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -153,7 +185,7 @@ public class AdminPage {
         }
     }
 
-    public void ManagementMeritPoint(){
+    public void managementMeritPoint(AsyncRequest asyncRequest){
         System.out.print("관리하려는 학생의 학번을 입력하세요 : ");
         String student = sc.next();
         System.out.println("상벌점 사유를 입력하세요 : ");
@@ -185,8 +217,8 @@ public class AdminPage {
         Protocol<?> resProtocol = null;
 
         try {
-            resProtocol = DormitoryAdminController.managementMeritPoint(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -198,7 +230,7 @@ public class AdminPage {
 
     }
 
-    public void ConfirmTuberReport(){
+    public void confirmTuberReport(AsyncRequest asyncRequest){
         // 결핵진단서 확인 안한 사람들 불러오는 쿼리있는 메서드
         // 한놈씩 반복문으로 조져서 그놈들이 올린 결핵진단서 메시지로 받아서 불러오는 메서드
         System.out.println("1.승인 / 2.거절 (번호를 누르세요) : ");
@@ -207,14 +239,60 @@ public class AdminPage {
         // 값에따라 반복문 계속할지?
     }
 
-    public void DisplayMoveOutApplicant(){
-        //메시지 보내서 퇴사신청한놈들 불러오는 메서드
-        // 그놈들 환불상태 불러오는 메서드
-        // 그럼 그거 보고 퇴사승인 누르기
-        // 승인하면 또 메시지 보내서 학생들 상태 바꾸기
+    public void displayMoveOutApplicant(AsyncRequest asyncRequest){
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MOVE_OUT_APPLICANTS,0);
+        Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
+        Protocol<?> protocol = new Protocol();
+        protocol.setHeader(header);
+        protocol.addChild(tlv);
+
+        Protocol<?> resProtocol;
+        try {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(resProtocol.getHeader().getCode() != Code.ResponseCode.OK){
+            System.out.println("재시도해주세요");
+            return;
+        }
+
+        System.out.println("=================== 퇴사 신청자 학번 목록 =====================");
+
+        String student;
+        int cnt = resProtocol.getChildren().size();
+
+        for(int i = 0; i < cnt; i++){
+            student = (String) resProtocol.getChildren().get(i).getData();
+            System.out.println(student);
+        }
+
+        System.out.println("==========================================================");
+        String selection = " ";
+        cnt = 0;
+        Header header2 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPROVE_MOVE_OUT,0);
+        for( ; !selection.equals("Q"); cnt++){
+            System.out.print("퇴사 승인하려는 학생의 학번을 입력하세요 (종료는 Q입력) : ");
+            selection = sc.next();
+            selection = selection.toUpperCase();
+
+            if(!selection.equals("Q")){
+                Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ID, 0);
+                Protocol<String> tlv2 = new Protocol<>(tlvHeader2, selection);
+                protocol.addChild(tlv2);
+            }
+        }
+
+        Header tlvHeader3 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
+        Protocol<String> tlv3 = new Protocol<>(tlvHeader3, sessionID);
+        protocol.addChild(tlv3);
+
+
     }
 
-    public void ConfirmFIleForProof(){
+    public void confirmFIleForProof(AsyncRequest asyncRequest){
         //위에 결핵이랑 똑같이
     }
 }

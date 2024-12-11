@@ -248,7 +248,8 @@ create table if not exists selection_schedules
     id         int primary key auto_increment,
     title      varchar(100) not null unique,
     created_at timestamp    not null default now(),
-    stated_at  timestamp    not null
+    started_at timestamp    not null,
+    ended_at   timestamp    not null
 );
 
 create table if not exists selection_quotas
@@ -359,7 +360,7 @@ create table if not exists move_out_requests
     bank_id            int         not null,
     foreign key (move_out_status_id) references move_out_request_statuses (id) on delete restrict,
     foreign key (selection_id) references selections (id) on delete cascade,
-    foreign key (bank_id) references banks (id) on delete restrict
+    foreign key (payment_refund_id) references payment_refunds (id) on delete restrict
 );
 
 create table if not exists demerit_points
