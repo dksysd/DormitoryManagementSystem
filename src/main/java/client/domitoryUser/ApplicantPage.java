@@ -329,7 +329,7 @@ public class ApplicantPage {
         try {
             resProtocol1 = asyncRequest.sendAndReceive(protocol1);
         } catch (Exception e) {
-            System.out.println("1순위 전송 오류");
+            System.out.println("1순위 전송 오류 ");
             throw new RuntimeException(e);
         }
 
