@@ -85,12 +85,13 @@ public class CardPaymentDAO implements CardPaymentDAOI {
 
     @Override
     public void update(String uid, String cardNumber, String cardIssuerName, String paymentStatus) throws SQLException {
-        String query = "SELECT cp.id, ci.id, p.id, ps.id FROM card_payments cp" +
-                "INNER JOIN payments p ON p.id = cp.payment_id" +
-                "INNER JOIN card_issuers ci ON ci.issuer_name = ?" +
-                "INNER JOIN payment_statuses ps ON ps.name = ?" +
-                "INNER JOIN payment_history ph ON p.id = ph.payment_id" +
-                "INNER JOIN users u ON u.id = ph.user_id" +
+        String query = "SELECT cp.id, ci.id, p.id, ps.id " +
+                "FROM card_payments cp " +
+                "INNER JOIN payments p ON p.id = cp.payment_id " +
+                "INNER JOIN card_issuers ci ON ci.issuer_name = ? " +
+                "INNER JOIN payment_statuses ps ON ps.status_name = ? " +
+                "INNER JOIN payment_histories ph ON p.id = ph.payment_id " +
+                "INNER JOIN users u ON u.id = ph.user_id " +
                 "WHERE u.uid = ?";
         int cardId;
         int paymentId;
