@@ -226,8 +226,10 @@ public class PaymentController {
                 RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
                 PaymentRefundDAO paymentRefundDAO = new PaymentRefundDAO();
-                PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0, protocol.getChildren().get(1).getData(), protocol.getChildren().get(2).getData(), LocalDateTime.now(),
-                        new BankDTO(0, (String) protocol.getChildren().get(3).getData()), paymentDTO);
+                PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0,(String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData(),
+                        (String) protocol.getChildren().get(3).getData(), LocalDateTime.now(),
+                        new BankDTO(0, (String) protocol.getChildren().get(4).getData(),
+                                (String) protocol.getChildren().get(5).getData()), paymentDTO);
                 paymentRefundDAO.save(paymentRefundDTO);
                 LocalDateTime start = roomAssignmentDTO.getMoveInAt();
                 LocalDateTime moveOut = moveOutRequestDTO.getCheckoutAt();
