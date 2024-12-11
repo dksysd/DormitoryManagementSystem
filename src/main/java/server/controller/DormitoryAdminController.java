@@ -2,14 +2,12 @@ package server.controller;
 
 
 import server.persistence.dao.*;
-import server.persistence.dto.DemeritPointDTO;
 import server.persistence.dto.SelectionScheduleDTO;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static server.util.ProtocolValidator.*;
@@ -59,7 +57,7 @@ public class DormitoryAdminController {
                 Protocol<String> child = new Protocol<>();
                 Header childHeader = new Header();
                 childHeader.setType(Type.VALUE);
-                childHeader.setCode(Code.ValueCode.USER_ID);
+                childHeader.setCode(Code.ValueCode.ID);
                 childHeader.setDataType(DataType.STRING);
                 child.setHeader(childHeader);
 

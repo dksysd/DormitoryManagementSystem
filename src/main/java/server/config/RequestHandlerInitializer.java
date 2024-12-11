@@ -1,9 +1,6 @@
 package server.config;
 
-import server.controller.AuthController;
-import server.controller.DormitoryUserController;
-import server.controller.PaymentController;
-import server.controller.UserController;
+import server.controller.*;
 import server.core.handler.RequestHandler;
 import shared.protocol.persistence.*;
 
@@ -48,6 +45,13 @@ public interface RequestHandlerInitializer {
         requestHandler.addRequestHandler(Code.RequestCode.GET_FILE_FOR_PROOF, DormitoryUserController::getFileForProof);
         requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_FILE_FOR_PROOF,DormitoryUserController::uploadFileForProof);
         requestHandler.addRequestHandler(Code.RequestCode.UPLOAD_TUBER_REPORT,DormitoryUserController::uploadTuberReport);//DormitoryUserController
+
+        requestHandler.addRequestHandler(Code.RequestCode.REGISTER_SELECTION_INFO, DormitoryAdminController::registerSelectionInfo);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_APPLICANTS,DormitoryAdminController::getApplicant);
+        requestHandler.addRequestHandler(Code.RequestCode.SELECT_APPLICANTS,DormitoryAdminController::selectApplicants);
+        requestHandler.addRequestHandler(Code.RequestCode.MANAGEMENT_MERIT_POINT,DormitoryAdminController::managementMeritPoint);
+        requestHandler.addRequestHandler(Code.RequestCode.GET_MOVE_OUT_APPLICANTS,DormitoryAdminController::getMoveOutApplicants);
+        requestHandler.addRequestHandler(Code.RequestCode.APPROVE_MOVE_OUT,DormitoryAdminController::approveMoveOut);
 
         requestHandler.addRequestHandler(Code.RequestCode.GET_PAYMENT_AMOUNT, PaymentController::getPaymentAmount);
         requestHandler.addRequestHandler(Code.RequestCode.GET_PAYMENT_STATUS, PaymentController::getPaymentStatus);
