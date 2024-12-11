@@ -114,7 +114,13 @@ public class ApplicantPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        Protocol<?> resProtocol = UserController.getUserInfo(protocol);
+        Protocol<?> resProtocol;
+        try {
+            resProtocol =  asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         String sexuality = null;
         if(resProtocol.getHeader().getType() == Type.RESPONSE){
             sexuality = (String) resProtocol.getChildren().get(3).getData();;
@@ -192,8 +198,8 @@ public class ApplicantPage {
 
             Protocol<?> resProtocol;
             try {
-                resProtocol = PaymentController.requestRefund(protocol);
-            } catch (SQLException e) {
+                resProtocol =  asyncRequest.sendAndReceive(protocol);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
@@ -244,8 +250,8 @@ public class ApplicantPage {
 
                 Protocol<?> resProtocol;
                 try {
-                    resProtocol = PaymentController.requestRefund(protocol);
-                } catch (SQLException e) {
+                    resProtocol =  asyncRequest.sendAndReceive(protocol);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
 
@@ -285,8 +291,8 @@ public class ApplicantPage {
         //상벌점 불러오기
         Protocol<?> resProtocol;
         try {
-            resProtocol = DormitoryUserController.getMeritAndDemeritPoints(protocol);
-        } catch (SQLException e) {
+            resProtocol =  asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -318,18 +324,15 @@ public class ApplicantPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        Protocol<?> resultProtocol;
-        Type resType;
-
+        Protocol<?> resProtocol;
         try {
-            resultProtocol = PaymentController.getPaymentAmount(protocol);
-            resType = resultProtocol.getHeader().getType();
+            resProtocol =  asyncRequest.sendAndReceive(protocol);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        if(resType == Type.RESPONSE){
-            int value = (int) resultProtocol.getChildren().get(0).getData();;
+        if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
+            int value = (int) resProtocol.getChildren().get(0).getData();;
             System.out.println("납부해야할 금액 : " + value + "원입니다.");
 
         } else{
@@ -369,8 +372,8 @@ public class ApplicantPage {
                 return;
             }
 
-            Protocol<?> resProtocol = null;
             Protocol<?> protocol = new Protocol<>();
+            Protocol<?> resProtocol;
             if(selection == 1){
                 Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BANK_TRANSFER,0);
                 protocol.setHeader(header);
@@ -399,11 +402,13 @@ public class ApplicantPage {
 
                     protocol.addChild(tlv);
                 }
+
                 try {
-                    resProtocol = PaymentController.payByBankTransfer(protocol);
-                } catch (SQLException e) {
+                    resProtocol =  asyncRequest.sendAndReceive(protocol);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
+
             } else {
                 Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.CARD_MOVEMENT,0);
                 protocol.setHeader(header);
@@ -449,20 +454,17 @@ public class ApplicantPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
-        Protocol<?> resultProtocol;
-        Type resType;
-
+        Protocol<?> resProtocol;
         try {
-            resultProtocol = PaymentController.getPaymentStatus(protocol);
-            resType = resultProtocol.getHeader().getType();
+            resProtocol =  asyncRequest.sendAndReceive(protocol);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        if(resType == Type.RESPONSE){
+        if(resProtocol.getHeader().getCode() == Code.ResponseCode.OK){
             return true;
-        } else if(resType == Type.ERROR){
-            Code code = resultProtocol.getHeader().getCode();
+        } else if(resProtocol.getHeader().getType() == Type.ERROR){
+            Code code = resProtocol.getHeader().getCode();
             if(code == Code.ResponseCode.ErrorCode.INVALID_REQUEST){
                 System.out.println("미납 상태입니다.");
             } else{
