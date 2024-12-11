@@ -1,4 +1,5 @@
 package client.domitoryAdmin;
+import client.core.util.AsyncRequest;
 import server.controller.DormitoryAdminController;
 import shared.protocol.persistence.*;
 
@@ -16,7 +17,7 @@ public class AdminPage {
     }
 
     //스위치문 있는 선택지별로 결과 돌리는 메서드 만들깅 >> 로그아웃 전까지 반복.
-    public static void adminFunction(){
+    public void adminFunction(AsyncRequest asyncRequest){
         int option = 0;
 
         do{
@@ -26,13 +27,13 @@ public class AdminPage {
             System.out.println("=======================================");
 
             switch (option){
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7:
+                case 1: registerSelectionInfo(asyncRequest);
+                case 2: displayApplicants(asyncRequest);
+                case 3: selectApplicant(asyncRequest);
+                case 4: managementMeritPoint(asyncRequest);
+                case 5: confirmTuberReport(asyncRequest);
+                case 6: displayMoveOutApplicant(asyncRequest);
+                case 7: confirmFIleForProof(asyncRequest);
                 default: break;
             }
         } while (option != 8);
@@ -52,7 +53,7 @@ public class AdminPage {
         System.out.println();
     }
 
-    public void registerSelectionInfo(){
+    public void registerSelectionInfo(AsyncRequest asyncRequest){
 
         int selection = 0;
         for( ; ; ){
@@ -105,8 +106,8 @@ public class AdminPage {
             Protocol<?> resProtocol = null;
 
             try {
-                resProtocol = DormitoryAdminController.registerSelectionInfo(protocol);
-            } catch (SQLException e) {
+                resProtocol = asyncRequest.sendAndReceive(protocol);
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
@@ -120,7 +121,7 @@ public class AdminPage {
 
     }
 
-    public void displayApplicants(){
+    public void displayApplicants(AsyncRequest asyncRequest){
 
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
@@ -132,8 +133,8 @@ public class AdminPage {
         Protocol<?> resProtocol;
 
         try {
-            resProtocol = DormitoryAdminController.getApplicant(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -155,7 +156,7 @@ public class AdminPage {
 
     }
 
-    public void selectApplicant(){
+    public void selectApplicant(AsyncRequest asyncRequest){
         System.out.print("선발/배정을 시작하시겠습니까? Y/N");
         char selection = sc.next().charAt(0);
         if(selection != 'Y' && selection != 'y'){
@@ -172,8 +173,8 @@ public class AdminPage {
         Protocol<?> resProtocol;
 
         try {
-            resProtocol = DormitoryAdminController.selectApplicants(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -184,7 +185,7 @@ public class AdminPage {
         }
     }
 
-    public void ManagementMeritPoint(){
+    public void managementMeritPoint(AsyncRequest asyncRequest){
         System.out.print("관리하려는 학생의 학번을 입력하세요 : ");
         String student = sc.next();
         System.out.println("상벌점 사유를 입력하세요 : ");
@@ -216,8 +217,8 @@ public class AdminPage {
         Protocol<?> resProtocol = null;
 
         try {
-            resProtocol = DormitoryAdminController.managementMeritPoint(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -229,7 +230,7 @@ public class AdminPage {
 
     }
 
-    public void ConfirmTuberReport(){
+    public void confirmTuberReport(AsyncRequest asyncRequest){
         // 결핵진단서 확인 안한 사람들 불러오는 쿼리있는 메서드
         // 한놈씩 반복문으로 조져서 그놈들이 올린 결핵진단서 메시지로 받아서 불러오는 메서드
         System.out.println("1.승인 / 2.거절 (번호를 누르세요) : ");
@@ -238,7 +239,7 @@ public class AdminPage {
         // 값에따라 반복문 계속할지?
     }
 
-    public void DisplayMoveOutApplicant(){
+    public void displayMoveOutApplicant(AsyncRequest asyncRequest){
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MOVE_OUT_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -248,8 +249,8 @@ public class AdminPage {
 
         Protocol<?> resProtocol;
         try {
-            resProtocol = DormitoryAdminController.getMoveOutApplicants(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -291,7 +292,7 @@ public class AdminPage {
 
     }
 
-    public void ConfirmFIleForProof(){
+    public void confirmFIleForProof(AsyncRequest asyncRequest){
         //위에 결핵이랑 똑같이
     }
 }

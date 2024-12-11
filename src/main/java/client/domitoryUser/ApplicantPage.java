@@ -1,4 +1,5 @@
 package client.domitoryUser;
+import client.core.util.AsyncRequest;
 import server.controller.DormitoryUserController;
 import server.controller.PaymentController;
 import server.controller.UserController;
@@ -18,7 +19,7 @@ public class ApplicantPage {
         this.sessionID = sessionID;
     }
 
-    public void applicantFunction(){
+    public void applicantFunction(AsyncRequest asyncRequest){
         int option = 0;
 
         do{
@@ -28,13 +29,13 @@ public class ApplicantPage {
             System.out.println("=======================================");
 
             switch (option){
-                case 1: displayInfo(); break;
+                case 1: displayInfo(asyncRequest); break;
                 case 2:
                 case 3:
                 case 4:
                 case 5:
-                case 6: displayBill(); break;
-                case 7: payment(); break;
+                case 6: displayBill(asyncRequest); break;
+                case 7: payment(asyncRequest); break;
                 case 8:
                 default: break;
             }
@@ -56,7 +57,7 @@ public class ApplicantPage {
     }
 
     //민성이가 슬쩍 보면 됨
-    public void displayInfo(){
+    public void displayInfo(AsyncRequest asyncRequest){
         // 선발 일정 요청 - sessionId
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
@@ -103,7 +104,7 @@ public class ApplicantPage {
         System.out.println("추가선발 : " + latest);
     }
 
-    public void applicate(){
+    public void applicate(AsyncRequest asyncRequest){
         // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
@@ -175,7 +176,7 @@ public class ApplicantPage {
 
     // 서현이가 봐죠 - 퇴사신청(환불신청) 부분
     // 퇴사 확인 부문만 추가하면 됨!
-    public void moveOutApplicate(){
+    public void moveOutApplicate(AsyncRequest asyncRequest){
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
         if(option == 2){
@@ -247,7 +248,7 @@ public class ApplicantPage {
     }
 
     //민성이가 확인 좀 해주셈
-    public void displaySelectionResult(){
+    public void displaySelectionResult(AsyncRequest asyncRequest){
         // 합격했는지 확인 요청
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_RESULT,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
@@ -260,7 +261,7 @@ public class ApplicantPage {
 
     }
 
-    public void displayMeritPoint(){
+    public void displayMeritPoint(AsyncRequest asyncRequest){
         //상벌점 요청
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MERIT_AND_DEMERIT_POINTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
@@ -295,7 +296,7 @@ public class ApplicantPage {
         System.out.println("자세한 사항은 관리자에게 문의하세요.");
     }
 
-    public void displayBill(){
+    public void displayBill(AsyncRequest asyncRequest){
         // 사용자 입력 없고 메시지 받기만 하면됨
         //클래스 및 메서드 불러오기
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BILL,0);
@@ -325,15 +326,15 @@ public class ApplicantPage {
     }
 
     //서혀나 봐조
-    public void payment(){
+    public void payment(AsyncRequest asyncRequest){
         //Payment 클래스 끌어와서 하기
         System.out.println("하려는 기능을 선택하세요. (1. 결제상태 확인 / 2. 결제하기)");
         int selection = sc.nextInt();
         if(selection == 1){
-            paidCheck();
+            paidCheck(asyncRequest);
         }
-        if(selection==2 && !paidCheck()){
-            displayBill();
+        if(selection==2 && !paidCheck(asyncRequest)){
+            displayBill(asyncRequest);
             System.out.println("납부 방법을 선택하세요 (1.계좌이체 / 2.카드결제)");
             selection = sc.nextInt();
             String account = null, name = null, bank = null, cardNum = null, cardCompany = null;
@@ -428,7 +429,7 @@ public class ApplicantPage {
 
     }
 
-    public boolean paidCheck(){
+    public boolean paidCheck(AsyncRequest asyncRequest){
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_CHECK,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);

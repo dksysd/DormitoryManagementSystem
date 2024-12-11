@@ -1,5 +1,6 @@
 package client.auth;
 
+import client.core.util.AsyncRequest;
 import lombok.Getter;
 import server.controller.AuthController;
 import shared.protocol.persistence.*;
@@ -14,9 +15,9 @@ public class Auth {
     @Getter
     private String sessionID;
 
-    public int logIn(){
+    public int logIn(AsyncRequest asyncRequest){
         logInInfo();
-        return logInCheck(id, pw);
+        return logInCheck(asyncRequest, id, pw);
     }
 
     public void logInInfo(){
@@ -30,7 +31,7 @@ public class Auth {
         pw = sc.next();
     }
 
-    public int logInCheck(String id, String pw){
+    public int logInCheck(AsyncRequest asyncRequest, String id, String pw){
         //관리자 = 0 , 학생 = 1, 로그인 실패 = -1
         Protocol<?> protocol = new Protocol<>();
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.LOGIN,0);
@@ -46,8 +47,8 @@ public class Auth {
 
         Protocol<?> resProtocol = null;
         try {
-            resProtocol = AuthController.login(protocol);
-        } catch (SQLException e) {
+            resProtocol = asyncRequest.sendAndReceive(protocol);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
