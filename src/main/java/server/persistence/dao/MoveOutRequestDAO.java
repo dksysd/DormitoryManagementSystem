@@ -122,10 +122,10 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
 
     @Override
     public void updateStatus(String uid, String status) throws SQLException {
-        String query = "SELECT mor.id AS request_id FROM move_out_requests mor" +
-                "INNER JOIN selections s ON mor.selection_id = s.id" +
-                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id" +
-                "INNER JOIN users u ON u.id = sa.user_id" +
+        String query = "SELECT mor.id AS request_id FROM move_out_requests mor " +
+                "INNER JOIN selections s ON mor.selection_id = s.id " +
+                "INNER JOIN selection_applications sa ON sa.id = s.selection_application_id " +
+                "INNER JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         int id;
         int status_id;
@@ -137,7 +137,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
             id = resultSet.getInt("request_id");
         }
 
-        query = "SELECT id FROM move_out_request_statuses" +
+        query = "SELECT id FROM move_out_request_statuses " +
                 "WHERE status_name = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
