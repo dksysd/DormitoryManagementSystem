@@ -4,6 +4,7 @@ import server.persistence.dto.DemeritPointDTO;
 import server.config.DatabaseConnectionPool;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,37 @@ public class DemeritPointDAO implements DemeritPointDAOI {
             preparedStatement.setTimestamp(2, Timestamp.valueOf(demeritPointDTO.getCreatedAt()));
             preparedStatement.setInt(3, demeritPointDTO.getUserDTO() != null ? demeritPointDTO.getUserDTO().getId() : null);
             preparedStatement.setInt(4, demeritPointDTO.getRoomAssignmentDTO() != null ? demeritPointDTO.getRoomAssignmentDTO().getId() : null);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void savePoint(String uid, String description, int score) throws SQLException{
+        int user_id;
+        int room_assignment_id;
+        String query = "SELECT u.id AS user_id, ra.id AS room_id FROM users u" +
+                "INNER JOIN selection_applications sa ON u.id = sa.user_id" +
+                "INNER JOIN selections s ON sa.id = s.selection_application_id" +
+                "INNER JOIN room_assignments ra ON s.id = ra.selection_id" +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            user_id = resultSet.getInt(1);
+            room_assignment_id = resultSet.getInt(2);
+        }
+
+        query = "INSERT INTO demerit_points (description, created_at, user_id, room_assignment_id) VALUES (?, ?, ?, ?)";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, description);
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            preparedStatement.setInt(3, user_id);
+            preparedStatement.setInt(4, room_assignment_id);
             preparedStatement.executeUpdate();
         }
     }

@@ -10,6 +10,7 @@ public interface DemeritPointDAOI {
     List<DemeritPointDTO> findAll() throws SQLException;
     List<String> findAllPointIntoString() throws SQLException;
     void save(DemeritPointDTO demeritPointDTO) throws SQLException;
+    void savePoint(String uid, String description, int score) throws SQLException;
     void update(DemeritPointDTO demeritPointDTO) throws SQLException;
     void delete(Integer id) throws SQLException;
 }

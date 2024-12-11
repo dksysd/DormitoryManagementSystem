@@ -52,6 +52,8 @@ public class DormitoryUserController {
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
         } else {
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setDataType(DataType.TLV);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
@@ -99,6 +101,8 @@ public class DormitoryUserController {
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
         } else {
+            resultHeader.setType(Type.ERROR);
+            resultHeader.setDataType(DataType.TLV);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
@@ -146,9 +150,11 @@ public class DormitoryUserController {
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
+        resultHeader.setDataType(DataType.TLV);
         result.setHeader(resultHeader);
         return result;
     }
@@ -181,9 +187,10 @@ public class DormitoryUserController {
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
-
+        resultHeader.setDataType(DataType.TLV);
         result.setHeader(resultHeader);
         return result;
     }
@@ -215,6 +222,7 @@ public class DormitoryUserController {
             resultHeader.setType(Type.RESPONSE);
 
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
@@ -247,9 +255,11 @@ public class DormitoryUserController {
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
+        resultHeader.setDataType(DataType.TLV);
         result.setHeader(resultHeader);
         return result;
     }
@@ -279,9 +289,11 @@ public class DormitoryUserController {
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
+        resultHeader.setDataType(DataType.TLV);
         result.setHeader(resultHeader);
         return result;
     }
@@ -322,6 +334,7 @@ public class DormitoryUserController {
             child.setData(statusName);
             result.addChild(child);
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
@@ -367,6 +380,7 @@ public class DormitoryUserController {
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 
@@ -420,6 +434,7 @@ public class DormitoryUserController {
             child.setHeader(childHeader);
             child.setData(selectionDTO.getAdditionalProofFileDTO().getData());
         } else {
+            resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
 

@@ -208,6 +208,37 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     }
 
     @Override
+    public void updateSelectionApplication(String uid, String statusName) throws SQLException {
+        String query = "SELECT sa.id, sas.id FROM selection_applications sa" +
+                "INNER JOIN selection_application_statuses sas ON sas.name = ?" +
+                "INNER JOIN user u ON u.id = sa.user_id" +
+                "WHERE = u.uid = ?";
+        int id;
+        int status_id;
+
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, statusName);
+            preparedStatement.setString(2,uid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            id = resultSet.getInt(1);
+            status_id = resultSet.getInt(2);
+        }
+
+        query = "UPDATE selection_applications SET selection_application_status_id = ?" +
+                "WHERE id = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1,status_id);
+            preparedStatement.setInt(2,id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
     public void updateRoomType(String uid, String roomTypeName) throws SQLException {
         String query = "SELECT s.id FROM selection_applications s" +
                 "LEFT JOIN users u ON u.uid = ?";

@@ -32,6 +32,56 @@ public class SelectionDAO implements SelectionDAOI {
     }
 
     @Override
+    public SelectionDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT s.id AS selection_id, s.is_final_approved, s.created_at, s.updated_at, " +
+                "s.selection_application_status_id, s.tuberculosis_certificate_file_id, s.additional_proof_file_id, " +
+                "sas.id AS status_id, sas.status_name " +
+                "FROM selections s " +
+                "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToSelectionDTO(resultSet);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void updateTuber(String uid, Byte[] data) throws SQLException {
+        String query = "SELECT s.id AS id, u.user_name AS name" +
+                "FROM selections s " +
+                "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id" +
+                "WHERE u.uid = ?";
+        int id;
+        String name;
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            id = resultSet.getInt("id");
+            name = resultSet.getString("name");
+        }
+        ImageDAO imageDAO = new ImageDAO();
+        ImageDTO imageDTO = ImageDTO.builder()
+                .name(name + "_tuber")
+                .data(data)
+                .width(16)
+                .height(16)
+                .extension("jpg")
+                .build();
+        imageDAO.save(imageDTO);
+
+        query = "UPDATE selections SET tuber";
+
+    }
+    @Override
     public List<SelectionDTO> findAll() throws SQLException {
         List<SelectionDTO> selections = new ArrayList<>();
         String query = "SELECT s.id AS selection_id, s.is_final_approved, s.created_at, s.updated_at, " +
