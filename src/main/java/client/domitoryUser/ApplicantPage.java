@@ -126,14 +126,11 @@ public class ApplicantPage {
         boolean pureum_1, pureum_2, pureum_3;
 
         if (sexuality.equals("F")) {
-            System.out.println("(푸름1 / 푸름3 / 오름1 )");
+            System.out.println("(푸름3 / 오름1 )");
         } else {
-            System.out.println("(푸름2 / 푸름4 / 오름2 )");
+            System.out.println("(푸름1 / 푸름2 / 푸름4 / 오름2 / 오름3)");
         }
-        System.out.println();
-        System.out.println(">> 예시 : e c h (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 아름관)");
-        System.out.println();
-        System.out.println("!! 타 성별 기숙사로 잘못 입력할 경우 선발이 취소됩니다 !!");
+        System.out.println(">> 예시 : 오름1 푸름3 아름관 (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 아름관)");
         System.out.println();
         System.out.println(">> 지망 순위 입력 : ");
         String first = sc.next();
@@ -195,7 +192,7 @@ public class ApplicantPage {
 
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 룸메이트 사전 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("두 사람이 모두 신청해야 적용됩니다");
-        System.out.print("룸메이트 사전 신청하시겠습니까? (y/n) ");
+        System.out.print("룸메이트 사전 신청하시겠습니까? (y/n)");
         String roommateAllow = sc.next();
         String roommate = "";
         boolean haveRoommate = false;
@@ -206,21 +203,21 @@ public class ApplicantPage {
         }
 
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 특이사항 기재 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-        System.out.print("1년 호실 신청하시겠습니까? 잘못 입력 시 한 학기만 신쳥됩니다 (y/n) ");
+        System.out.print("1년 호실 신청하시겠습니까? 잘못 입력 시 한 학기만 신쳥됩니다 (y/n)");
         String temp = sc.next();
-        int oneYear = 0;
+        boolean oneYear = false;
         if (temp.toLowerCase().equals("y")) {
-            oneYear = 1;
+            oneYear = true;
         }
-        System.out.print("잠버릇 여부를 체크해주세요. 잘못 입력 시 잠버릇 있는 것으로 간주됩니다. (y/n) ");
+        System.out.print("잠버릇 여부를 체크해주세요. 잘못 입력 시 잠버릇 있는 것으로 간주됩니다. (y/n)");
         temp = sc.next();
-        int snore = 1;
+        boolean snore = true;
         if (temp.toLowerCase().equals("n")) {
-            snore = 0;
+            snore = false;
         }
         //선호도 -> 잠버릇(bool) -> 1년호실 (bool) -> 어디 기숙사인지 -> 밥-> 룸메이트
-        Protocol<Integer> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.ONEYEAR_LASTING, 0), oneYear);
-        Protocol<Integer> snoring = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.SNORE, 0), snore);
+        Protocol<Boolean> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.ONEYEAR_LASTING, 0), oneYear);
+        Protocol<Boolean> snoring = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.SNORE, 0), snore);
         Protocol<String> roommates;
         Protocol<String> session = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
 
