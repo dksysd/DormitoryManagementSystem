@@ -25,6 +25,22 @@ public class RoomTypeDAO implements RoomTypeDAOI {
     }
 
     @Override
+    public RoomTypeDTO findByName(String name) throws SQLException {
+        String query = "SELECT id, type_name, description, max_person FROM room_types WHERE type_name = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToRoomTypeDTO(resultSet);
+            }
+        }
+        return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+
+    @Override
     public List<RoomTypeDTO> findAll() throws SQLException {
         List<RoomTypeDTO> roomTypes = new ArrayList<>();
         String query = "SELECT id, type_name, description, max_person FROM room_types";

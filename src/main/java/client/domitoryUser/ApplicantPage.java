@@ -165,8 +165,7 @@ public class ApplicantPage {
 
         String sexuality ;
         if (resProtocol.getHeader().getType() == Type.RESPONSE) {
-            sexuality = (String) resProtocol.getChildren().get(3).getData();
-
+            sexuality = (String) resProtocol.getChildren().get(2).getData();
         } else {
             System.out.println("학생 정보를 가져올 수 없습니다. 재로그인 해주세요");
             return;
