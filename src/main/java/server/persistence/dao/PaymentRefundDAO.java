@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentRefundDAO implements PaymentRefundDAOI {
-
     @Override
     public PaymentRefundDTO findById(Integer id) throws SQLException {
         String query = "SELECT pr.id AS refund_id, pr.refund_reason, pr.account_number, pr.account_holder_name, " +
@@ -30,6 +29,28 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
             }
         }
         return null; // ID에 해당하는 데이터가 없으면 null 반환
+    }
+
+    @Override
+    public PaymentRefundDTO findByUid(String uid) throws SQLException {
+        String query = "SELECT pr.id AS refund_id, pr.refund_reason, pr.account_number, pr.account_holder_name, " +
+                "pr.created_at, b.id AS bank_id, b.bank_name, b.bank_code, " +
+                "p.id AS payment_id, p.payment_amount, p.created_at AS payment_created_at " +
+                "FROM payment_refunds pr " +
+                "LEFT JOIN banks b ON pr.bank_id = b.id " +
+                "LEFT JOIN payments p ON pr.payment_id = p.id " +
+                "INNER JOIN payment_history ph ON ph.payment_id = p.id" +
+                "INNER JOIN users u ON u.id = ph.user_id" +
+                "WHERE u.uid = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, uid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToPaymentRefundDTO(resultSet);
+            }
+        }
+        return null;
     }
 
     @Override
