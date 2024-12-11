@@ -55,8 +55,8 @@ public class AuthController implements Controller {
                 sessionManager.getSession(sessionId).setAttribute("ID", id);
                 sessionManager.getSession(sessionId).setAttribute("PW", pw);
                 sessionManager.getSession(sessionId).setAttribute("USER_TYPE", userType);
-                childProtocol1.setHeader(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.SESSION_ID, 0));
-                childProtocol2.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.USER_TYPE_ID, 0));
+                childProtocol1.setHeader(new Header(Type.VALUE, DataType.INTEGER,Code.ValueCode.USER_TYPE_ID , 0));
+                childProtocol2.setHeader(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0));
                 childProtocol1.setData(userType);
                 childProtocol2.setData(sessionId);
                 resProtocol.addChild(childProtocol1);

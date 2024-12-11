@@ -56,8 +56,8 @@ public class Auth {
             System.out.println("로그인 오류");
             return -1;
         } else {
-            sessionID = (String) resProtocol.getChildren().get(1).getData();
-            int type = (int) resProtocol.getChildren().get(0).getData();
+            sessionID = (String) resProtocol.getChildren().getLast().getData();
+            int type = (int) resProtocol.getChildren().getFirst().getData();
             if (type == 1)
                 return 0;
             else if (type == 2)
