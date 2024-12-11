@@ -114,7 +114,7 @@ public class PaymentController {
      *                 3 ( header(type: value, dataType: string, code: bank_name, dataLength:,)
      *                 data: 은행명)
      *                 4 ( header(type: value, dataType: string, code: bank_code, dataLength:,)
-     *      *                 data: 은행명)
+     *      *                 data: 은행코드)
      *                 5 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
      *                 data: "납부")
      *                 6 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
