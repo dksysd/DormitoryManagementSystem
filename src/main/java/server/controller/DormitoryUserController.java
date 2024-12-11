@@ -2,7 +2,6 @@ package server.controller;
 
 import server.persistence.dao.*;
 import server.persistence.dto.*;
-import server.persistence.model.Selection;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
@@ -34,7 +33,6 @@ public class DormitoryUserController {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = result.getHeader();
         String sessionId = (String) protocol.getChildren().getLast().getData();
-        String id = getIdBySessionId((String) protocol.getChildren().getFirst().getData());
 
         if (verifySessionId(sessionId)&&isStudent(sessionId)) {
             List<String> list = dao.findAllTitleIntoString();
@@ -78,13 +76,13 @@ public class DormitoryUserController {
      * data: null
      */
     public static Protocol<?> getMealPlan(Protocol<?> protocol) throws SQLException {
-        Header header = protocol.getHeader();
+
         MealPlanDAO dao = new MealPlanDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
-        String Sessionid = (String) protocol.getChildren().getLast().getData();
+        String sessionId = (String) protocol.getChildren().getLast().getData();
 
-        if (verifySessionId(Sessionid)&&isStudent(Sessionid)) {
+        if (verifySessionId(sessionId)&&isStudent(sessionId)) {
             List<String> list = dao.findAllMealTypeIntoString();
 
             for (String s : list) {
@@ -128,7 +126,6 @@ public class DormitoryUserController {
      * data: null
      */
     public static Protocol<?> getDormitoryRooms(Protocol<?> protocol) throws SQLException {
-        Header header = protocol.getHeader();
         DormitoryDAO dao = new DormitoryDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -150,7 +147,6 @@ public class DormitoryUserController {
 
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
-            resultHeader.setDataType(DataType.TLV);
         } else {
             resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
@@ -176,7 +172,6 @@ public class DormitoryUserController {
      * data: null
      */
     public static Protocol<?> selectPriorityApplication(Protocol<?> protocol) throws SQLException {
-        Header header = protocol.getHeader();
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -280,7 +275,6 @@ public class DormitoryUserController {
      * data: null
      */
     public static Protocol<?> applyRoom(Protocol<?> protocol) throws SQLException {
-        Header header = new Header();
         DormitoryRoomTypeDAO dao = new DormitoryRoomTypeDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -510,6 +504,21 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * @param protocol header(type:request, dataType: TLV, code: MOVE_OUT, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : demerit_point, dataLength :, ))
+     * @return (에러의 경우) header(type : Error, dataType : TLV, code : Error dataLength: 0)
+     * 정상 -> header(type : Response, dataType : TLV, code : OK dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> moveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
