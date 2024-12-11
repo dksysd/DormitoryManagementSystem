@@ -75,7 +75,7 @@ public class DormitoryUserController {
                     .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
                     .build();
 
-            if (protocol.getHeader().getDataLength() >= 6) {
+            if (protocol.getHeader().getDataLength() >= 7) {
                 UserDAO userDAO = new UserDAO();
                 UserDTO userDTO = userDAO.findByUid((String) protocol.getChildren().get(5).getData());
 
