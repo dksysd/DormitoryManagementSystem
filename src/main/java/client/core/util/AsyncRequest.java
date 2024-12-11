@@ -9,7 +9,6 @@ import shared.protocol.util.ProtocolSerializer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.ReadPendingException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,19 +30,14 @@ public class AsyncRequest {
     }
 
     private CompletableFuture<Protocol<?>> receiveResponse() {
-        try {
-            CompletableFuture<Protocol<?>> responseFuture = new CompletableFuture<>();
-            ByteBuffer headerBuffer = ByteBuffer.allocate(Header.BYTES);
-            client.read(headerBuffer, headerBuffer, new InputHeaderHandler(client, this::closeClient, responseFuture));
-            return responseFuture;
-        } catch (ReadPendingException e) {
-            e.printStackTrace();
-            return null;
-        }
+        CompletableFuture<Protocol<?>> responseFuture = new CompletableFuture<>();
+        ByteBuffer headerBuffer = ByteBuffer.allocate(Header.BYTES);
+        client.read(headerBuffer, headerBuffer, new InputHeaderHandler(client, this::closeClient, responseFuture));
+        return responseFuture;
     }
 
     public Protocol<?> sendAndReceive(Protocol<?> requestProtocol) throws ExecutionException, InterruptedException {
-        return sendRequest(requestProtocol).thenCompose(client -> receiveResponse()).join();
+        return sendRequest(requestProtocol).thenCompose(client -> receiveResponse()).get();
     }
 
     private void closeClient(AsynchronousSocketChannel client) {

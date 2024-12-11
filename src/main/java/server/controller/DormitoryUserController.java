@@ -31,7 +31,7 @@ public class DormitoryUserController {
     public static Protocol<?> getSelectionSchedule(Protocol<?> protocol) throws SQLException {
         SelectionScheduleDAO dao = new SelectionScheduleDAO();
         Protocol<?> result = new Protocol<>();
-        Header resultHeader = result.getHeader();
+        Header resultHeader = new Header();
         String sessionId = (String) protocol.getChildren().getLast().getData();
 
         if (verifySessionId(sessionId)&&isStudent(sessionId)) {
