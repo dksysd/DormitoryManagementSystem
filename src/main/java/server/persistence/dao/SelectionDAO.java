@@ -1,10 +1,7 @@
 package server.persistence.dao;
 
-import server.persistence.dto.SelectionDTO;
-import server.persistence.dto.SelectionApplicationStatusDTO;
-import server.persistence.dto.ImageDTO;
+import server.persistence.dto.*;
 import server.config.DatabaseConnectionPool;
-import server.persistence.dto.UserDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,12 +11,12 @@ public class SelectionDAO implements SelectionDAOI {
 
     @Override
     public SelectionDTO findById(Integer id) throws SQLException {
-        String query = "SELECT s.id AS selection_id, s.is_final_approved, s.created_at, s.updated_at, " +
-                "s.selection_application_status_id, s.tuberculosis_certificate_file_id, s.additional_proof_file_id, " +
-                "sas.id AS status_id, sas.status_name " +
+        String query = "SELECT s.id AS id, is_final_approved, created_at, updated_at, " +
+                "selection_application_id, tuberculosis_certificate_file_id, additional_proof_file_id " +
                 "FROM selections s " +
-                "LEFT JOIN selection_application_status sas ON s.selection_application_status_id = sas.id " +
-                "WHERE s.id = ?";
+                "LEFT JOIN selection_applications sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id " +
+                "WHERE u.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -34,12 +31,11 @@ public class SelectionDAO implements SelectionDAOI {
 
     @Override
     public SelectionDTO findByUid(String uid) throws SQLException {
-        String query = "SELECT s.id AS selection_id, s.is_final_approved, s.created_at, s.updated_at, " +
-                "s.selection_application_status_id, s.tuberculosis_certificate_file_id, s.additional_proof_file_id, " +
-                "sas.id AS status_id, sas.status_name " +
+        String query = "SELECT s.id AS id, is_final_approved, created_at, updated_at, " +
+                "selection_application_id, tuberculosis_certificate_file_id, additional_proof_file_id " +
                 "FROM selections s " +
-                "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
-                "LEFT JOIN users u ON u.id = sa.user_id" +
+                "LEFT JOIN selection_applications sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -55,10 +51,10 @@ public class SelectionDAO implements SelectionDAOI {
 
     @Override
     public void updateTuber(String uid, Byte[] data) throws SQLException {
-        String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id" +
+        String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id " +
                 "FROM selections s " +
-                "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
-                "LEFT JOIN users u ON u.id = sa.user_id" +
+                "LEFT JOIN selection_applications sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         int id;
         int user_id;
@@ -96,10 +92,10 @@ public class SelectionDAO implements SelectionDAOI {
 
     @Override
     public void updateProof(String uid, Byte[] data) throws SQLException {
-        String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id" +
+        String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id " +
                 "FROM selections s " +
-                "LEFT JOIN selection_application sa ON s.selection_application_id = sa.id " +
-                "LEFT JOIN users u ON u.id = sa.user_id" +
+                "LEFT JOIN selection_applications sa ON s.selection_application_id = sa.id " +
+                "LEFT JOIN users u ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         int id;
         int user_id;
@@ -140,10 +136,10 @@ public class SelectionDAO implements SelectionDAOI {
     public List<SelectionDTO> findAll() throws SQLException {
         List<SelectionDTO> selections = new ArrayList<>();
         String query = "SELECT s.id AS selection_id, s.is_final_approved, s.created_at, s.updated_at, " +
-                "s.selection_application_status_id, s.tuberculosis_certificate_file_id, s.additional_proof_file_id, " +
-                "sas.id AS status_id, sas.status_name " +
+                "s.selection_application_id, s.tuberculosis_certificate_file_id, s.additional_proof_file_id, " +
+                "sa.id AS application_id " +
                 "FROM selections s " +
-                "LEFT JOIN selection_application_status sas ON s.selection_application_status_id = sas.id";
+                "INNER JOIN selection_applications sa ON s.selection_application_id = sa.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -158,7 +154,7 @@ public class SelectionDAO implements SelectionDAOI {
     @Override
     public void save(SelectionDTO selectionDTO) throws SQLException {
         String query = "INSERT INTO selections (is_final_approved, created_at, updated_at, " +
-                "selection_application_status_id, tuberculosis_certificate_file_id, additional_proof_file_id) " +
+                "selection_application_id, tuberculosis_certificate_file_id, additional_proof_file_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -166,7 +162,7 @@ public class SelectionDAO implements SelectionDAOI {
             preparedStatement.setBoolean(1, selectionDTO.isFinalApproved());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(selectionDTO.getCreatedAt()));
             preparedStatement.setTimestamp(3, Timestamp.valueOf(selectionDTO.getUpdatedAt()));
-            preparedStatement.setInt(4, selectionDTO.getSelectionApplicationStatusDTO() != null ? selectionDTO.getSelectionApplicationStatusDTO().getId() : null);
+            preparedStatement.setInt(4, selectionDTO.getSelectionApplicationDTO() != null ? selectionDTO.getSelectionApplicationDTO().getId() : null);
             preparedStatement.setInt(5, selectionDTO.getTuberculosisCertificateFileDTO() != null ? selectionDTO.getTuberculosisCertificateFileDTO().getId() : null);
             preparedStatement.setInt(6, selectionDTO.getAdditionalProofFileDTO() != null ? selectionDTO.getAdditionalProofFileDTO().getId() : null);
             preparedStatement.executeUpdate();
@@ -176,14 +172,14 @@ public class SelectionDAO implements SelectionDAOI {
     @Override
     public void update(SelectionDTO selectionDTO) throws SQLException {
         String query = "UPDATE selections SET is_final_approved = ?, created_at = ?, updated_at = ?, " +
-                "selection_application_status_id = ?, tuberculosis_certificate_file_id = ?, additional_proof_file_id = ? WHERE id = ?";
+                "selection_application_id = ?, tuberculosis_certificate_file_id = ?, additional_proof_file_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setBoolean(1, selectionDTO.isFinalApproved());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(selectionDTO.getCreatedAt()));
             preparedStatement.setTimestamp(3, Timestamp.valueOf(selectionDTO.getUpdatedAt()));
-            preparedStatement.setInt(4, selectionDTO.getSelectionApplicationStatusDTO() != null ? selectionDTO.getSelectionApplicationStatusDTO().getId() : null);
+            preparedStatement.setInt(4, selectionDTO.getSelectionApplicationDTO() != null ? selectionDTO.getSelectionApplicationDTO().getId() : null);
             preparedStatement.setInt(5, selectionDTO.getTuberculosisCertificateFileDTO() != null ? selectionDTO.getTuberculosisCertificateFileDTO().getId() : null);
             preparedStatement.setInt(6, selectionDTO.getAdditionalProofFileDTO() != null ? selectionDTO.getAdditionalProofFileDTO().getId() : null);
             preparedStatement.setInt(7, selectionDTO.getId());
@@ -203,9 +199,8 @@ public class SelectionDAO implements SelectionDAOI {
     }
 
     private SelectionDTO mapRowToSelectionDTO(ResultSet resultSet) throws SQLException {
-        SelectionApplicationStatusDTO statusDTO = SelectionApplicationStatusDTO.builder()
-                .id(resultSet.getInt("selection_application_status_id"))
-                .statusName(resultSet.getString("status_name")) // 상태 이름 추가
+        SelectionApplicationDTO selectionApplicationDTO = SelectionApplicationDTO.builder()
+                .id(resultSet.getInt("application_id"))
                 .build();
 
         ImageDTO tuberculosisCertificateFileDTO = ImageDTO.builder()
@@ -221,7 +216,7 @@ public class SelectionDAO implements SelectionDAOI {
                 .isFinalApproved(resultSet.getBoolean("is_final_approved"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
-                .selectionApplicationStatusDTO(statusDTO) // 선택 신청 상태 정보 추가
+                .selectionApplicationDTO(selectionApplicationDTO) // 선택 신청 상태 정보 추가
                 .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO) // 결핵 증명서 파일 정보 추가
                 .additionalProofFileDTO(additionalProofFileDTO) // 추가 증명서 파일 정보 추가
                 .build();

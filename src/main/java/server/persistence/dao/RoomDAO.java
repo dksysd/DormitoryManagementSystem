@@ -53,7 +53,7 @@ public class RoomDAO implements RoomDAOI {
 
     @Override
     public void update(RoomDTO roomDTO) throws SQLException {
-        String query = "UPDATE room_types SET room_number = ? WHERE id = ?";
+        String query = "UPDATE rooms SET room_number = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 

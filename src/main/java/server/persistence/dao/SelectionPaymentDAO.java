@@ -15,7 +15,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
     public SelectionPaymentDTO findById(Integer id) throws SQLException {
         String query = "SELECT sp.id AS payment_id, sp.selection_id, sp.payment_id, " +
                 "s.id AS selection_id, s.is_final_approved, s.created_at AS selection_created_at, " +
-                "p.id AS payment_id, p.amount, p.created_at AS payment_created_at " +
+                "p.id AS payment_id, p.payment_amount, p.created_at AS payment_created_at " +
                 "FROM selection_payments sp " +
                 "LEFT JOIN selections s ON sp.selection_id = s.id " +
                 "LEFT JOIN payments p ON sp.payment_id = p.id " +
@@ -37,7 +37,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
         List<SelectionPaymentDTO> selectionPayments = new ArrayList<>();
         String query = "SELECT sp.id AS payment_id, sp.selection_id, sp.payment_id, " +
                 "s.id AS selection_id, s.is_final_approved, s.created_at AS selection_created_at, " +
-                "p.id AS payment_id, p.amount, p.created_at AS payment_created_at " +
+                "p.id AS payment_id, p.payment_amount, p.created_at AS payment_created_at " +
                 "FROM selection_payments sp " +
                 "LEFT JOIN selections s ON sp.selection_id = s.id " +
                 "LEFT JOIN payments p ON sp.payment_id = p.id";

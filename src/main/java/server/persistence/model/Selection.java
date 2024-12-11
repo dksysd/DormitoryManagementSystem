@@ -20,7 +20,7 @@ public class Selection implements Model {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private SelectionApplicationStatusDTO selectionApplicationStatusDTO;
+    private SelectionApplicationDTO selectionApplicationDTO;
     private ImageDTO tuberculosisCertificateFileDTO;
     private ImageDTO additionalProofFileDTO;
 
@@ -31,7 +31,7 @@ public class Selection implements Model {
                 .isFinalApproved(isFinalApproved)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .selectionApplicationStatusDTO(selectionApplicationStatusDTO)
+                .selectionApplicationDTO(selectionApplicationDTO)
                 .tuberculosisCertificateFileDTO(tuberculosisCertificateFileDTO)
                 .build();
     }

@@ -2,6 +2,7 @@ package server.core;
 
 import lombok.Getter;
 import server.config.Config;
+import server.config.DatabaseConnectionPool;
 import server.config.RequestHandlerInitializer;
 import server.core.handler.AcceptHandler;
 import server.core.handler.OutputHandler;
@@ -40,6 +41,8 @@ public class Server {
         for (int i = 0; i < workerThreads; i++) {
             workerExecutor.submit(() -> {}); // 빈 작업 제출
         }
+
+        DatabaseConnectionPool.load();
     }
 
     public void start() {

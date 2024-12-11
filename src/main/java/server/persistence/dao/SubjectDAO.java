@@ -13,9 +13,9 @@ public class SubjectDAO implements SubjectDAOI {
     @Override
     public SubjectDTO findById(Integer id) throws SQLException {
         String query = "SELECT s.id, s.subject_name, s.description, s.credit, s.created_at, s.updated_at, " +
-                "s.professor_id, u.user_name AS professor_name " +
+                "s.professor_user_id, u.user_name AS professor_name " +
                 "FROM subjects s " +
-                "LEFT JOIN users u ON s.professor_id = u.id " +
+                "LEFT JOIN users u ON s.professor_user_id = u.id " +
                 "WHERE s.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -32,9 +32,9 @@ public class SubjectDAO implements SubjectDAOI {
     @Override
     public SubjectDTO findByName(String subjectName) throws SQLException {
         String query = "SELECT s.id, s.subject_name, s.description, s.credit, s.created_at, s.updated_at, " +
-                "s.professor_id, u.user_name AS professor_name " +
+                "s.professor_user_id, u.user_name AS professor_name " +
                 "FROM subjects s " +
-                "LEFT JOIN users u ON s.professor_id = u.id " +
+                "LEFT JOIN users u ON s.professor_user_id = u.id " +
                 "WHERE s.subject_name = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -51,9 +51,9 @@ public class SubjectDAO implements SubjectDAOI {
     public List<SubjectDTO> findAll() throws SQLException {
         List<SubjectDTO> subjects = new ArrayList<>();
         String query = "SELECT s.id, s.subject_name, s.description, s.credit, s.created_at, s.updated_at, " +
-                "s.professor_id, u.user_name AS professor_name " +
+                "s.professor_user_id, u.user_name AS professor_name " +
                 "FROM subjects s " +
-                "LEFT JOIN users u ON s.professor_id = u.id";
+                "LEFT JOIN users u ON s.professor_user_id = u.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -67,7 +67,7 @@ public class SubjectDAO implements SubjectDAOI {
 
     @Override
     public void save(SubjectDTO subjectDTO) throws SQLException {
-        String query = "INSERT INTO subjects (subject_name, description, credit, created_at, updated_at, professor_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO subjects (subject_name, description, credit, created_at, updated_at, professor_user_id) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -83,7 +83,7 @@ public class SubjectDAO implements SubjectDAOI {
 
     @Override
     public void update(SubjectDTO subjectDTO) throws SQLException {
-        String query = "UPDATE subjects SET subject_name = ?, description = ?, credit = ?, created_at = ?, updated_at = ?, professor_id = ? WHERE id = ?";
+        String query = "UPDATE subjects SET subject_name = ?, description = ?, credit = ?, created_at = ?, updated_at = ?, professor_user_id = ? WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -111,7 +111,7 @@ public class SubjectDAO implements SubjectDAOI {
 
     private SubjectDTO mapRowToSubjectDTO(ResultSet resultSet) throws SQLException {
         UserDTO professorDTO = null;
-        Integer professorId = resultSet.getInt("professor_id");
+        Integer professorId = resultSet.getInt("professor_user_id");
 
         // 교수 ID가 null이 아닐 경우 교수 정보를 설정
         if (professorId != null) {
