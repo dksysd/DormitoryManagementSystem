@@ -126,9 +126,9 @@ public class ApplicantPage {
         boolean pureum_1, pureum_2, pureum_3;
 
         if (sexuality.equals("F")) {
-            System.out.println("(푸름3 / 오름1 )");
+            System.out.println("(푸름1/ 푸름3 / 오름1 )");
         } else {
-            System.out.println("(푸름1 / 푸름2 / 푸름4 / 오름2 / 오름3)");
+            System.out.println("(푸름2 / 푸름4 / 오름2 / 오름3)");
         }
         System.out.println(">> 예시 : 오름1 푸름3 아름관 (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 아름관)");
         System.out.println();
@@ -139,9 +139,9 @@ public class ApplicantPage {
         String domi1, domi2, domi3;
 
         if (sexuality.equals("F")) {
-            pureum_1 = (first.equals("푸름3"));
-            pureum_2 = (second.equals("푸름3"));
-            pureum_3 = (third.equals("푸름3"));
+            pureum_1 = (!first.equals("오름1"));
+            pureum_2 = (!second.equals("오름1"));
+            pureum_3 = (!third.equals("오름1"));
 
         } else {
             pureum_1 = (!first.equals("오름2") && !first.equals("오름3"));
