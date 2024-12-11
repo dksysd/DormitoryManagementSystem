@@ -9,6 +9,9 @@ import java.sql.SQLException;
 public abstract class DatabaseConnectionPool {
     private static final HikariDataSource DATASOURCE = new HikariDataSource(getConfig());
 
+    public static void load() {
+    }
+
     public static Connection getConnection() throws SQLException {
         return DATASOURCE.getConnection();
     }

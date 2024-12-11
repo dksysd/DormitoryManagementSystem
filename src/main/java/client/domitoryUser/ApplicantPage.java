@@ -40,7 +40,7 @@ public class ApplicantPage {
                 case 10: System.out.println("종료합니다."); break;
                 default: System.out.println("유효하지 않은 선택입니다. 다시 시도하세요."); break;
             }
-        } while (option != 8); // 8번을 선택하면 루프 종료
+        } while (option != 10); // 8번을 선택하면 루프 종료
     }
 
 
