@@ -89,9 +89,11 @@ public class UserDAO implements UserDAOI {
         String query = "SELECT u.uid AS uid FROM users u " +
                 "INNER JOIN selection_applications sa ON sa.user_id = u.id " +
                 "INNER JOIN selection_application_statuses sas ON sas.id = sa.selection_application_status_id " +
-                "WHERE sas.status_name = " + "'선발대기'";
+                "WHERE sas.status_name = ?";
         try(Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1,"선발대기");
+
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 users.add(resultSet.getString(1));
