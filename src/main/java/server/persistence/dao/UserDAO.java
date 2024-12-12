@@ -45,6 +45,7 @@ public class UserDAO implements UserDAOI {
                 "INNER JOIN gender_codes gc ON u.gender_code_id = gc.id " +
                 "INNER JOIN addresses a ON u.address_id = a.id " +
                 "WHERE u.uid = ?";
+
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
