@@ -2,6 +2,8 @@ package server.persistence.dao;
 
 import server.persistence.dto.DemeritPointDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.RoomAssignmentDTO;
+import server.persistence.dto.UserDTO;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -134,15 +136,18 @@ public class DemeritPointDAO implements DemeritPointDAOI {
 
     private DemeritPointDTO mapRowToDemeritPointDTO(ResultSet resultSet) throws SQLException {
         UserDAO dao1 = new UserDAO();
-
+        UserDTO userDTO = dao1.findById(resultSet.getInt("user_id"));
 
         RoomAssignmentDAO dao2 = new RoomAssignmentDAO();
+        RoomAssignmentDTO roomAssignmentDTO = dao2.findById(resultSet.getInt("room_assignment_id"));
 
         return DemeritPointDTO.builder()
                 .id(resultSet.getInt("id"))
                 .description(resultSet.getString("description"))
                 .point(resultSet.getInt("point"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .userDTO(userDTO)
+                .roomAssignmentDTO(roomAssignmentDTO)
                 .build();
     }
 }

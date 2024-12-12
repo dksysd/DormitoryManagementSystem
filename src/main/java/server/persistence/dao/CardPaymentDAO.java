@@ -1,7 +1,9 @@
 package server.persistence.dao;
 
+import server.persistence.dto.CardIssuerDTO;
 import server.persistence.dto.CardPaymentDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.PaymentDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -144,10 +146,17 @@ public class CardPaymentDAO implements CardPaymentDAOI {
     }
 
     private CardPaymentDTO mapRowToCardPaymentDTO(ResultSet resultSet) throws SQLException {
+        CardIssuerDAO dao1 = new CardIssuerDAO();
+        CardIssuerDTO cardIssuerDTO = dao1.findById(resultSet.getInt("card_issuer_id"));
+        PaymentDAO paymentDAO = new PaymentDAO();
+        PaymentDTO paymentDTO = paymentDAO.findById(resultSet.getInt("payment_id"));
+
         return CardPaymentDTO.builder()
                 .id(resultSet.getInt("id"))
                 .cardNumber(resultSet.getString("card_number"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .cardIssuerDTO(cardIssuerDTO)
+                .paymentDTO(paymentDTO)
                 .build();
     }
 }

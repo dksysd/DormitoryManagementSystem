@@ -17,10 +17,10 @@ public class UserDAO implements UserDAOI {
                 ",a.postal_name AS postal_code, a.do AS address_do, a.si AS address_si, a.detail_address AS detail_address," +
                 "i.name AS image_name, i.extension AS extension " +
                 "FROM users u " +
-                "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
-                "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
-                "LEFT JOIN addresses a ON u.address_id = a.id " +
-                "LEFT JOIN images i ON u.profile_image = i.id " +
+                "INNER JOIN user_types ut ON u.user_type_id = ut.id " +
+                "INNER JOIN gender_codes gc ON u.gender_code_id = gc.id " +
+                "INNER JOIN addresses a ON u.address_id = a.id " +
+                "INNER JOIN images i ON u.profile_image = i.id " +
                 "WHERE u.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
