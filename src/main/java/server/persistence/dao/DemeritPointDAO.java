@@ -133,6 +133,11 @@ public class DemeritPointDAO implements DemeritPointDAOI {
     }
 
     private DemeritPointDTO mapRowToDemeritPointDTO(ResultSet resultSet) throws SQLException {
+        UserDAO dao1 = new UserDAO();
+
+
+        RoomAssignmentDAO dao2 = new RoomAssignmentDAO();
+
         return DemeritPointDTO.builder()
                 .id(resultSet.getInt("id"))
                 .description(resultSet.getString("description"))
