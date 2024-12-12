@@ -224,29 +224,17 @@ public class UserDAO implements UserDAOI {
     }
 
     private UserDTO mapRowToUserDTO(ResultSet resultSet) throws SQLException {
-        UserTypeDTO userTypeDTO = UserTypeDTO.builder()
-                .id(resultSet.getInt("user_type_id"))
-                .typeName(resultSet.getString("user_type_name")) // 사용자 유형 이름 추가
-                .build();
+        UserTypeDAO dao1 = new UserTypeDAO();
+        UserTypeDTO userTypeDTO = dao1.findById(resultSet.getInt("user_type_id"));
 
-        GenderCodeDTO genderCodeDTO = GenderCodeDTO.builder()
-                .id(resultSet.getInt("gender_code_id"))
-                .codeName(resultSet.getString("code_name")) // 성별 코드 추가
-                .build();
+        GenderCodeDAO dao2 = new GenderCodeDAO();
+        GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code_id"));
 
-        AddressDTO addressDTO = AddressDTO.builder()
-                .id(resultSet.getInt("address_id"))
-                .postalCode(resultSet.getString("postal_code")) // 주소 추가
-                ._do(resultSet.getString("address_do"))
-                .si(resultSet.getString("address_si"))
-                .detailAddress(resultSet.getString("detail_address"))
-                .build();
+        AddressDAO dao3 = new AddressDAO();
+        AddressDTO addressDTO = dao3.findById(resultSet.getInt("address_id"));
 
-        ImageDTO imageDTO = ImageDTO.builder()
-                .id(resultSet.getInt("profile_image"))
-                .name(resultSet.getString("image_name"))
-                .extension(resultSet.getString("image_extension"))
-                .build();
+        ImageDAO dao4 = new ImageDAO();
+        ImageDTO imageDTO = dao4.findById(resultSet.getInt("profile_image"));
 
         return UserDTO.builder()
                 .id(resultSet.getInt("id"))

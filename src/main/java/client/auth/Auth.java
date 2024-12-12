@@ -50,6 +50,7 @@ public class Auth {
         try {
             resProtocol = asyncRequest.sendAndReceive(protocol);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
 

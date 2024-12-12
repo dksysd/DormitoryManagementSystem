@@ -75,6 +75,7 @@ public class DormitoryUserController {
             MealPlanDTO mealPlanDTO = MealPlanDTO.builder()
                     .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
                     .build();
+
             SelectionApplicationDTO selectionApplicationDTO = dao.findByUid(getIdBySessionId(sessionId));
             selectionApplicationDTO.setPreference((int) protocol.getChildren().getFirst().getData());
             selectionApplicationDTO.setHasSleepHabit((boolean) protocol.getChildren().get(1).getData());
