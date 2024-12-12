@@ -229,7 +229,7 @@ public class UserDAO implements UserDAOI {
         UserTypeDTO userTypeDTO = dao1.findById(resultSet.getInt("user_type_id"));
 
         GenderCodeDAO dao2 = new GenderCodeDAO();
-        GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code_id"));
+        GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code"));
 
         AddressDAO dao3 = new AddressDAO();
         AddressDTO addressDTO = dao3.findById(resultSet.getInt("address_id"));
