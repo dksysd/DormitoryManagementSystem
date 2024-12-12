@@ -21,6 +21,7 @@ public class MoveOutRequestDTO implements DTO {
 
     private MoveOutRequestStatusDTO moveOutRequestStatusDTO;
     private SelectionDTO selectionDTO;
+    private BankDTO bankDTO;
     private PaymentRefundDTO paymentRefundDTO;
 
     @Override
@@ -34,6 +35,7 @@ public class MoveOutRequestDTO implements DTO {
                 .moveOutRequestStatusDTO(moveOutRequestStatusDTO)
                 .selectionDTO(selectionDTO)
                 .paymentRefundDTO(paymentRefundDTO)
+                .bankDTO(bankDTO)
                 .build();
     }
 }

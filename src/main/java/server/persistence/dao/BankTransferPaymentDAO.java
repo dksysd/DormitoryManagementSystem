@@ -133,29 +133,24 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
     }
 
     private BankTransferPaymentDTO mapRowToBankTransferPaymentDTO(ResultSet resultSet) throws SQLException {
-        BankTransferPaymentDTO paymentDTO = BankTransferPaymentDTO.builder()
-                .id(resultSet.getInt("id"))
-                .accountNumber(resultSet.getString("account_number"))
-                .accountHolderName(resultSet.getString("account_holder_name"))
-                .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
-                .build();
+        BankTransferPaymentDAO dao1 = new BankTransferPaymentDAO();
+        BankTransferPaymentDTO paymentDTO = dao1.findById(resultSet.getInt("id"));
 
+        PaymentDAO dao2 = new PaymentDAO();
         // PaymentDTO와 BankDTO 구성
-        PaymentDTO payment = PaymentDTO.builder()
-                .id(resultSet.getInt("payment_id"))
-                .paymentAmount(resultSet.getInt("payment_amount"))
-                .createdAt(resultSet.getTimestamp("payment_created_at").toLocalDateTime())
+        PaymentDTO payment = dao2.findById(resultSet.getInt("payment_id"));
+
+        BankDAO dao3 = new BankDAO();
+        BankDTO bank = dao3.findById(resultSet.getInt("bank_id"));
+
+        BankTransferPaymentDTO bankTransferPaymentDTO = BankTransferPaymentDTO.builder()
+                .accountHolderName(resultSet.getString("account_holder_name"))
+                .bankDTO(bank)
+                .paymentDTO(payment)
+                .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
+                .accountNumber(resultSet.getString("account_number"))
                 .build();
 
-        BankDTO bank = BankDTO.builder()
-                .id(resultSet.getInt("bank_id"))
-                .bankName(resultSet.getString("bank_name"))
-                .bankCode(resultSet.getString("bank_code"))
-                .build();
-
-        paymentDTO.setPaymentDTO(payment);
-        paymentDTO.setBankDTO(bank);
-
-        return paymentDTO;
+        return bankTransferPaymentDTO;
     }
 }
