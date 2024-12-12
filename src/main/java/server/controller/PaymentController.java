@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import static server.util.ProtocolValidator.getIdBySessionId;
+import static server.util.ProtocolValidator.isStudent;
 
 public class PaymentController {
 
@@ -30,7 +31,7 @@ public class PaymentController {
         String sessionId = (String) protocol.getChildren().getFirst().getData();
         String id = getIdBySessionId(sessionId);
 
-        if (id != null && ProtocolValidator.isStudent(sessionId)) {
+        if (id != null && isStudent(sessionId)) {
 
             PaymentDAO paymentDAO = new PaymentDAO();
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
@@ -78,7 +79,7 @@ public class PaymentController {
         String sessionId = (String) protocol.getChildren().getFirst().getData();
         String id = getIdBySessionId(sessionId);
 
-        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
+        if (id != null && isStudent(sessionId)) {
             PaymentDAO paymentDAO = new PaymentDAO();
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
 
@@ -118,7 +119,7 @@ public class PaymentController {
      *                 3 ( header(type: value, dataType: string, code: bank_name, dataLength:,)
      *                 data: 은행명)
      *                 4 ( header(type: value, dataType: string, code: bank_code, dataLength:,)
-     *      *                 data: 은행코드)
+     *                 *                 data: 은행코드)
      *                 5 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
      *                 data: "납부")
      *                 6 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
@@ -135,7 +136,7 @@ public class PaymentController {
         String id;
         String sessionId = (String) protocol.getChildren().getLast().getData();
         id = getIdBySessionId(sessionId);
-        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
+        if (id != null && isStudent(sessionId)) {
             BTPaymentDAO.save(new BankTransferPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
                     (String) protocol.getChildren().get(1).getData(), LocalDateTime.now(), paymentDAO.findByUid(id),
                     new BankDTO(0, (String) protocol.getChildren().get(2).getData(), (String) protocol.getChildren().get(3).getData())));
@@ -157,7 +158,7 @@ public class PaymentController {
      *                 2 ( header(type: value, dataType: string, code: card_issuer, dataLength:,)
      *                 data: 카드사 이름),
      *                 3 ( header(type: value, dataType: string, code: card_code, dataLength:,)
-     *      *                 data: 카드사 코드),
+     *                 *                 data: 카드사 코드),
      *                 4 ( header(type: value, dataType: string, code: PAYMENT_STATUS_NAME, dataLength:,)
      *                 data: "납부"),
      *                 5 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
@@ -173,22 +174,22 @@ public class PaymentController {
             String sessionId = (String) protocol.getChildren().getLast().getData();
             String id = getIdBySessionId(sessionId);
 
-            if (id == null && !ProtocolValidator.isStudent(sessionId)) {
+            if (id == null && !isStudent(sessionId)) {
                 header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
                 resProtocol.setHeader(header);
                 return resProtocol;
             }
-                PaymentDAO paymentDAO = new PaymentDAO();
-                CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
-                cardPaymentDAO.save(new CardPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
-                        LocalDateTime.now(),
-                        new CardIssuerDTO(0, (String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData()),
-                        paymentDAO.findByUid(id)
-                ));
-                paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(3).getData());
+            PaymentDAO paymentDAO = new PaymentDAO();
+            CardPaymentDAO cardPaymentDAO = new CardPaymentDAO();
+            cardPaymentDAO.save(new CardPaymentDTO(0, (String) protocol.getChildren().get(0).getData(),
+                    LocalDateTime.now(),
+                    new CardIssuerDTO(0, (String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData()),
+                    paymentDAO.findByUid(id)
+            ));
+            paymentDAO.statusUpdate(id, (String) protocol.getChildren().get(3).getData());
 
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             // 데이터베이스 예외 처리
             header.setType(Type.ERROR);
             header.setCode(Code.ResponseCode.ErrorCode.INTERNAL_SERVER_ERROR);
@@ -206,7 +207,7 @@ public class PaymentController {
      *                 1 ( header(type: value, dataType: string, code:PAYMENT_STATUS, dataLength:,)
      *                 data: "환불" ),
      *                 2 ( header(type: value, dataType: string, code:Refund_reason, dataLength:,)
-     *      *                 data: "환불 사유" ),
+     *                 *                 data: "환불 사유" ),
      *                 3 ( header(type: value, dataType: string, code:ACCOUNT_NUMBER, dataLength:,)
      *                 data: "계좌번호" ),
      *                 4 ( header(type: value, dataType: string, code:ACCOUNT_HOLDER_NAME, dataLength:,)
@@ -214,7 +215,7 @@ public class PaymentController {
      *                 5 ( header(type: value, dataType: string, code:BANK_NAME, dataLength:,)
      *                 data: "은행명" ),
      *                 6 ( header(type: value, dataType: string, code:bank_code, dataLength:,)
-     *      *                 data: "은행 코드" ),
+     *                 *                 data: "은행 코드" ),
      *                 7 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
@@ -230,7 +231,7 @@ public class PaymentController {
         PaymentDAO paymentDAO = new PaymentDAO();
 
         Protocol<?> respProtocol = new Protocol<>(new Header(Type.VALUE, DataType.TLV, Code.ResponseCode.OK, 0), "");
-        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
+        if (id != null && isStudent(sessionId)) {
 
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
             if (paymentDTO != null && Objects.equals(paymentDTO.getPaymentStatusDTO().getStatusName(), "납부")) {
@@ -240,7 +241,7 @@ public class PaymentController {
                 RoomAssignmentDTO roomAssignmentDTO = roomAssignmentDAO.findByUid(id);
                 MoveOutRequestDTO moveOutRequestDTO = moveOutRequestDAO.findByUid(id);
                 PaymentRefundDAO paymentRefundDAO = new PaymentRefundDAO();
-                PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0,(String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData(),
+                PaymentRefundDTO paymentRefundDTO = new PaymentRefundDTO(0, (String) protocol.getChildren().get(1).getData(), (String) protocol.getChildren().get(2).getData(),
                         (String) protocol.getChildren().get(3).getData(), LocalDateTime.now(),
                         new BankDTO(0, (String) protocol.getChildren().get(4).getData(),
                                 (String) protocol.getChildren().get(5).getData()), paymentDTO);
@@ -263,7 +264,9 @@ public class PaymentController {
             respProtocol.getHeader().setCode(Code.ErrorCode.INVALID_REQUEST);
         } else {
             respProtocol.getHeader().setType(Type.ERROR);
-            respProtocol.getHeader().setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);}
+            respProtocol.getHeader().setCode(Code.ErrorCode.UNAUTHORIZED);
+
+        }
         return respProtocol;
     }
 
@@ -288,7 +291,7 @@ public class PaymentController {
         Header header = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         Protocol<String> resProtocol = new Protocol<>();
 
-        if (id != null&&ProtocolValidator.isStudent(sessionId)) {
+        if (id != null && isStudent(sessionId)) {
             PaymentDAO paymentDAO = new PaymentDAO();
             PaymentDTO paymentDTO = paymentDAO.findByUid(id);
 
@@ -303,7 +306,6 @@ public class PaymentController {
             }
         } else {
             header.setType(Type.ERROR);
-            // 세션 ID가 유효하지 않은 경우 UNAUTHORIZED 처리
             header.setCode(Code.ResponseCode.ErrorCode.UNAUTHORIZED);
         }
 

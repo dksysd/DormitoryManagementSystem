@@ -6,7 +6,6 @@ import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,7 +87,6 @@ public class DormitoryUserController {
                 selectionApplicationDTO.setRoommateUserDTO(userDTO);
             }
             dao.save(selectionApplicationDTO);
-
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
