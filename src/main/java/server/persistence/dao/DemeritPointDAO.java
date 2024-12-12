@@ -74,8 +74,8 @@ public class DemeritPointDAO implements DemeritPointDAOI {
 
     @Override
     public void savePoint(String uid, String description, int score) throws SQLException{
-        int user_id;
-        int room_assignment_id;
+        int user_id = -1;
+        int room_assignment_id = -1;
         String query = "SELECT u.id AS user_id, ra.id AS room_id FROM users u " +
                 "INNER JOIN selection_applications sa ON u.id = sa.user_id " +
                 "INNER JOIN selections s ON sa.id = s.selection_application_id " +
@@ -87,19 +87,22 @@ public class DemeritPointDAO implements DemeritPointDAOI {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            user_id = resultSet.getInt(1);
-            room_assignment_id = resultSet.getInt(2);
+            if (resultSet.next()) {
+                user_id = resultSet.getInt(1);
+                room_assignment_id = resultSet.getInt(2);
+            }
         }
+        if (user_id != -1 && room_assignment_id != -1) {
+            query = "INSERT INTO demerit_points (description, created_at, user_id, room_assignment_id) VALUES (?, ?, ?, ?)";
+            try (Connection connection = DatabaseConnectionPool.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        query = "INSERT INTO demerit_points (description, created_at, user_id, room_assignment_id) VALUES (?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnectionPool.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setString(1, description);
-            preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
-            preparedStatement.setInt(3, user_id);
-            preparedStatement.setInt(4, room_assignment_id);
-            preparedStatement.executeUpdate();
+                preparedStatement.setString(1, description);
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+                preparedStatement.setInt(3, user_id);
+                preparedStatement.setInt(4, room_assignment_id);
+                preparedStatement.executeUpdate();
+            }
         }
     }
 
