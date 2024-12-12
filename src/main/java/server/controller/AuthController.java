@@ -61,7 +61,7 @@ public class AuthController implements Controller {
                 childProtocol2.setData(sessionId);
                 resProtocol.addChild(childProtocol1);
                 resProtocol.addChild(childProtocol2);
-            }else {
+            } else {
                 header.setType(Type.ERROR);
                 header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
             }
@@ -178,10 +178,6 @@ public class AuthController implements Controller {
     private static boolean authenticateUser(String id, String password) throws SQLException {
         UserDAO userDAO = new UserDAO();
         UserDTO userDTO = userDAO.findByUid(id);
-
         return userDTO != null && Objects.equals(password, userDTO.getLoginPassword());
     }
-
-
-
 }

@@ -51,10 +51,13 @@ public class UserDAO implements UserDAOI {
 
             preparedStatement.setString(1, uid);
             ResultSet resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()) {
                 return mapRowToUserDTO(resultSet);
             }
+
         }
+
         return null;
     }
 
@@ -76,6 +79,7 @@ public class UserDAO implements UserDAOI {
             if (resultSet.next()) {
                 check = resultSet.getString(1);
             }
+
         }
 
         return check;
@@ -95,6 +99,7 @@ public class UserDAO implements UserDAOI {
             while (resultSet.next()) {
                 users.add(resultSet.getString(1));
             }
+            System.out.println("Valid Check"); //FIXME delete
         }
 
         return users;
@@ -103,7 +108,7 @@ public class UserDAO implements UserDAOI {
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
         String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
-                "u.user_type_id, u.gender_code_id, u.address_id, u.profile_image," +
+                "u.user_type_id AS user_type_id, u.gender_code_id AS gender_code, u.address_id AS address_id, u.profile_image AS profile_image," +
                 "ut.type_name AS user_type_name, gc.code_name AS code_name, a.detail_address AS user_address," +
                 "a.postal_name AS postal_code, a.do AS address_do, a.si AS address_si, a.detail_address AS detail_address," +
                 "i.name AS image_name, i.extension AS extension " +
@@ -119,6 +124,7 @@ public class UserDAO implements UserDAOI {
             while (resultSet.next()) {
                 users.add(mapRowToUserDTO(resultSet));
             }
+
         }
         return users; // 모든 사용자 정보 반환
     }
@@ -223,17 +229,23 @@ public class UserDAO implements UserDAOI {
     }
 
     private UserDTO mapRowToUserDTO(ResultSet resultSet) throws SQLException {
+        System.out.println("Valid Check"); //FIXME delete
         UserTypeDAO dao1 = new UserTypeDAO();
         UserTypeDTO userTypeDTO = dao1.findById(resultSet.getInt("user_type_id"));
 
+        System.out.println("Valid Check"); //FIXME delete
         GenderCodeDAO dao2 = new GenderCodeDAO();
         GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code"));
 
+        System.out.println("Valid Check"); //FIXME delete
         AddressDAO dao3 = new AddressDAO();
         AddressDTO addressDTO = dao3.findById(resultSet.getInt("address_id"));
+        System.out.println("Valid Check"); //FIXME delete
 
-        ImageDAO dao4 = new ImageDAO();
-        ImageDTO imageDTO = dao4.findById(resultSet.getInt("profile_image"));
+//        System.out.println("Valid Check"); //FIXME delete
+//        ImageDAO dao4 = new ImageDAO();
+//        if (resultSet.get)
+//        ImageDTO imageDTO = dao4.findById(resultSet.getInt("profile_image"));
 
         return UserDTO.builder()
                 .id(resultSet.getInt("id"))
@@ -246,7 +258,8 @@ public class UserDAO implements UserDAOI {
                 .userTypeDTO(userTypeDTO) // 사용자 유형 DTO 추가
                 .genderCodeDTO(genderCodeDTO) // 성별 코드 DTO 추가
                 .addressDTO(addressDTO)
-                .imageDTO(imageDTO)// 주소 DTO 추가
+                .imageDTO(null)
+//                .imageDTO(imageDTO)// 주소 DTO 추가
                 .build();
     }
 

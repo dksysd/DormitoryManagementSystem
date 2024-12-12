@@ -11,31 +11,17 @@ import java.util.List;
 public class AddressDAO implements AddressDAOI{
     @Override
     public AddressDTO findById(Integer id) throws SQLException {
-        String query = "SELECT * FROM addresses WHERE id = ?";
-        Connection con = DatabaseConnectionPool.getConnection();
-        PreparedStatement ps = con.prepareStatement(query);
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
+        String query = "SELECT id, postal_name, do, si, detail_address, created_at FROM addresses WHERE id = ?";
+        try (Connection con = DatabaseConnectionPool.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
 
-        if (!rs.next()) {
-            return null;
+            if (rs.next()) {
+                return mapRowAddress(rs);
+            }
         }
-
-        Integer addressId = rs.getInt("id");
-        String postalCode = rs.getString("postal_code");
-        String _do = rs.getString("do");
-        String si = rs.getString("si");
-        String detailAddress = rs.getString("detail_address");
-        LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
-
-        return AddressDTO.builder()
-                .id(addressId)
-                .postalCode(postalCode)
-                ._do(_do)
-                .si(si)
-                .detailAddress(detailAddress)
-                .createdAt(createdAt)
-                .build();
+        return null;
     }
 
     @Override
@@ -98,15 +84,13 @@ public class AddressDAO implements AddressDAOI{
     }
 
     private AddressDTO mapRowAddress(ResultSet rs) throws SQLException {
-        AddressDTO dto = AddressDTO.builder()
+        return AddressDTO.builder()
                 .id(rs.getInt("id"))
-                .postalCode(rs.getString("postal_code"))
+                .postalCode(rs.getString("postal_name"))
                 ._do(rs.getString("do"))
                 .si(rs.getString("si"))
                 .detailAddress(rs.getString("detail_address"))
                 .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
                 .build();
-
-        return dto;
     }
 }
