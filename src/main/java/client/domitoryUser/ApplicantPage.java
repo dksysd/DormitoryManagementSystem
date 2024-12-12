@@ -148,7 +148,7 @@ public class ApplicantPage {
     }
 
     public void applicate(AsyncRequest asyncRequest) {
-        // 성별 물어보는 요청 - 유저 인포에서 파싱으로 성별 가져옴
+        // 요청 준비
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO, 0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -156,6 +156,7 @@ public class ApplicantPage {
         protocol.setHeader(header);
         protocol.addChild(tlv);
 
+        // 응답 처리
         Protocol<?> resProtocol;
         try {
             resProtocol = asyncRequest.sendAndReceive(protocol);
@@ -163,21 +164,17 @@ public class ApplicantPage {
             throw new RuntimeException(e);
         }
 
-        String sexuality ;
-        if (resProtocol.getHeader().getType() == Type.RESPONSE) {
-            sexuality = (String) resProtocol.getChildren().get(2).getData();
-        } else {
+        if (resProtocol.getHeader().getType() != Type.RESPONSE) {
             System.out.println("학생 정보를 가져올 수 없습니다. 재로그인 해주세요");
             return;
         }
+        String sexuality = (String) resProtocol.getChildren().get(2).getData();
 
-        // 성별별로 좀 다르게 하기 - 수정 필요 + 식사신청이랑 묶어서 받는지? 따로 받는지?
+        // 입사 신청 입력
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 입사 신청 페이지 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println();
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 기숙사 지망 순위 설정 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("지망하는 순서대로 기숙사 3개를 띄어쓰기로 구분하여 입력하세요 ");
-
-        boolean pureum_1, pureum_2, pureum_3;
 
         if (sexuality.equals("female")) {
             System.out.println("( 푸름1 / 푸름3 / 오름1 )");
@@ -186,180 +183,93 @@ public class ApplicantPage {
         }
         System.out.println(">> 예시 : 오름1 푸름3 푸름1 (1지망 - 오름1, 2지망 - 푸름3, 3지망 - 푸름3)");
         System.out.println();
-        System.out.println(">> 지망 순위 입력 : ");
+        System.out.print(">> 지망 순위 입력 : ");
+
         String first = sc.next();
         String second = sc.next();
         String third = sc.next();
 
-        if (sexuality.equals("female")) {
-            pureum_1 = (!first.equals("오름1"));
-            pureum_2 = (!second.equals("오름1"));
-            pureum_3 = (!third.equals("오름1"));
-
-        } else {
-            pureum_1 = (!first.equals("오름2") && !first.equals("오름3"));
-            pureum_2 = (!second.equals("오름2") && !second.equals("오름3"));
-            pureum_3 = (!third.equals("오름2") && !third.equals("오름3"));
+        boolean[] pureum = new boolean[3];
+        String[] dormitories = {first, second, third};
+        for (int i = 0; i < 3; i++) {
+            if (sexuality.equals("female")) {
+                pureum[i] = !dormitories[i].equals("오름1");
+            } else {
+                pureum[i] = !(dormitories[i].equals("오름2") || dormitories[i].equals("오름3"));
+            }
         }
 
+        // 식사 신청 입력
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 식사 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("신청안함, 5일식, 7일식 - 잘못 입력 시 푸름관의 경우 신청 안함으로 입력됩니다.");
         System.out.println("!!오름관의 경우 식사 신청(5일식 또는 7일식)이 필수입니다!! - 잘못 입력 시 5일식으로 신청됨");
         System.out.println();
 
-        System.out.print("1지망 기숙사 식사 신청 : ");
-        String meal1 = sc.next();
-        if (pureum_1) {
-            if (!(meal1.equals("신청안함") || meal1.equals("5일식") || meal1.equals("7일식"))) {
-                meal1 = "신청안함";
-            }
-        } else {
-            if (!(meal1.equals("5일식") || meal1.equals("7일식"))) {
-                meal1 = "5일식";
-            }
-        }
-
-        System.out.print("2지망 기숙사 식사 신청 : ");
-        String meal2 = sc.next();
-        if (pureum_2) {
-            if (!(meal2.equals("신청안함") || meal2.equals("5일식") || meal2.equals("7일식"))) {
-                meal2 = "신청안함";
-            }
-        } else {
-            if (!(meal2.equals("5일식") || meal2.equals("7일식"))) {
-                meal2 = "5일식";
+        String[] meals = new String[3];
+        for (int i = 0; i < 3; i++) {
+            System.out.print((i + 1) + "지망 기숙사 식사 신청 : ");
+            meals[i] = sc.next();
+            if (pureum[i]) {
+                if (!(meals[i].equals("신청안함") || meals[i].equals("5일식") || meals[i].equals("7일식"))) {
+                    meals[i] = "신청안함";
+                }
+            } else {
+                if (!(meals[i].equals("5일식") || meals[i].equals("7일식"))) {
+                    meals[i] = "5일식";
+                }
             }
         }
 
-        System.out.print("3지망 기숙사 식사 신청 : ");
-        String meal3 = sc.next();
-        if (pureum_3) {
-            if (!(meal3.equals("신청안함") || meal3.equals("5일식") || meal3.equals("7일식"))) {
-                meal3 = "신청안함";
-            }
-        } else {
-            if (!(meal3.equals("5일식") || meal3.equals("7일식"))) {
-                meal3 = "5일식";
-            }
-        }
-
+        // 룸메이트 신청
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 룸메이트 사전 신청 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.println("두 사람이 모두 신청해야 적용됩니다");
         System.out.print("룸메이트 사전 신청하시겠습니까? (y/n) : ");
-        String roommateAllow = sc.next();
-        String roommate = "";
-        boolean haveRoommate = false;
-        if (roommateAllow.toLowerCase().equals("y")) {
-            System.out.println("룸메이트 하려는 학생의 학번 : ");
-            roommate = sc.next();
-            haveRoommate = true;
-        }
+        boolean haveRoommate = sc.next().equalsIgnoreCase("y");
+        String roommate = haveRoommate ? sc.next() : "";
 
+        // 특이사항 기재
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 특이사항 기재 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
         System.out.print("1년 호실 신청하시겠습니까? 잘못 입력 시 한 학기만 신쳥됩니다 (y/n) : ");
-        String temp = sc.next();
-        boolean oneYear = false;
-        if (temp.toLowerCase().equals("y")) {
-            oneYear = true;
-        }
+        boolean oneYear = sc.next().equalsIgnoreCase("y");
         System.out.print("잠버릇 여부를 체크해주세요. 잘못 입력 시 잠버릇 있는 것으로 간주됩니다. (y/n) : ");
-        temp = sc.next();
-        boolean snore = true;
-        if (temp.toLowerCase().equals("n")) {
-            snore = false;
-        }
-        //선호도 -> 잠버릇(bool) -> 1년호실 (bool) -> 어디 기숙사인지 -> 밥-> 룸메이트
+        boolean snore = !sc.next().equalsIgnoreCase("n");
+
+        // 프로토콜 생성 및 전송
         Protocol<Boolean> yearlast = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.ONEYEAR_LASTING, 0), oneYear);
         Protocol<Boolean> snoring = new Protocol<>(new Header(Type.VALUE, DataType.BOOLEAN, Code.ValueCode.SNORE, 0), snore);
-        Protocol<String> roommates;
         Protocol<String> session = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
+        Protocol<String> roommates = haveRoommate ? new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), roommate) : null;
 
+        for (int i = 0; i < 3; i++) {
+            Protocol<?> protocolN = new Protocol<>();
+            protocolN.setHeader(new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION, 0));
+            protocolN.addChild(new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE, 0), i + 1));
+            protocolN.addChild(snoring);
+            protocolN.addChild(yearlast);
+            protocolN.addChild(new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), dormitories[i]));
+            protocolN.addChild(new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN, 0), meals[i]));
+            if (haveRoommate) protocolN.addChild(roommates);
+            protocolN.addChild(session);
 
-        Protocol<?> protocol1 = new Protocol<>();
-        Header header1 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION, 0);
-        Protocol<Integer> prefer1 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE, 0), 1);
-        Protocol<String> domitory1 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), first);
-        Protocol<String> mealSchedule1 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN, 0), meal1);
-        protocol1.setHeader(header1);
-        protocol1.addChild(prefer1);
-        protocol1.addChild(snoring);
-        protocol1.addChild(yearlast);
-        protocol1.addChild(domitory1);
-        protocol1.addChild(mealSchedule1);
-
-        Protocol<?> protocol2 = new Protocol<>();
-        Header header2 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION, 0);
-        Protocol<Integer> prefer2 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE, 0), 2);
-        Protocol<String> domitory2 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), second);
-        Protocol<String> mealSchedule2 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN, 0), meal2);
-        protocol2.setHeader(header2);
-        protocol2.addChild(prefer2);
-        protocol1.addChild(snoring);
-        protocol1.addChild(yearlast);
-        protocol1.addChild(domitory2);
-        protocol1.addChild(mealSchedule2);
-
-
-        Protocol<?> protocol3 = new Protocol<>();
-        Header header3 = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.APPLICATION, 0);
-        Protocol<Integer> prefer3 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE, 0), 3);
-        Protocol<String> domitory3 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), third);
-        Protocol<String> mealSchedule3 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN, 0), meal3);
-        protocol1.setHeader(header3);
-        protocol1.addChild(prefer3);
-        protocol1.addChild(snoring);
-        protocol1.addChild(yearlast);
-        protocol1.addChild(domitory3);
-        protocol1.addChild(mealSchedule3);
-
-        if (haveRoommate) {
-            roommates = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), roommate);
-            protocol1.addChild(roommates);
-            protocol2.addChild(roommates);
-            protocol3.addChild(roommates);
+            try {
+                Protocol<?> resProtocolN = asyncRequest.sendAndReceive(protocolN);
+                if (resProtocolN.getHeader().getCode() != Code.ResponseCode.OK) {
+                    System.out.println((i + 1) + "순위 전송 오류");
+                    return;
+                }
+            } catch (Exception e) {
+                System.out.println((i + 1) + "순위 전송 오류");
+                throw new RuntimeException(e);
+            }
         }
 
-        protocol1.addChild(session);
-        protocol2.addChild(session);
-        protocol3.addChild(session);
-
-
-        Protocol<?> resProtocol1, resProtocol2, resProtocol3;
-        try {
-            resProtocol1 = asyncRequest.sendAndReceive(protocol1);
-        } catch (Exception e) {
-            System.out.println("1순위 전송 오류 ");
-            throw new RuntimeException(e);
-        }
-
-        try {
-            resProtocol2 = asyncRequest.sendAndReceive(protocol1);
-        } catch (Exception e) {
-            System.out.println("2순위 전송 오류");
-            throw new RuntimeException(e);
-        }
-
-        try {
-            resProtocol3 = asyncRequest.sendAndReceive(protocol1);
-        } catch (Exception e) {
-            System.out.println("3순위 전송 오류");
-            throw new RuntimeException(e);
-        }
-
-        if ((resProtocol1.getHeader().getCode() != Code.ResponseCode.OK) || (resProtocol2.getHeader().getCode() != Code.ResponseCode.OK) || (resProtocol3.getHeader().getCode() != Code.ResponseCode.OK)) {
-            System.out.println("재시도해주세요");
-            return;
-        }
-
-        System.out.println("입사신청서 등록이 완료되었습니다. 결핵진단서를 제출하지 않으면 합격이 취소되며, \n우선선발의 경우 결핵진단서에 더하여 우선선발 증빙자료를 제출하지 않으면 합격이 취소됩니다");
+        // 완료 메시지
+        System.out.println("입사신청서 등록이 완료되었습니다. 결핵진단서를 제출하지 않으면 합격이 취소되며, ");
+        System.out.println("우선선발의 경우 결핵진단서에 더하여 우선선발 증빙자료를 제출하지 않으면 합격이 취소됩니다");
         System.out.println("결핵진단서와 우선선발 증빙자료 제출은 각각 학생페이지 9번, 10번 기능입니다.");
-
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-
-        // 메시지로 보내기
-        // 응답메시지 받고 결과 출력
-
     }
+
 
     public void moveOutApplicate(AsyncRequest asyncRequest) {
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
@@ -407,32 +317,33 @@ public class ApplicantPage {
                     Protocol<String> tlv = null;
                     Header tlvHeader = null;
 
-                    switch (i) {
-                        case 0:
+                    tlv = switch (i) {
+                        case 0 -> {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.PAYMENT_STATUS_NAME, 0);
-                            tlv = new Protocol<>(tlvHeader, text);
-                            break;
-                        case 1:
+                            yield new Protocol<>(tlvHeader, text);
+                        }
+                        case 1 -> {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.REFUND_REASON, 0);
-                            tlv = new Protocol<>(tlvHeader, reason);
-                            break;
-                        case 2:
+                            yield new Protocol<>(tlvHeader, reason);
+                        }
+                        case 2 -> {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_NUMBER, 0);
-                            tlv = new Protocol<>(tlvHeader, account);
-                            break;
-                        case 3:
+                            yield new Protocol<>(tlvHeader, account);
+                        }
+                        case 3 -> {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ACCOUNT_HOLDER_NAME, 0);
-                            tlv = new Protocol<>(tlvHeader, name);
-                            break;
-                        case 4:
+                            yield new Protocol<>(tlvHeader, name);
+                        }
+                        case 4 -> {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.BANK_NAME, 0);
-                            tlv = new Protocol<>(tlvHeader, bank);
-                            break;
-                        case 5:
+                            yield new Protocol<>(tlvHeader, bank);
+                        }
+                        case 5 -> {
                             tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
-                            tlv = new Protocol<>(tlvHeader, sessionID);
-                            break;
-                    }
+                            yield new Protocol<>(tlvHeader, sessionID);
+                        }
+                        default -> tlv;
+                    };
 
                     protocol.addChild(tlv);
                 }

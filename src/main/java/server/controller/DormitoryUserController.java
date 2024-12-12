@@ -6,7 +6,6 @@ import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,7 +76,7 @@ public class DormitoryUserController {
                     .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
                     .build();
             SelectionApplicationDTO selectionApplicationDTO;
-            if (protocol.getHeader().getDataLength() >= 7) {
+            if (protocol.getChildren().get(6)!=null) {
                 UserDAO userDAO = new UserDAO();
                 UserDTO userDTO = userDAO.findByUid((String) protocol.getChildren().get(5).getData());
 
@@ -88,19 +87,22 @@ public class DormitoryUserController {
                         .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
                         .mealPlanDTO(mealPlanDTO)
                         .roommateUserDTO(userDTO)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build();
-            } else {
+            }else {
                 selectionApplicationDTO = SelectionApplicationDTO.builder()
                         .preference((int) protocol.getChildren().getFirst().getData())
                         .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
                         .isYear((boolean) protocol.getChildren().get(2).getData())
                         .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
                         .mealPlanDTO(mealPlanDTO)
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
                         .build();
+
             }
-
             dao.save(selectionApplicationDTO);
-
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
