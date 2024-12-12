@@ -284,35 +284,22 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
     }
 
     private SelectionApplicationDTO mapRowToSelectionApplicationDTO(ResultSet resultSet) throws SQLException {
-        SelectionApplicationStatusDTO statusDTO = SelectionApplicationStatusDTO.builder()
-                .id(resultSet.getInt("selection_application_status_id"))
-                .statusName(resultSet.getString("status_name"))
-                .build();
+        SelectionApplicationStatusDAO dao1 = new SelectionApplicationStatusDAO();
+        SelectionApplicationStatusDTO statusDTO = dao1.findById(resultSet.getInt("selection_application_status_id"));
 
-        SelectionScheduleDTO scheduleDTO = SelectionScheduleDTO.builder()
-                .id(resultSet.getInt("selection_schedule_id"))
-                .title(resultSet.getString("title"))
-                .build();
+        SelectionScheduleDAO dao2 = new SelectionScheduleDAO();
+        SelectionScheduleDTO scheduleDTO = dao2.findById(resultSet.getInt("selection_schedule_id"));
 
-        DormitoryRoomTypeDTO roomTypeDTO = DormitoryRoomTypeDTO.builder()
-                .id(resultSet.getInt("dormitory_room_type_id"))
-                .price(resultSet.getInt("price"))
-                .build();
+        DormitoryRoomTypeDAO dao3 = new DormitoryRoomTypeDAO();
+        DormitoryRoomTypeDTO roomTypeDTO = dao3.findById(resultSet.getInt("dormitory_room_type_id"));
 
-        MealPlanDTO mealPlanDTO = MealPlanDTO.builder()
-                .id(resultSet.getInt("meal_plan_id"))
-                .price(resultSet.getInt("price"))
-                .build();
+        MealPlanDAO dao4 = new MealPlanDAO();
+        MealPlanDTO mealPlanDTO = dao4.findById(resultSet.getInt("meal_plan_id"));
 
-        UserDTO roommateUserDTO = UserDTO.builder()
-                .id(resultSet.getInt("roommate_user_id"))
-                .userName(resultSet.getString("roommate_user_name"))
-                .build();
+        UserDAO dao5 = new UserDAO();
+        UserDTO roommateUserDTO = dao5.findById(resultSet.getInt("roommate_user_id"));
 
-        UserDTO userDTO = UserDTO.builder()
-                .id(resultSet.getInt("user_id"))
-                .userName(resultSet.getString("user_name")) // 사용자 이름 추가
-                .build();
+        UserDTO userDTO = dao5.findById(resultSet.getInt("user_id"));
 
         return SelectionApplicationDTO.builder()
                 .id(resultSet.getInt("application_id"))

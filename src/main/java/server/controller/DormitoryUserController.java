@@ -76,29 +76,17 @@ public class DormitoryUserController {
             MealPlanDTO mealPlanDTO = MealPlanDTO.builder()
                     .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
                     .build();
-            SelectionApplicationDTO selectionApplicationDTO;
+            SelectionApplicationDTO selectionApplicationDTO = dao.findByUid(getIdBySessionId(sessionId));
+            selectionApplicationDTO.setPreference((int) protocol.getChildren().getFirst().getData());
+            selectionApplicationDTO.setHasSleepHabit((boolean) protocol.getChildren().get(1).getData());
+            selectionApplicationDTO.setYear((boolean) protocol.getChildren().get(2).getData());
+            selectionApplicationDTO.setDormitoryRoomTypeDTO(dormitoryRoomTypeDTO);
+            selectionApplicationDTO.setMealPlanDTO(mealPlanDTO);
             if (protocol.getHeader().getDataLength() >= 7) {
                 UserDAO userDAO = new UserDAO();
                 UserDTO userDTO = userDAO.findByUid((String) protocol.getChildren().get(5).getData());
-
-                selectionApplicationDTO = SelectionApplicationDTO.builder()
-                        .preference((int) protocol.getChildren().getFirst().getData())
-                        .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
-                        .isYear((boolean) protocol.getChildren().get(2).getData())
-                        .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
-                        .mealPlanDTO(mealPlanDTO)
-                        .roommateUserDTO(userDTO)
-                        .build();
-            } else {
-                selectionApplicationDTO = SelectionApplicationDTO.builder()
-                        .preference((int) protocol.getChildren().getFirst().getData())
-                        .hasSleepHabit((boolean) protocol.getChildren().get(1).getData())
-                        .isYear((boolean) protocol.getChildren().get(2).getData())
-                        .dormitoryRoomTypeDTO(dormitoryRoomTypeDTO)
-                        .mealPlanDTO(mealPlanDTO)
-                        .build();
+                selectionApplicationDTO.setRoommateUserDTO(userDTO);
             }
-
             dao.save(selectionApplicationDTO);
 
             resultHeader.setCode(Code.ResponseCode.OK);

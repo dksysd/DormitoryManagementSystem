@@ -294,10 +294,10 @@ public class ApplicantPage {
         Protocol<String> mealSchedule2 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN, 0), meal2);
         protocol2.setHeader(header2);
         protocol2.addChild(prefer2);
-        protocol1.addChild(snoring);
-        protocol1.addChild(yearlast);
-        protocol1.addChild(domitory2);
-        protocol1.addChild(mealSchedule2);
+        protocol2.addChild(snoring);
+        protocol2.addChild(yearlast);
+        protocol2.addChild(domitory2);
+        protocol2.addChild(mealSchedule2);
 
 
         Protocol<?> protocol3 = new Protocol<>();
@@ -305,12 +305,12 @@ public class ApplicantPage {
         Protocol<Integer> prefer3 = new Protocol<>(new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.PREFERENCE, 0), 3);
         Protocol<String> domitory3 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), third);
         Protocol<String> mealSchedule3 = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.MEAL_PLAN, 0), meal3);
-        protocol1.setHeader(header3);
-        protocol1.addChild(prefer3);
-        protocol1.addChild(snoring);
-        protocol1.addChild(yearlast);
-        protocol1.addChild(domitory3);
-        protocol1.addChild(mealSchedule3);
+        protocol3.setHeader(header3);
+        protocol3.addChild(prefer3);
+        protocol3.addChild(snoring);
+        protocol3.addChild(yearlast);
+        protocol3.addChild(domitory3);
+        protocol3.addChild(mealSchedule3);
 
         if (haveRoommate) {
             roommates = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.DORMITORY_ROOM_TYPE, 0), roommate);
