@@ -37,13 +37,13 @@ public class DormitoryAdminController {
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String title = (String) protocol.getChildren().getFirst().getData();
         String day = (String) protocol.getChildren().get(1).getData();
-        String finish = (String)protocol.getChildren().get(2).getData();
+        String finish = (String) protocol.getChildren().get(2).getData();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             SelectionScheduleDTO dto = SelectionScheduleDTO.builder()
                     .startedAt(LocalDateTime.parse(day, formatter))
-                    .endedAt(LocalDateTime.parse(finish,formatter))
+                    .endedAt(LocalDateTime.parse(finish, formatter))
                     .title(title)
                     .createdAt(LocalDateTime.now())
                     .build();
@@ -67,21 +67,12 @@ public class DormitoryAdminController {
         Header resultHeader = new Header();
         UserDAO dao = new UserDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
-        String id = getIdBySessionId(sessionId);
         if (verifySessionId(sessionId) && isAdmin(sessionId)) {
             List<String> list = dao.findAllOfSelection();
-
             for (String s : list) {
-                Protocol<String> child = new Protocol<>();
-                Header childHeader = new Header();
-                childHeader.setType(Type.VALUE);
-                childHeader.setCode(Code.ValueCode.ID);
-                childHeader.setDataType(DataType.STRING);
-                child.setHeader(childHeader);
-
+                Protocol<String> child = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.ID, 0), s);
                 result.addChild(child);
             }
-
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setDataType(DataType.TLV);
             resultHeader.setType(Type.RESPONSE);
@@ -103,7 +94,7 @@ public class DormitoryAdminController {
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
         if (verifySessionId(sessionId) && isAdmin(sessionId)) {
-            dao.updateSelectionApplication(id, (String) protocol.getChildren().getFirst().getData());
+            dao.updateSelectionApplication(id, "선발완료");
             resultHeader.setCode(Code.ResponseCode.OK);
             resultHeader.setType(Type.RESPONSE);
             resultHeader.setDataType(DataType.TLV);
@@ -139,7 +130,6 @@ public class DormitoryAdminController {
         result.setHeader(resultHeader);
         return result;
     }
-
 
 
     public static Protocol<?> getMoveOutApplicants(Protocol<?> protocol) throws SQLException {
@@ -188,10 +178,10 @@ public class DormitoryAdminController {
      */
     public static Protocol<?> approveMoveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
-        Header resultHeader = new Header(Type.RESPONSE,DataType.TLV,Code.ResponseCode.OK,0);
+        Header resultHeader = new Header(Type.RESPONSE, DataType.TLV, Code.ResponseCode.OK, 0);
         MoveOutRequestDAO MORDao = new MoveOutRequestDAO();
         PaymentRefundDAO PRDao = new PaymentRefundDAO();
-        SelectionApplicationDAO selectionApplicationDAO= new SelectionApplicationDAO();
+        SelectionApplicationDAO selectionApplicationDAO = new SelectionApplicationDAO();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         String id = getIdBySessionId(sessionId);
         PaymentRefundDTO PRDto = PRDao.findByUid(id);
@@ -202,7 +192,7 @@ public class DormitoryAdminController {
             SelectionApplicationDTO roommateDTO = selectionApplicationDAO.findByUid(userDTO.getUid());
             roommateDTO.setRoommateUserDTO(null);
             selectionApplicationDAO.update(roommateDTO);
-        }else{
+        } else {
             resultHeader.setType(Type.ERROR);
             resultHeader.setCode(Code.ErrorCode.UNAUTHORIZED);
         }
