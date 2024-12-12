@@ -51,7 +51,7 @@ public class AuthController implements Controller {
             UserDTO userDTO = userDAO.findByUid(id);
             String userType = userDTO.getUserTypeDTO().getTypeName();
 
-            if (isValidLoginCredentials(id, pw, header)) {
+            if (isValidLoginCredentials(id, pw, header)&&userType!=null) {
                 sessionManager.getSession(sessionId).setAttribute("ID", id);
                 sessionManager.getSession(sessionId).setAttribute("PW", pw);
                 sessionManager.getSession(sessionId).setAttribute("USER_TYPE", userType);
@@ -61,6 +61,9 @@ public class AuthController implements Controller {
                 childProtocol2.setData(sessionId);
                 resProtocol.addChild(childProtocol1);
                 resProtocol.addChild(childProtocol2);
+            }else {
+                header.setType(Type.ERROR);
+                header.setCode(Code.ErrorCode.INTERNAL_SERVER_ERROR);
             }
         } catch (SQLException e) {
             header.setType(Type.ERROR);

@@ -158,12 +158,12 @@ public class AdminPage {
 
     public void selectApplicant(AsyncRequest asyncRequest){
         System.out.print("선발/배정을 시작하시겠습니까? Y/N");
-        char selection = sc.next().charAt(0);
-        if(selection != 'Y' && selection != 'y'){
+        char selection = Character.toUpperCase(sc.next().charAt(0));
+        if (selection != 'Y') {
             return;
         }
 
-        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_SCHEDULE,0);
+        Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.SELECT_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
         Protocol<?> protocol = new Protocol<>();
@@ -206,7 +206,7 @@ public class AdminPage {
         Protocol<String> tlv4 = new Protocol<>(tlvHeader4, reason);
         protocol.addChild(tlv4);
 
-        Header tlvHeader2 = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SUM_OF_MERIT_POINTS, 0);
+        Header tlvHeader2 = new Header(Type.VALUE, DataType.INTEGER, Code.ValueCode.SUM_OF_MERIT_POINTS, 0);
         Protocol<Integer> tlv2 = new Protocol<>(tlvHeader2, point);
         protocol.addChild(tlv2);
 
