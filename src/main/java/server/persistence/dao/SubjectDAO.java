@@ -115,10 +115,8 @@ public class SubjectDAO implements SubjectDAOI {
 
         // 교수 ID가 null이 아닐 경우 교수 정보를 설정
         if (professorId != null) {
-            professorDTO = UserDTO.builder()
-                    .id(professorId)
-                    .userName(resultSet.getString("professor_name")) // 교수 이름 설정
-                    .build();
+            UserDAO dao = new UserDAO();
+            professorDTO = dao.findById(professorId);
         }
 
         return SubjectDTO.builder()

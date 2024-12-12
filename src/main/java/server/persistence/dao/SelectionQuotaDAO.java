@@ -80,13 +80,11 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
     }
 
     private SelectionQuotaDTO mapRowToSelectionQuotaDTO(ResultSet resultSet) throws SQLException {
-        SelectionScheduleDTO scheduleDTO = SelectionScheduleDTO.builder()
-                .id(resultSet.getInt("selection_schedule_id"))
-                .build();
+        SelectionScheduleDAO dao = new SelectionScheduleDAO();
+        SelectionScheduleDTO scheduleDTO = dao.findById(resultSet.getInt("selection_schedule_id"));
 
-        DormitoryRoomTypeDTO dormitoryRoomTypeDTO = DormitoryRoomTypeDTO.builder()
-                .id(resultSet.getInt("dormitory_room_type_id"))
-                .build();
+        DormitoryRoomTypeDAO dao2 = new DormitoryRoomTypeDAO();
+        DormitoryRoomTypeDTO dormitoryRoomTypeDTO = dao2.findById(resultSet.getInt("dormitory_room_type_id"));
 
         return SelectionQuotaDTO.builder()
                 .id(resultSet.getInt("id"))

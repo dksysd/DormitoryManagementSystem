@@ -89,16 +89,11 @@ public class PaymentHistoryDAO implements PaymentHistoryDAOI {
     }
 
     private PaymentHistoryDTO mapRowToPaymentHistoryDTO(ResultSet resultSet) throws SQLException {
-        UserDTO userDTO = UserDTO.builder()
-                .id(resultSet.getInt("user_id"))
-                .userName(resultSet.getString("user_name"))
-                .phoneNumber(resultSet.getString("phone_number"))
-                .build();
+        UserDAO dao = new UserDAO();
+        UserDTO userDTO = dao.findById(resultSet.getInt("user_id"));
 
-        PaymentDTO paymentDTO = PaymentDTO.builder()
-                .id(resultSet.getInt("payment_id"))
-                .paymentAmount(resultSet.getInt("payment_amount"))
-                .build();
+        PaymentDAO dao2 = new PaymentDAO();
+        PaymentDTO paymentDTO = dao2.findById(resultSet.getInt("payment_id"));
 
         return PaymentHistoryDTO.builder()
                 .id(resultSet.getInt("history_id"))

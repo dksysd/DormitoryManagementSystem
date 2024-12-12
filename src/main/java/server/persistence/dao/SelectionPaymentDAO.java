@@ -89,17 +89,11 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
     }
 
     private SelectionPaymentDTO mapRowToSelectionPaymentDTO(ResultSet resultSet) throws SQLException {
-        SelectionDTO selectionDTO = SelectionDTO.builder()
-                .id(resultSet.getInt("selection_id"))
-                .isFinalApproved(resultSet.getBoolean("is_final_approved"))
-                .createdAt(resultSet.getTimestamp("selection_created_at").toLocalDateTime())
-                .build();
+        SelectionDAO dao = new SelectionDAO();
+        SelectionDTO selectionDTO = dao.findById(resultSet.getInt("selection_id"));
 
-        PaymentDTO paymentDTO = PaymentDTO.builder()
-                .id(resultSet.getInt("payment_id"))
-                .paymentAmount(resultSet.getInt("payment_amount")) // 결제 금액 추가
-                .createdAt(resultSet.getTimestamp("payment_created_at").toLocalDateTime())
-                .build();
+        PaymentDAO paymentDAO = new PaymentDAO();
+        PaymentDTO paymentDTO = paymentDAO.findById(resultSet.getInt("payment_id"));
 
         return SelectionPaymentDTO.builder()
                 .id(resultSet.getInt("payment_id"))

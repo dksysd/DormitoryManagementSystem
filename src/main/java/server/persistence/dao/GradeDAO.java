@@ -2,6 +2,9 @@ package server.persistence.dao;
 
 import server.persistence.dto.GradeDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.GradeLevelDTO;
+import server.persistence.dto.SubjectDTO;
+import server.persistence.dto.UserDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -82,10 +85,20 @@ public class GradeDAO implements GradeDAOI {
     }
 
     private GradeDTO mapRowToGradeDTO(ResultSet resultSet) throws SQLException {
+        SubjectDAO dao1 = new SubjectDAO();
+        SubjectDTO subjectDTO = dao1.findById(resultSet.getInt("subject_id"));
+        UserDAO dao2 = new UserDAO();
+        UserDTO userDTO = dao2.findById(resultSet.getInt("student_user_id"));
+        GradeLevelDAO dao3 = new GradeLevelDAO();
+        GradeLevelDTO gradeLevelDTO = dao3.findById(resultSet.getInt("grade_level_id"));
+
         return GradeDTO.builder()
                 .id(resultSet.getInt("id"))
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .updatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime())
+                .subjectDTO(subjectDTO)
+                .userDTO(userDTO)
+                .gradeLevelDTO(gradeLevelDTO)
                 .build();
     }
 }

@@ -123,16 +123,12 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
     }
 
     private PaymentRefundDTO mapRowToPaymentRefundDTO(ResultSet resultSet) throws SQLException {
-        BankDTO bankDTO = BankDTO.builder()
-                .id(resultSet.getInt("bank_id"))
-                .bankName(resultSet.getString("bank_name"))
-                .bankCode(resultSet.getString("bank_code"))
-                .build();
+        BankDAO dao = new BankDAO();
+        BankDTO bankDTO = dao.findById(resultSet.getInt("bank_id"));
 
-        PaymentDTO paymentDTO = PaymentDTO.builder()
-                .id(resultSet.getInt("payment_id"))
-                .paymentAmount(resultSet.getInt("payment_amount"))
-                .build();
+        PaymentDAO dao2 = new PaymentDAO();
+        PaymentDTO paymentDTO = dao2
+                .findById(resultSet.getInt("payment_id"));
 
         return PaymentRefundDTO.builder()
                 .id(resultSet.getInt("refund_id"))

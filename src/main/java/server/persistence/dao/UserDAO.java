@@ -41,10 +41,9 @@ public class UserDAO implements UserDAOI {
                 "ut.type_name AS user_type_name, gc.code_name AS code_name, a.detail_address AS user_address, " +
                 "a.postal_name AS postal_code, a.do AS address_do, a.si AS address_si, a.detail_address AS detail_address " +
                 "FROM users u " +
-                "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
-                "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
-                "LEFT JOIN addresses a ON u.address_id = a.id " +
-                "LEFT JOIN images i ON u.profile_image = i.id " +
+                "INNER JOIN user_types ut ON u.user_type_id = ut.id " +
+                "INNER JOIN gender_codes gc ON u.gender_code_id = gc.id " +
+                "INNER JOIN addresses a ON u.address_id = a.id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -66,6 +65,7 @@ public class UserDAO implements UserDAOI {
                 "INNER JOIN move_out_requests mor ON s.id = mor.selection_id " +
                 "INNER JOIN move_out_request_statuses mors ON mors.id = mor.move_out_status_id " +
                 "WHERE u.uid = ?";
+
         String check = "NULL";
         try (Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {

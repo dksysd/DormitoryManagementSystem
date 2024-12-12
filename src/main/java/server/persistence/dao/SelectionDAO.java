@@ -199,17 +199,13 @@ public class SelectionDAO implements SelectionDAOI {
     }
 
     private SelectionDTO mapRowToSelectionDTO(ResultSet resultSet) throws SQLException {
-        SelectionApplicationDTO selectionApplicationDTO = SelectionApplicationDTO.builder()
-                .id(resultSet.getInt("application_id"))
-                .build();
+        SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        SelectionApplicationDTO selectionApplicationDTO = dao.findById(resultSet.getInt("application_id"));
 
-        ImageDTO tuberculosisCertificateFileDTO = ImageDTO.builder()
-                .id(resultSet.getInt("tuberculosis_certificate_file_id")) // ID만 세팅
-                .build();
+        ImageDAO dao2 = new ImageDAO();
+        ImageDTO tuberculosisCertificateFileDTO = dao2.findById(resultSet.getInt("tuberculosis_certificate_file_id")); // ID만 세팅
 
-        ImageDTO additionalProofFileDTO = ImageDTO.builder()
-                .id(resultSet.getInt("additional_proof_file_id")) // ID만 세팅
-                .build();
+        ImageDTO additionalProofFileDTO = dao2.findById(resultSet.getInt("additional_proof_file_id"));
 
         return SelectionDTO.builder()
                 .id(resultSet.getInt("selection_id"))

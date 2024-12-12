@@ -2,6 +2,7 @@ package server.persistence.dao;
 
 import server.persistence.dto.ImageDTO;
 import server.config.DatabaseConnectionPool;
+import server.persistence.dto.UserDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class ImageDAO implements ImageDAOI {
 
     @Override
     public ImageDTO findById(Integer id) throws SQLException {
-        String query = "SELECT id, name, data, width, height, extension FROM images WHERE id = ?";
+        String query = "SELECT id, name, data, width, height, extension, user_id FROM images WHERE id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,7 +28,7 @@ public class ImageDAO implements ImageDAOI {
     @Override
     public List<ImageDTO> findAll() throws SQLException {
         List<ImageDTO> images = new ArrayList<>();
-        String query = "SELECT id, name, data, width, height, extension FROM images";
+        String query = "SELECT id, name, data, width, height, extension, user_id FROM images";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -86,6 +87,9 @@ public class ImageDAO implements ImageDAOI {
     }
 
     private ImageDTO mapRowToImageDTO(ResultSet resultSet) throws SQLException {
+        UserDAO dao = new UserDAO();
+        UserDTO userDTO = dao.findById(resultSet.getInt("user_id"));
+
         return ImageDTO.builder()
                 .id(resultSet.getInt("id"))
                 .name(resultSet.getString("name"))
@@ -93,6 +97,7 @@ public class ImageDAO implements ImageDAOI {
                 .width(resultSet.getInt("width"))
                 .height(resultSet.getInt("height"))
                 .extension(resultSet.getString("extension"))
+                .userDTO(userDTO)
                 .build();
     }
 

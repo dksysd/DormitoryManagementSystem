@@ -120,15 +120,11 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
     }
 
     private RoomAssignmentDTO mapRowToRoomAssignmentDTO(ResultSet resultSet) throws SQLException {
-        SelectionDTO selectionDTO = SelectionDTO.builder()
-                .id(resultSet.getInt("selection_id"))
-                .isFinalApproved(resultSet.getBoolean("is_final_approved"))
-                .build();
+        SelectionDAO dao = new SelectionDAO();
+        SelectionDTO selectionDTO = dao.findById(resultSet.getInt("selection_id"));
 
-        RoomDTO roomDTO = RoomDTO.builder()
-                .id(resultSet.getInt("room_id"))
-                .roomNumber(resultSet.getString("room_number"))
-                .build();
+        RoomDAO dao2 = new RoomDAO();
+        RoomDTO roomDTO = dao2.findById(resultSet.getInt("room_id"));
 
         return RoomAssignmentDTO.builder()
                 .id(resultSet.getInt("assignment_id"))

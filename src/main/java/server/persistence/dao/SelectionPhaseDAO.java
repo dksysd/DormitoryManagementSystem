@@ -100,9 +100,8 @@ public class SelectionPhaseDAO implements SelectionPhaseDAOI {
     }
 
     private SelectionPhaseDTO mapRowToSelectionPhaseDTO(ResultSet resultSet) throws SQLException {
-        SelectionScheduleDTO selectionScheduleDTO = SelectionScheduleDTO.builder()
-                .id(resultSet.getInt("selection_schedule_id"))
-                .build();
+        SelectionScheduleDAO dao = new SelectionScheduleDAO();
+        SelectionScheduleDTO selectionScheduleDTO = dao.findById(resultSet.getInt("selection_schedule_id"));
 
         return SelectionPhaseDTO.builder()
                 .id(resultSet.getInt("id"))

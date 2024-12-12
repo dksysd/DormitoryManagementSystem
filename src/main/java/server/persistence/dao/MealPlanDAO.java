@@ -13,7 +13,7 @@ public class MealPlanDAO implements MealPlanDAOI {
 
     @Override
     public MealPlanDTO findById(Integer id) throws SQLException {
-        String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id, m.dormitory_id, " +
+        String query = "SELECT m.id AS meal_id, m.price, m.meal_plan_type_id AS meal_plan_type_id, m.dormitory_id AS dormitory_id, " +
                 "mp.type_name AS mealTypeName, " +
                 "d.name AS DormitoryName " +
                 "FROM meal_plans m " +
@@ -111,12 +111,11 @@ public class MealPlanDAO implements MealPlanDAOI {
     }
 
     private MealPlanDTO mapRowToMealPlanDTO(ResultSet resultSet) throws SQLException {
-        MealPlanTypeDTO mealPlanTypeDTO = MealPlanTypeDTO.builder()
-                .typeName(resultSet.getString("mealTypeName"))
-                .build();
-        DormitoryDTO dormitoryDTO = DormitoryDTO.builder()
-                .name(resultSet.getString("DormitoryName"))
-                .build();
+        MealPlanTypeDAO dao = new MealPlanTypeDAO();
+        MealPlanTypeDTO mealPlanTypeDTO = dao.findById(resultSet.getInt("meal_plan_type_id"));
+
+        DormitoryDAO dao2 = new DormitoryDAO();
+        DormitoryDTO dormitoryDTO = dao2.findById(resultSet.getInt("dormitory_id"));
 
         return MealPlanDTO.builder()
                 .id(resultSet.getInt("meal_id"))

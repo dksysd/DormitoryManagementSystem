@@ -151,18 +151,14 @@ public class PaymentDAO implements PaymentDAOI {
     }
 
     private PaymentDTO mapRowToPaymentDTO(ResultSet resultSet) throws SQLException {
-        PaymentCodeDTO paymentCodeDTO = PaymentCodeDTO.builder()
-                .id(resultSet.getInt("payment_code_id"))
-                .paymentCode(resultSet.getString("payment_code"))
-                .build();
-        PaymentStatusDTO paymentStatusDTO = PaymentStatusDTO.builder()
-                .id(resultSet.getInt("payment_status_id"))
-                .statusName(resultSet.getString("payment_status"))
-                .build();
-        PaymentMethodDTO paymentMethodDTO = PaymentMethodDTO.builder()
-                .id(resultSet.getInt("payment_method_id"))
-                .methodName(resultSet.getString("method_name"))
-                .build();
+        PaymentCodeDAO dao = new PaymentCodeDAO();
+        PaymentCodeDTO paymentCodeDTO = dao.findById(resultSet.getInt("payment_code_id"));
+
+        PaymentStatusDAO dao2 = new PaymentStatusDAO();
+        PaymentStatusDTO paymentStatusDTO = dao2.findById(resultSet.getInt("payment_status_id"));
+
+        PaymentMethodDAO dao3 = new PaymentMethodDAO();
+        PaymentMethodDTO paymentMethodDTO = dao3.findById(resultSet.getInt("payment_method_id"));
 
         return PaymentDTO.builder()
                 .id(resultSet.getInt("id"))
