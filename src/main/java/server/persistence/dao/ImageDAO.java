@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageDAO implements ImageDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public ImageDTO findById(Integer id) throws SQLException {
         String query = "SELECT id, name, data, width, height, extension, user_id FROM images WHERE id = ?";
@@ -25,6 +25,7 @@ public class ImageDAO implements ImageDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<ImageDTO> findAll() throws SQLException {
         List<ImageDTO> images = new ArrayList<>();
@@ -40,6 +41,7 @@ public class ImageDAO implements ImageDAOI {
         return images; // 모든 이미지 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public int save(ImageDTO imageDTO) throws SQLException {
         int id;
@@ -59,6 +61,7 @@ public class ImageDAO implements ImageDAOI {
         return id;
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(ImageDTO imageDTO) throws SQLException {
         String query = "UPDATE images SET name = ?, data = ?, width = ?, height = ?, extension = ? WHERE id = ?";
@@ -75,6 +78,7 @@ public class ImageDAO implements ImageDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM images WHERE id = ?";
@@ -86,6 +90,7 @@ public class ImageDAO implements ImageDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private ImageDTO mapRowToImageDTO(ResultSet resultSet) throws SQLException {
         UserDAO dao = new UserDAO();
         UserDTO userDTO = dao.findById(resultSet.getInt("user_id"));

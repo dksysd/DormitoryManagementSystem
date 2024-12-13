@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentRefundDAO implements PaymentRefundDAOI {
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public PaymentRefundDTO findById(Integer id) throws SQLException {
         String query = "SELECT pr.id AS refund_id, pr.refund_reason, pr.account_number, pr.account_holder_name, " +
@@ -31,6 +32,7 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public PaymentRefundDTO findByUid(String uid) throws SQLException {
         String query = "SELECT pr.id AS refund_id, pr.refund_reason, pr.account_number, pr.account_holder_name, " +
@@ -53,6 +55,7 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
         return null;
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<PaymentRefundDTO> findAll() throws SQLException {
         List<PaymentRefundDTO> paymentRefunds = new ArrayList<>();
@@ -73,6 +76,7 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
         return paymentRefunds; // 모든 결제 환불 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public int save(PaymentRefundDTO paymentRefundDTO) throws SQLException {
         String query = "INSERT INTO payment_refunds (refund_reason, account_number, account_holder_name, created_at, bank_id, payment_id) VALUES (?, ?, ?, ?, ?, ?)";
@@ -94,6 +98,7 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
         return id;
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(PaymentRefundDTO paymentRefundDTO) throws SQLException {
         String query = "UPDATE payment_refunds SET refund_reason = ?, account_number = ?, account_holder_name = ?, created_at = ?, bank_id = ?, payment_id = ? WHERE id = ?";
@@ -111,6 +116,7 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM payment_refunds WHERE id = ?";
@@ -122,6 +128,7 @@ public class PaymentRefundDAO implements PaymentRefundDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private PaymentRefundDTO mapRowToPaymentRefundDTO(ResultSet resultSet) throws SQLException {
         BankDAO dao = new BankDAO();
         BankDTO bankDTO = dao.findById(resultSet.getInt("bank_id"));

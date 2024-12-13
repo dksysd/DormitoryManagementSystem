@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoomTypeDAO implements RoomTypeDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public RoomTypeDTO findById(Integer id) throws SQLException {
         String query = "SELECT id, type_name, description, max_person FROM room_types WHERE id = ?";
@@ -24,6 +24,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // 이름을 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public RoomTypeDTO findByName(String name) throws SQLException {
         String query = "SELECT id, type_name, description, max_person FROM room_types WHERE type_name = ?";
@@ -39,7 +40,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
-
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<RoomTypeDTO> findAll() throws SQLException {
         List<RoomTypeDTO> roomTypes = new ArrayList<>();
@@ -55,6 +56,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         return roomTypes; // 모든 방 유형 정보 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List<String>로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<String> findAllIntoString() throws SQLException {
         List<String> roomTypes = new ArrayList<>();
@@ -72,6 +74,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         return roomTypes;
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(RoomTypeDTO roomTypeDTO) throws SQLException {
         String query = "INSERT INTO room_types (type_name, description, max_person) VALUES (?, ?, ?)";
@@ -85,6 +88,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(RoomTypeDTO roomTypeDTO) throws SQLException {
         String query = "UPDATE room_types SET type_name = ?, description = ?, max_person = ? WHERE id = ?";
@@ -99,6 +103,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM room_types WHERE id = ?";
@@ -110,6 +115,7 @@ public class RoomTypeDAO implements RoomTypeDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private RoomTypeDTO mapRowToRoomTypeDTO(ResultSet resultSet) throws SQLException {
         return RoomTypeDTO.builder()
                 .id(resultSet.getInt("id"))

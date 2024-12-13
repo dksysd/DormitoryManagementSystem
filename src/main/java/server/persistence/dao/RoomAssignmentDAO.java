@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoomAssignmentDAO implements RoomAssignmentDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public RoomAssignmentDTO findById(Integer id) throws SQLException {
         String query = "SELECT ra.id AS assignment_id, ra.bed_number, ra.move_in_at, ra.move_out_at, ra.created_at, " +
@@ -32,6 +32,7 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public RoomAssignmentDTO findByUid(String uid) throws SQLException {
         String query = "SELECT ra.id AS assignment_id, ra.bed_number, ra.move_in_at, ra.move_out_at, ra.created_at, " +
@@ -55,6 +56,7 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
         return null;
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<RoomAssignmentDTO> findAll() throws SQLException {
         List<RoomAssignmentDTO> roomAssignments = new ArrayList<>();
@@ -75,6 +77,7 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
         return roomAssignments; // 모든 방 배정 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(RoomAssignmentDTO roomAssignmentDTO) throws SQLException {
         String query = "INSERT INTO room_assignments (bed_number, move_in_at, move_out_at, created_at, selection_id, room_id) VALUES (?, ?, ?, ?, ?, ?)";
@@ -91,6 +94,7 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(RoomAssignmentDTO roomAssignmentDTO) throws SQLException {
         String query = "UPDATE room_assignments SET bed_number = ?, move_in_at = ?, move_out_at = ?, created_at = ?, selection_id = ?, room_id = ? WHERE id = ?";
@@ -108,6 +112,7 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM room_assignments WHERE id = ?";
@@ -119,6 +124,7 @@ public class RoomAssignmentDAO implements RoomAssignmentDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private RoomAssignmentDTO mapRowToRoomAssignmentDTO(ResultSet resultSet) throws SQLException {
         SelectionDAO dao = new SelectionDAO();
         SelectionDTO selectionDTO = dao.findById(resultSet.getInt("selection_id"));

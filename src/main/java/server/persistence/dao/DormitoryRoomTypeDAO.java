@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public DormitoryRoomTypeDTO findById(Integer id) throws SQLException {
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
@@ -34,6 +34,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public DormitoryRoomTypeDTO findByUid(String uid) throws SQLException {
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
@@ -53,6 +54,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         }
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<DormitoryRoomTypeDTO> findAll() throws SQLException {
         List<DormitoryRoomTypeDTO> roomTypes = new ArrayList<>();
@@ -76,6 +78,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         return roomTypes; // 모든 기숙사 방 유형 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(DormitoryRoomTypeDTO dormitoryRoomTypeDTO) throws SQLException {
         String query = "INSERT INTO dormitory_room_types (price, created_at, updated_at, room_type_id, dormitory_id) VALUES (?, ?, ?, ?, ?)";
@@ -91,6 +94,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(DormitoryRoomTypeDTO dormitoryRoomTypeDTO) throws SQLException {
         String query = "UPDATE dormitory_room_types SET price = ?, created_at = ?, updated_at = ?, room_type_id = ?, dormitory_id = ? WHERE id = ?";
@@ -107,6 +111,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         }
     }
 
+    // 필요한 데이터를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updateDormitory(String uid, String dormitoryName) throws SQLException {
         String query = "SELECT drt.id AS dormitory_room_type_id, drt.price, drt.created_at, drt.updated_at, drt.room_type_id, drt.dormitory_id" +
@@ -139,6 +144,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM dormitory_room_types WHERE id = ?";
@@ -150,6 +156,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private DormitoryRoomTypeDTO mapRowToDormitoryRoomTypeDTO(ResultSet resultSet) throws SQLException {
         RoomTypeDAO dao1 = new RoomTypeDAO();
         RoomTypeDTO roomTypeDTO = dao1.findById(resultSet.getInt("room_type_id"));

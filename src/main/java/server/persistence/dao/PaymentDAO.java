@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentDAO implements PaymentDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public PaymentDTO findById(Integer id) throws SQLException {
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
@@ -34,6 +34,7 @@ public class PaymentDAO implements PaymentDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public PaymentDTO findByUid(String uid) throws SQLException {
         String query = "SELECT p.id, p.payment_amount, p.created_at, p.payment_code_id, p.payment_status_id, p.payment_method_id, " +
@@ -58,6 +59,7 @@ public class PaymentDAO implements PaymentDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<PaymentDTO> findAll() throws SQLException {
         List<PaymentDTO> payments = new ArrayList<>();
@@ -80,6 +82,7 @@ public class PaymentDAO implements PaymentDAOI {
         return payments; // 모든 결제 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(PaymentDTO paymentDTO) throws SQLException {
         String query = "INSERT INTO payments (payment_amount, created_at, payment_code_id, payment_status_id, payment_method_id) VALUES (?, ?, ?, ?, ?)";
@@ -95,6 +98,7 @@ public class PaymentDAO implements PaymentDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(PaymentDTO paymentDTO) throws SQLException {
         String query = "UPDATE payments SET payment_amount = ?, created_at = ?, payment_code_id = ?, payment_status_id = ?, payment_method_id = ? WHERE id = ?";
@@ -111,6 +115,7 @@ public class PaymentDAO implements PaymentDAOI {
         }
     }
 
+    // 필요한 데이터를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void statusUpdate(String uid, String paymentStatusName) throws SQLException {
         String query = "SELECT p.id AS payment_id, ps.id AS ps_id FROM payments p " +
@@ -139,6 +144,7 @@ public class PaymentDAO implements PaymentDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM payments WHERE id = ?";
@@ -150,6 +156,7 @@ public class PaymentDAO implements PaymentDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private PaymentDTO mapRowToPaymentDTO(ResultSet resultSet) throws SQLException {
         PaymentCodeDAO dao = new PaymentCodeDAO();
         PaymentCodeDTO paymentCodeDTO = dao.findById(resultSet.getInt("payment_code_id"));
