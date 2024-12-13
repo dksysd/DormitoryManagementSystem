@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionQuotaDAO implements SelectionQuotaDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public SelectionQuotaDTO findById(Integer id) throws SQLException {
         String query = "SELECT s.id, s.quota, s.selection_schedule_id, s.dormitory_room_type_id FROM selection_quotas s WHERE id = ?";
@@ -26,6 +26,7 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<SelectionQuotaDTO> findAll() throws SQLException {
         List<SelectionQuotaDTO> selectionQuotas = new ArrayList<>();
@@ -41,6 +42,7 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
         return selectionQuotas; // 모든 선택 할당량 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(SelectionQuotaDTO selectionQuotaDTO) throws SQLException {
         String query = "INSERT INTO selection_quotas (quota, selection_schedule_id, dormitory_room_type_id) VALUES (?, ?, ?)";
@@ -54,6 +56,7 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(SelectionQuotaDTO selectionQuotaDTO) throws SQLException {
         String query = "UPDATE selection_quotas SET quota = ?, selection_schedule_id = ?, dormitory_room_type_id = ? WHERE id = ?";
@@ -68,6 +71,7 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM selection_quotas WHERE id = ?";
@@ -79,6 +83,7 @@ public class SelectionQuotaDAO implements SelectionQuotaDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private SelectionQuotaDTO mapRowToSelectionQuotaDTO(ResultSet resultSet) throws SQLException {
         SelectionScheduleDAO dao = new SelectionScheduleDAO();
         SelectionScheduleDTO scheduleDTO = dao.findById(resultSet.getInt("selection_schedule_id"));

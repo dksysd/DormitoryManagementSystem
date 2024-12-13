@@ -62,6 +62,23 @@ public class DormitoryAdminController {
         return result;
     }
 
+    /**
+     * 신청자 내역을 가져와서 프로토콜에 실어 보내는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: get_applicant, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : get_applicant, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> getApplicant(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -87,6 +104,27 @@ public class DormitoryAdminController {
         return result;
     }
 
+    /**
+     * 선발자 학번을 받아와서 결정하는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: select_applicant, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: raw, code: proof_image, dataLength:,)
+     *                 data: 이미지 )
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : OK, dataLength :, ))
+     * @return (에러의 경우) header(type : Error, dataType : TLV, code : Error dataLength: 0)
+     * 정상 -> header(type : Response, dataType : TLV, code : OK dataLength: 0)
+     * data: null
+     */
+
+
     public static Protocol<?> selectApplicants(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -107,6 +145,26 @@ public class DormitoryAdminController {
         result.setHeader(resultHeader);
         return result;
     }
+
+    /**
+     * 상벌점 내역을 추가하는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: manage_merit, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: raw, code: proof_image, dataLength:,)
+     *                 data: 이미지 )
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : OK dataLength : 0, ))
+     * @return (에러의 경우) header(type : Error, dataType : TLV, code : Error dataLength: 0)
+     * 정상 -> header(type : Response, dataType : TLV, code : OK dataLength: 0)
+     * data: null
+     */
 
     public static Protocol<?> managementMeritPoint(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
@@ -165,7 +223,9 @@ public class DormitoryAdminController {
     }
 
     /**
-     * @param protocol header(type:request, dataType: TLV, code: APPROVE_MOVEOUT, dataLength:)
+     * 퇴사절차를 진행한 뒤, 환불까지 처리하는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: approve_moveout, dataLength:)
      *                 data:
      *                 children <
      *                 1 ( header(type: value, dataType: string, code: Id, dataLength:,)

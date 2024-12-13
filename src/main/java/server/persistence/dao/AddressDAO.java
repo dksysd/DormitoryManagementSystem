@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressDAO implements AddressDAOI{
+
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public AddressDTO findById(Integer id) throws SQLException {
         String query = "SELECT id, postal_name, do, si, detail_address, created_at FROM addresses WHERE id = ?";
@@ -24,6 +26,7 @@ public class AddressDAO implements AddressDAOI{
         return null;
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<AddressDTO> findAll() throws SQLException {
         List<AddressDTO> addresses = new ArrayList<>();
@@ -41,6 +44,7 @@ public class AddressDAO implements AddressDAOI{
         return addresses;
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(AddressDTO address) throws SQLException {
         String query = "insert into addresses (postal_name, do, si, detail_address, created_at) values (?, ?, ?, ?, ?)";
@@ -56,6 +60,7 @@ public class AddressDAO implements AddressDAOI{
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(AddressDTO address) throws SQLException {
         String query = "UPDATE addresses SET postal_name = ?, do = ?, si = ?, detail_address = ?, created_at = ? WHERE  id = ?";
@@ -72,6 +77,7 @@ public class AddressDAO implements AddressDAOI{
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM addresses WHERE id = ?";
@@ -83,6 +89,7 @@ public class AddressDAO implements AddressDAOI{
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private AddressDTO mapRowAddress(ResultSet rs) throws SQLException {
         return AddressDTO.builder()
                 .id(rs.getInt("id"))

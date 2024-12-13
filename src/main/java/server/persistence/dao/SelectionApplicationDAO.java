@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionApplicationDAO implements SelectionApplicationDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public SelectionApplicationDTO findById(Integer id) throws SQLException {
         String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year_room, sa.created_at, sa.updated_at, " +
@@ -43,6 +43,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public SelectionApplicationDTO findByUid(String uid) throws SQLException {
         String query = "SELECT sa.id AS application_id, sa.preference, sa.has_sleep_habit, sa.is_year_room, sa.created_at, sa.updated_at, " +
@@ -73,7 +74,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
-
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<SelectionApplicationDTO> findAll() throws SQLException {
         List<SelectionApplicationDTO> selectionApplications = new ArrayList<>();
@@ -103,6 +104,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         return selectionApplications; // 모든 선택 신청 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(SelectionApplicationDTO selectionApplicationDTO) throws SQLException {
         String query = "INSERT INTO selection_applications (preference, has_sleep_habit, is_year_room, created_at, updated_at, " +
@@ -126,6 +128,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(SelectionApplicationDTO selectionApplicationDTO) throws SQLException {
         String query = "UPDATE selection_applications SET preference = ?, has_sleep_habit = ?, is_year_room = ?, " +
@@ -150,6 +153,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // Uid를 통해 검색하고, 우선도를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updatePreference(String uid, Integer preference) throws SQLException {
         String query = "SELECT s.id FROM users u " +
@@ -175,6 +179,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // uid를 통해 검색하고, mealPlanName을 통해 상태를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updateMealPlan(String uid, String mealPlanName) throws SQLException {
         String query = "SELECT s.id FROM selection_applications s " +
@@ -207,6 +212,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // uid를 통해 정보를 검색하고, 상태 이름을 통해 id를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updateSelectionApplication(String uid, String statusName) throws SQLException {
         String query = "SELECT sa.id, sas.id " +
@@ -239,6 +245,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // Uid를 통해 검색하고, 기숙사 형태를 검색하여 id를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updateRoomType(String uid, String roomTypeName) throws SQLException {
         String query = "SELECT s.id FROM selection_applications s " +
@@ -272,6 +279,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM selection_applications WHERE id = ?";
@@ -283,6 +291,7 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private SelectionApplicationDTO mapRowToSelectionApplicationDTO(ResultSet resultSet) throws SQLException {
         SelectionApplicationStatusDAO dao1 = new SelectionApplicationStatusDAO();
         SelectionApplicationStatusDTO statusDTO = dao1.findById(resultSet.getInt("selection_application_status_id"));

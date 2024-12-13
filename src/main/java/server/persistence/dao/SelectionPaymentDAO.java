@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionPaymentDAO implements SelectionPaymentDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public SelectionPaymentDTO findById(Integer id) throws SQLException {
         String query = "SELECT sp.id AS payment_id, sp.selection_id, sp.payment_id, " +
@@ -32,6 +32,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<SelectionPaymentDTO> findAll() throws SQLException {
         List<SelectionPaymentDTO> selectionPayments = new ArrayList<>();
@@ -52,6 +53,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
         return selectionPayments; // 모든 선택 결제 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(SelectionPaymentDTO selectionPaymentDTO) throws SQLException {
         String query = "INSERT INTO selection_payments (selection_id, payment_id) VALUES (?, ?)";
@@ -64,6 +66,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(SelectionPaymentDTO selectionPaymentDTO) throws SQLException {
         String query = "UPDATE selection_payments SET selection_id = ?, payment_id = ? WHERE id = ?";
@@ -77,6 +80,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM selection_payments WHERE id = ?";
@@ -88,6 +92,7 @@ public class SelectionPaymentDAO implements SelectionPaymentDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private SelectionPaymentDTO mapRowToSelectionPaymentDTO(ResultSet resultSet) throws SQLException {
         SelectionDAO dao = new SelectionDAO();
         SelectionDTO selectionDTO = dao.findById(resultSet.getInt("selection_id"));

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectionDAO implements SelectionDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public SelectionDTO findById(Integer id) throws SQLException {
         String query = "SELECT s.id AS id, is_final_approved, created_at, updated_at, " +
@@ -29,6 +29,7 @@ public class SelectionDAO implements SelectionDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public SelectionDTO findByUid(String uid) throws SQLException {
         String query = "SELECT s.id AS id, is_final_approved, created_at, updated_at, " +
@@ -49,6 +50,7 @@ public class SelectionDAO implements SelectionDAOI {
         return null;
     }
 
+    // Uid를 통해 검색하고, 이미지 파일을 DB에 INSERT하는 메서드이다.
     @Override
     public void updateTuber(String uid, Byte[] data) throws SQLException {
         String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id " +
@@ -90,6 +92,7 @@ public class SelectionDAO implements SelectionDAOI {
         }
     }
 
+    // Uid를 통해 검색하고, 이미지 파일을 DB에 INSERT하는 메서드이다.
     @Override
     public void updateProof(String uid, Byte[] data) throws SQLException {
         String query = "SELECT s.id AS id, u.user_name AS name, u.id AS user_id " +
@@ -131,7 +134,7 @@ public class SelectionDAO implements SelectionDAOI {
         }
     }
 
-
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<SelectionDTO> findAll() throws SQLException {
         List<SelectionDTO> selections = new ArrayList<>();
@@ -151,6 +154,7 @@ public class SelectionDAO implements SelectionDAOI {
         return selections; // 모든 선택 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(SelectionDTO selectionDTO) throws SQLException {
         String query = "INSERT INTO selections (is_final_approved, created_at, updated_at, " +
@@ -169,6 +173,7 @@ public class SelectionDAO implements SelectionDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(SelectionDTO selectionDTO) throws SQLException {
         String query = "UPDATE selections SET is_final_approved = ?, created_at = ?, updated_at = ?, " +
@@ -187,6 +192,7 @@ public class SelectionDAO implements SelectionDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM selections WHERE id = ?";
@@ -198,6 +204,7 @@ public class SelectionDAO implements SelectionDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private SelectionDTO mapRowToSelectionDTO(ResultSet resultSet) throws SQLException {
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
         SelectionApplicationDTO selectionApplicationDTO = dao.findById(resultSet.getInt("application_id"));

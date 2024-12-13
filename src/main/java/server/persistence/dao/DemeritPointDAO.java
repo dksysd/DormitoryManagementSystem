@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DemeritPointDAO implements DemeritPointDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public DemeritPointDTO findById(Integer id) throws SQLException {
         String query = "SELECT id, description, point, created_at, user_id, room_assignment_id FROM demerit_points WHERE id = ?";
@@ -27,6 +27,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<DemeritPointDTO> findAll() throws SQLException {
         List<DemeritPointDTO> demeritPoints = new ArrayList<>();
@@ -42,6 +43,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         return demeritPoints; // 모든 불이익 점수 정보 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List<String>으로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<String> findAllPointIntoString() throws SQLException {
         List<String> demeritPoints = new ArrayList<>();
@@ -60,6 +62,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         return demeritPoints;
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(DemeritPointDTO demeritPointDTO) throws SQLException {
         String query = "INSERT INTO demerit_points (description, created_at, user_id, room_assignment_id) VALUES (?, ?, ?, ?)";
@@ -74,6 +77,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         }
     }
 
+    // 필요한 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void savePoint(String uid, String description, int score) throws SQLException{
         int user_id = -1;
@@ -108,6 +112,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(DemeritPointDTO demeritPointDTO) throws SQLException {
         String query = "UPDATE demerit_points SET description = ?, created_at = ?, user_id = ?, room_assignment_id = ? WHERE id = ?";
@@ -123,6 +128,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM demerit_points WHERE id = ?";
@@ -134,6 +140,7 @@ public class DemeritPointDAO implements DemeritPointDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private DemeritPointDTO mapRowToDemeritPointDTO(ResultSet resultSet) throws SQLException {
         UserDAO dao1 = new UserDAO();
         UserDTO userDTO = dao1.findById(resultSet.getInt("user_id"));

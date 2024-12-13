@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO implements UserDAOI {
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public UserDTO findById(Integer id) throws SQLException {
         String query = "SELECT u.id, u.uid, u.login_password, u.user_name, u.phone_number, u.created_at, u.updated_at, " +
@@ -32,6 +33,7 @@ public class UserDAO implements UserDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public UserDTO findByUid(String uid) throws SQLException {
         String query = "SELECT u.id AS id, u.uid AS uid, u.login_password AS login_password, u.user_name AS user_name, " +
@@ -61,6 +63,7 @@ public class UserDAO implements UserDAOI {
         return null;
     }
 
+    // Uid를 입력받아 move_out에 있는지 대조한 뒤, DB에서 데이터를 반환하는 메서드이다.
     @Override
     public String checkMoveOut(String uid) throws SQLException {
         String query = "SELECT mors.status_name FROM users u " +
@@ -85,6 +88,7 @@ public class UserDAO implements UserDAOI {
         return check;
     }
 
+    // DB의 모든 항목들을 가져와서 상태를 비교하고, List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<String> findAllOfSelection() throws SQLException {
         List<String> users = new ArrayList<>();
@@ -104,6 +108,8 @@ public class UserDAO implements UserDAOI {
 
         return users;
     }
+
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<UserDTO> findAll() throws SQLException {
         List<UserDTO> users = new ArrayList<>();
@@ -129,6 +135,7 @@ public class UserDAO implements UserDAOI {
         return users; // 모든 사용자 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(UserDTO userDTO) throws SQLException {
         String query = "INSERT INTO users (uid, login_password, salt, user_name, phone_number, created_at, updated_at, user_type_id, gender_code_id, address_id, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -150,6 +157,7 @@ public class UserDAO implements UserDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(UserDTO userDTO) throws SQLException {
         String query = "UPDATE users SET uid = ?, login_password = ?, user_name = ?, phone_number = ?, created_at = ?, updated_at = ?, user_type_id = ?, gender_code_id = ?, address_id = ?,profile_image = ? WHERE id = ?";
@@ -171,6 +179,7 @@ public class UserDAO implements UserDAOI {
         }
     }
 
+    // 필요한 데이터를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updateRoommate(String uid, String roommate) throws SQLException {
         String query = "SELECT sa.id AS id, u.id AS userId, sa.roommate_user_id AS roommate_id FROM users u " +
@@ -217,6 +226,7 @@ public class UserDAO implements UserDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM users WHERE id = ?";
@@ -228,21 +238,17 @@ public class UserDAO implements UserDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private UserDTO mapRowToUserDTO(ResultSet resultSet) throws SQLException {
-//        System.out.println("Valid Check"); //FIXME delete
         UserTypeDAO dao1 = new UserTypeDAO();
         UserTypeDTO userTypeDTO = dao1.findById(resultSet.getInt("user_type_id"));
 
-//        System.out.println("Valid Check"); //FIXME delete
         GenderCodeDAO dao2 = new GenderCodeDAO();
         GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code"));
 
-//        System.out.println("Valid Check"); //FIXME delete
         AddressDAO dao3 = new AddressDAO();
         AddressDTO addressDTO = dao3.findById(resultSet.getInt("address_id"));
-//        System.out.println("Valid Check"); //FIXME delete
 
-//        System.out.println("Valid Check"); //FIXME delete
 //        ImageDAO dao4 = new ImageDAO();
 //        if (resultSet.get)
 //        ImageDTO imageDTO = dao4.findById(resultSet.getInt("profile_image"));

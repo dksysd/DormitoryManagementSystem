@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoomDAO implements RoomDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public RoomDTO findById(Integer id) throws SQLException {
         String query = "SELECT id, room_number, dormitory_room_type_id, dormitory_id FROM rooms WHERE id = ?";
@@ -27,6 +27,7 @@ public class RoomDAO implements RoomDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<RoomDTO> findAll() throws SQLException {
         List<RoomDTO> roomTypes = new ArrayList<>();
@@ -42,6 +43,7 @@ public class RoomDAO implements RoomDAOI {
         return roomTypes; // 모든 방 유형 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(RoomDTO roomDTO) throws SQLException {
         String query = "INSERT INTO rooms (room_number, dormitory_room_type_id, dormitory_id) VALUES (?, ? ,?)";
@@ -55,6 +57,7 @@ public class RoomDAO implements RoomDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(RoomDTO roomDTO) throws SQLException {
         String query = "UPDATE rooms SET room_number = ?, dormitory_room_type_id = ?, dormitory_id = ? WHERE id = ?";
@@ -69,6 +72,7 @@ public class RoomDAO implements RoomDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM rooms WHERE id = ?";
@@ -80,6 +84,7 @@ public class RoomDAO implements RoomDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private RoomDTO mapRowToRoomDTO(ResultSet resultSet) throws SQLException {
         DormitoryRoomTypeDAO dao = new DormitoryRoomTypeDAO();
         DormitoryRoomTypeDTO dormitoryRoomTypeDTO = dao.findById(resultSet.getInt("dormitory_room_type_id"));

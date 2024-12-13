@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoveOutRequestDAO implements MoveOutRequestDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public MoveOutRequestDTO findById(Integer id) throws SQLException {
         String query = "SELECT id, checkout_at,expect_checkout_at, account_number, created_at, updated_at, " +
@@ -27,6 +27,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // Uid를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public MoveOutRequestDTO findByUid(String uid) throws SQLException {
         String query = "SELECT mor.id AS id, mor.checkout_at AS checkout_at, mor.expect_checkout_at AS expect_checkout_at," +
@@ -50,6 +51,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<MoveOutRequestDTO> findAll() throws SQLException {
         List<MoveOutRequestDTO> moveOutRequests = new ArrayList<>();
@@ -65,6 +67,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         return moveOutRequests; // 모든 퇴실 요청 정보 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List<String>로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<String> findAllOfMoveOut() throws SQLException {
         List<String> moveOutRequests = new ArrayList<>();
@@ -86,6 +89,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         return moveOutRequests;
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
         String query = "INSERT INTO move_out_requests (checkout_at,expect_checkout_at, account_number, created_at, updated_at, move_out_status_id, selection_id, bank_id, payment_refund_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
@@ -105,6 +109,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(MoveOutRequestDTO moveOutRequestDTO) throws SQLException {
         String query = "UPDATE move_out_requests SET checkout_at = ?, account_number = ?, created_at = ?, updated_at = ?, move_out_status_id = ?, selection_id = ?, payment_refund_id = ? WHERE id = ?";
@@ -123,6 +128,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         }
     }
 
+    // 필요한 데이터를 각각 가져와, 업데이트 하는 메서드이다.
     @Override
     public void updateStatus(String uid, String status) throws SQLException {
         String query = "SELECT mor.id AS request_id FROM move_out_requests mor " +
@@ -158,6 +164,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM move_out_requests WHERE id = ?";
@@ -169,6 +176,7 @@ public class MoveOutRequestDAO implements MoveOutRequestDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private MoveOutRequestDTO mapRowToMoveOutRequestDTO(ResultSet resultSet) throws SQLException {
         MoveOutRequestStatusDAO dao1 = new MoveOutRequestStatusDAO();
         MoveOutRequestStatusDTO moveOutRequestStatusDTO = dao1.findById(resultSet.getInt("move_out_status_id"));

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PaymentHistoryDAO implements PaymentHistoryDAOI {
-
+    // ID를 입력받아 DB에서 데이터를 반환하는 메서드이다.
     @Override
     public PaymentHistoryDTO findById(Integer id) throws SQLException {
         String query = "SELECT ph.id AS history_id, ph.user_id, ph.payment_id, " +
@@ -32,6 +32,7 @@ public class PaymentHistoryDAO implements PaymentHistoryDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<PaymentHistoryDTO> findAll() throws SQLException {
         List<PaymentHistoryDTO> paymentHistories = new ArrayList<>();
@@ -52,6 +53,7 @@ public class PaymentHistoryDAO implements PaymentHistoryDAOI {
         return paymentHistories; // 모든 결제 기록 정보 반환
     }
 
+    // 입력받은 데이터를 바탕으로 DB에 INSERT하는 메서드이다.
     @Override
     public void save(PaymentHistoryDTO paymentHistoryDTO) throws SQLException {
         String query = "INSERT INTO payment_histories (user_id, payment_id) VALUES (?, ?)";
@@ -64,6 +66,7 @@ public class PaymentHistoryDAO implements PaymentHistoryDAOI {
         }
     }
 
+    // id를 제외하고 나머지 영역이 바뀌어있는 데이터를 가져와, 업데이트 하는 메서드이다.
     @Override
     public void update(PaymentHistoryDTO paymentHistoryDTO) throws SQLException {
         String query = "UPDATE payment_histories SET user_id = ?, payment_id = ? WHERE id = ?";
@@ -77,6 +80,7 @@ public class PaymentHistoryDAO implements PaymentHistoryDAOI {
         }
     }
 
+    // 입력받은 id를 DB에서 제거하는 메서드이다.
     @Override
     public void delete(Integer id) throws SQLException {
         String query = "DELETE FROM payment_histories WHERE id = ?";
@@ -88,6 +92,7 @@ public class PaymentHistoryDAO implements PaymentHistoryDAOI {
         }
     }
 
+    // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private PaymentHistoryDTO mapRowToPaymentHistoryDTO(ResultSet resultSet) throws SQLException {
         UserDAO dao = new UserDAO();
         UserDTO userDTO = dao.findById(resultSet.getInt("user_id"));
