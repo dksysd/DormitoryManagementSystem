@@ -16,7 +16,7 @@ public class AdminPage {
         this.sessionID = sessionID;
     }
 
-    //스위치문 있는 선택지별로 결과 돌리는 메서드 만들깅 >> 로그아웃 전까지 반복.
+    //스위치문 있는 선택지별로 결과 돌리는 메서드 만들기 >> 로그아웃 전까지 반복.
     public void adminFunction(AsyncRequest asyncRequest){
         int option = 0;
 
@@ -33,8 +33,7 @@ public class AdminPage {
                 case 4: managementMeritPoint(asyncRequest); break;
                 case 5: confirmTuberReport(asyncRequest); break;
                 case 6: displayMoveOutApplicant(asyncRequest); break;
-                case 7: confirmFIleForProof(asyncRequest); break;
-                case 8: System.out.println("종료합니다."); break;
+                case 7:System.out.println("종료합니다."); break;
                 default: System.out.println("유효하지 않은 선택입니다. 다시 시도하세요."); break;
             }
         } while (option != 8);
@@ -42,20 +41,19 @@ public class AdminPage {
 
     public static void adminFunctionInfo(){
         System.out.println("============= 관리자 페이지입니다 =============");
-        System.out.println("1. 선발 일정 등록"); // ok - 확인만
-        System.out.println("2. 입사 신청자 목록 확인"); // ok - 확인만
-        System.out.println("3. 입사자 선발하기"); // ok - 확인만
-        System.out.println("4. 상벌점 관리"); // ok - 확인만
+        System.out.println("1. 선발 일정 등록");
+        System.out.println("2. 입사 신청자 목록 확인");
+        System.out.println("3. 입사자 선발하기");
+        System.out.println("4. 상벌점 관리");
         System.out.println("5. 결핵진단서 진위 확인");
-        System.out.println("6. 퇴사 승인");// ok - 확인만
-        System.out.println("7. 우선선발 증빙서 진위 확인");
-        System.out.println("8. 로그아웃");
+        System.out.println("6. 퇴사 승인");
+        System.out.println("7. 로그아웃");
         System.out.println();
         System.out.println();
     }
 
     public void registerSelectionInfo(AsyncRequest asyncRequest){
-
+        //선발 일정 등록
         int selection = 0;
         for( ; ; ){
             System.out.println("어떤 선발의 일정을 등록하시겠습니까?");
@@ -121,7 +119,9 @@ public class AdminPage {
     }
 
     public void displayApplicants(AsyncRequest asyncRequest){
+        //입사 신청자들 조회
 
+        //요청 메시지
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -157,6 +157,7 @@ public class AdminPage {
     }
 
     public void selectApplicant(AsyncRequest asyncRequest){
+        // 합격자 선발
         System.out.print("선발/배정을 시작하시겠습니까? Y/N");
         char selection = Character.toUpperCase(sc.next().charAt(0));
         if (selection != 'Y') {
@@ -186,6 +187,7 @@ public class AdminPage {
     }
 
     public void managementMeritPoint(AsyncRequest asyncRequest){
+        // 상벌점 관리
         System.out.print("관리하려는 학생의 학번을 입력하세요 : ");
         String student = sc.next();
         System.out.println("상벌점 사유를 입력하세요 : ");
@@ -231,15 +233,14 @@ public class AdminPage {
     }
 
     public void confirmTuberReport(AsyncRequest asyncRequest){
-        // 결핵진단서 확인 안한 사람들 불러오는 쿼리있는 메서드
-        // 한놈씩 반복문으로 조져서 그놈들이 올린 결핵진단서 메시지로 받아서 불러오는 메서드
+        // 결핵 진단서 승인 - 미구현
         System.out.println("1.승인 / 2.거절 (번호를 누르세요) : ");
         // 승인거절 결과 보내는 메서드
         System.out.println("다음 학생의 결핵진단서를 불러올까요? (1. 승인 / 2. 거절) : ");
-        // 값에따라 반복문 계속할지?
     }
 
     public void displayMoveOutApplicant(AsyncRequest asyncRequest){
+        // 퇴사 신청자 조회, 퇴사승인
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MOVE_OUT_APPLICANTS,0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -292,9 +293,5 @@ public class AdminPage {
         protocol2.addChild(tlv3);
 
 
-    }
-
-    public void confirmFIleForProof(AsyncRequest asyncRequest){
-        //위에 결핵이랑 똑같이
     }
 }

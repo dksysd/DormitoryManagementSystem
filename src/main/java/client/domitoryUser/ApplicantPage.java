@@ -148,7 +148,9 @@ public class ApplicantPage {
     }
 
     public void applicate(AsyncRequest asyncRequest) {
-        // 요청 준비
+        // 입사 신청
+
+        // 성별 정보 가져오기 - 성별 별로 다른 안내창
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO, 0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -272,6 +274,7 @@ public class ApplicantPage {
 
 
     public void moveOutApplicate(AsyncRequest asyncRequest) {
+        //퇴사 신청, 확인
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
@@ -355,7 +358,7 @@ public class ApplicantPage {
                     throw new RuntimeException(e);
                 }
 
-                // 메시지 받고 환불 완료 안내 띄우기 - 여기 좀 봐죠!!!!! 응답메시지 어떻게 오는지 몰라서!! 안에 밸류는 필요 없을 것 같아서 이러케 함
+                // 메시지 받고 환불 완료 안내 띄우기
                 if (resProtocol.getHeader().getCode() == Code.ResponseCode.OK) {
                     System.out.println("환불과 퇴사신청이 정상적으로 완료되었습니다.");
                     System.out.println("환불 상태를 다시 확인하고 싶으시다면 학생페이지 7번 결제 상태 확인을 참고 하세요.");
@@ -368,7 +371,6 @@ public class ApplicantPage {
         }
     }
 
-    //민성이가 확인 좀 해주셈
     public void displaySelectionResult(AsyncRequest asyncRequest) {
         // 합격했는지 확인 요청
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_RESULT, 0);
@@ -435,7 +437,6 @@ public class ApplicantPage {
     }
 
     public void displayBill(AsyncRequest asyncRequest) {
-        // 사용자 입력 없고 메시지 받기만 하면됨
         //클래스 및 메서드 불러오기
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BILL, 0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
@@ -461,9 +462,9 @@ public class ApplicantPage {
         }
     }
 
-    //서혀나 봐조
+
     public void payment(AsyncRequest asyncRequest) {
-        //Payment 클래스 끌어와서 하기
+        //결제 상태 확인, 결제하기
         System.out.println("하려는 기능을 선택하세요. (1. 결제상태 확인 / 2. 결제하기)");
         int selection = sc.nextInt();
         if (selection == 1) {
@@ -579,6 +580,7 @@ public class ApplicantPage {
     }
 
     public boolean paidCheck(AsyncRequest asyncRequest) {
+        // 결제상태 확인하는 메서드 - 타 메서드에서 사용
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_CHECK, 0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -608,6 +610,7 @@ public class ApplicantPage {
     }
 
     public void appliyTuber(AsyncRequest asyncRequest) {
+        // 결핵진단서 등록
         String imagePath = "/Users/gayeong/Desktop/스크린샷 2024-12-10 오후 7.37.40.png";
         byte[] bytes;
         try {
@@ -640,6 +643,7 @@ public class ApplicantPage {
 
 
     public byte[] convertImageToByteArray(String imagePath) throws IOException {
+        //이미지를 바이트 배열로
         // FileInputStream을 사용하여 이미지 파일 읽기
         FileInputStream fis = new FileInputStream(imagePath);
 
