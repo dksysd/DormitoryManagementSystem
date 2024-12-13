@@ -19,7 +19,7 @@ public class OutputHandler extends shared.protocol.handler.OutputHandler {
         super.completed(result, buffer);
 
         if(result != -1) {
-            System.out.println("Send data " + Arrays.toString(buffer.array()));
+            System.out.println("Send data ");
             sendFuture.complete(client);
         }
     }
