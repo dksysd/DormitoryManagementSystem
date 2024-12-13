@@ -148,7 +148,9 @@ public class ApplicantPage {
     }
 
     public void applicate(AsyncRequest asyncRequest) {
-        // 요청 준비
+        // 입사 신청
+
+        // 성별 정보 가져오기 - 성별 별로 다른 안내창
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_USER_INFO, 0);
         Header tlvHeader = new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0);
         Protocol<String> tlv = new Protocol<>(tlvHeader, sessionID);
@@ -272,6 +274,7 @@ public class ApplicantPage {
 
 
     public void moveOutApplicate(AsyncRequest asyncRequest) {
+        //퇴사 신청, 확인
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
         int option = sc.nextInt();
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
