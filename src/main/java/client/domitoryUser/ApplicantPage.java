@@ -11,16 +11,33 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
 public class ApplicantPage {
-    private static Scanner sc = new Scanner(System.in);
+    private static final Scanner sc = new Scanner(System.in);
     private String sessionID;
 
+    /**
+     * 기본 생성자.
+     * <p>
+     * 세션 정보를 초기화하지 않고 객체를 생성합니다.
+     */
     public ApplicantPage() {
     }
 
+    /**
+     * 세션 아이디를 초기화하는 생성자.
+     *
+     * @param sessionID 로그인한 학생의 세션 ID
+     */
     public ApplicantPage(String sessionID) {
         this.sessionID = sessionID;
     }
 
+    /**
+     * 학생 페이지에서 제공하는 기능을 출력하고 사용자의 선택을 받아 적절한 작업을 처리합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     * @throws ExecutionException   요청 처리 중 발생하는 예외
+     * @throws InterruptedException 작업 중단 시 발생하는 예외
+     */
     public void applicantFunction(AsyncRequest asyncRequest) throws ExecutionException, InterruptedException {
         int option = 0;
 
@@ -67,6 +84,9 @@ public class ApplicantPage {
     }
 
 
+    /**
+     * 학생 페이지에서 제공하는 기능들을 출력합니다.
+     */
     public static void applicantFunctionInfo() {
         System.out.println("============= 학생 페이지입니다 =============");
         System.out.println("1. 선발 일정 확인"); // 0k -  확인은 필요
@@ -83,7 +103,13 @@ public class ApplicantPage {
         System.out.println();
     }
 
-
+    /**
+     * 선발 일정을 확인합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     * @throws InterruptedException 작업 중단 시 발생하는 예외
+     * @throws ExecutionException   요청 처리 중 발생하는 예외
+     */
     public void displayInfo(AsyncRequest asyncRequest) throws InterruptedException, ExecutionException {
         // 선발 일정 요청 - sessionId
         Protocol<String> tlv = new Protocol<>(new Header(Type.VALUE, DataType.STRING, Code.ValueCode.SESSION_ID, 0), sessionID);
@@ -97,7 +123,7 @@ public class ApplicantPage {
             System.out.println("잘못된 요청입니다. 재시도 하세요");
             return;
         }
-        String priority ="";
+        String priority = "";
         String normal = "";
         String extra = "";
         String first = (String) resProtocol.getChildren().getFirst().getData();
@@ -147,6 +173,11 @@ public class ApplicantPage {
 
     }
 
+    /**
+     * 입사 신청을 처리합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
     public void applicate(AsyncRequest asyncRequest) {
         // 입사 신청
 
@@ -272,7 +303,11 @@ public class ApplicantPage {
         System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
     }
 
-
+    /**
+     * 퇴사 신청 또는 확인을 처리합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
     public void moveOutApplicate(AsyncRequest asyncRequest) {
         //퇴사 신청, 확인
         System.out.println("이용하려는 기능을 선택하세요 (1.퇴사신청 / 2.퇴사확인)");
@@ -362,7 +397,7 @@ public class ApplicantPage {
                 if (resProtocol.getHeader().getCode() == Code.ResponseCode.OK) {
                     System.out.println("환불과 퇴사신청이 정상적으로 완료되었습니다.");
                     System.out.println("환불 상태를 다시 확인하고 싶으시다면 학생페이지 7번 결제 상태 확인을 참고 하세요.");
-                }else{
+                } else {
                     System.out.println("환불 및 퇴사신청이 비정상적으로 종료되었습니다. 다시 시도해 주세요.");
 
                 }
@@ -371,6 +406,11 @@ public class ApplicantPage {
         }
     }
 
+    /**
+     * 선발 결과를 확인합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
     public void displaySelectionResult(AsyncRequest asyncRequest) {
         // 합격했는지 확인 요청
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_SELECTION_RESULT, 0);
@@ -401,6 +441,11 @@ public class ApplicantPage {
 
     }
 
+    /**
+     * 상벌점을 확인합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
     public void displayMeritPoint(AsyncRequest asyncRequest) {
         //상벌점 요청
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_MERIT_AND_DEMERIT_POINTS, 0);
@@ -436,6 +481,11 @@ public class ApplicantPage {
         System.out.println("자세한 사항은 관리자에게 문의하세요.");
     }
 
+    /**
+     * 명세서를 요청하여 출력합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
     public void displayBill(AsyncRequest asyncRequest) {
         //클래스 및 메서드 불러오기
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.BILL, 0);
@@ -462,6 +512,11 @@ public class ApplicantPage {
         }
     }
 
+    /**
+     * 결제를 처리하고 상태를 확인합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
 
     public void payment(AsyncRequest asyncRequest) {
         //결제 상태 확인, 결제하기
@@ -579,6 +634,12 @@ public class ApplicantPage {
 
     }
 
+    /**
+     * 결제 상태를 확인하는 메서드로, 서버와 비동기 통신을 이용하여 결제 완료 여부를 반환합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     * @return 결제 상태가 완료되었으면 {@code true}, 미결제 상태이거나 오류가 발생하면 {@code false}
+     */
     public boolean paidCheck(AsyncRequest asyncRequest) {
         // 결제상태 확인하는 메서드 - 타 메서드에서 사용
         Header header = new Header(Type.REQUEST, DataType.TLV, Code.RequestCode.GET_PAYMENT_CHECK, 0);
@@ -609,6 +670,11 @@ public class ApplicantPage {
         return false;
     }
 
+    /**
+     * 결핵진단서를 제출합니다.
+     *
+     * @param asyncRequest 서버와 비동기 통신을 위한 {@link AsyncRequest} 객체
+     */
     public void appliyTuber(AsyncRequest asyncRequest) {
         // 결핵진단서 등록
         String imagePath = "/Users/gayeong/Desktop/스크린샷 2024-12-10 오후 7.37.40.png";
@@ -641,7 +707,13 @@ public class ApplicantPage {
         System.out.println("결핵진단서 등록이 완료되었습니다");
     }
 
-
+    /**
+     * 이미지 파일을 바이트 배열로 변환합니다.
+     *
+     * @param imagePath 이미지 경로
+     * @return 변환된 바이트 배열
+     * @throws IOException 파일 읽기 실패 시 발생
+     */
     public byte[] convertImageToByteArray(String imagePath) throws IOException {
         //이미지를 바이트 배열로
         // FileInputStream을 사용하여 이미지 파일 읽기
@@ -666,6 +738,11 @@ public class ApplicantPage {
         return baos.toByteArray();
     }
 
+    /**
+     * 주어진 일정 정보를 형식화하여 출력합니다.
+     *
+     * @param string 일정 정보 문자열
+     */
     private void printSchedule(String string) {
         String[] s = string.split(" ");
         System.out.println(s[0] + " 선발 시작일: " + s[1] + " 선발 종료일: " + s[2]);
