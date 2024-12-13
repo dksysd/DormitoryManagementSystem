@@ -10,10 +10,12 @@ import java.util.Objects;
 
 import static server.util.ProtocolValidator.verifySessionId;
 
-//refreshSession 미완
+
 public class AuthController implements Controller {
 
     /**
+     * 로그인 메서드
+
      * id : 숫자 8자리 제한, password: 8~20자리, 영어, 특수문자, 숫자 포함
      *
      * @param protocol header(type:request, dataType: TLV, code: LOGIN, dataLength:)
@@ -26,16 +28,16 @@ public class AuthController implements Controller {
      *                 >
      * @return 성공 header(type: response, dataType: TLV, code: OK, dataLength:
      * children<
- * 1 header(type:value, dataType: INT, code: USER_TYPE_ID, dataLength:)
-* data: 사용자 유형 아이디(관리자 or 학생)
+    * 1 header(type:value, dataType: INT, code: USER_TYPE_ID, dataLength:)
+    * data: 사용자 유형 아이디(관리자 or 학생)
      * 2 header(type:value, dataType: String, code: SessionId, dataLength:)
      * data: 세션아이디,
 
      * >
-     * 실패 header(type: response, dataType: TLV, code: 에러코드(개중 보고 에러원인 판단), dataLength: 0)
+     * 실패 header(type: response, dataType: TLV(실패 시 ERROR), code: 에러코드(개중 보고 에러원인 판단), dataLength: 0)
      * data:
      */
-    public static Protocol<?> login(Protocol<?> protocol) throws SQLException {
+    public static Protocol<?> login(Protocol<?> protocol) {
 
         Protocol<?> resProtocol = new Protocol<>();
         Protocol<String > childProtocol1 = new Protocol<>();
@@ -74,13 +76,15 @@ public class AuthController implements Controller {
     }
 
     /**
+     * 로그아웃 메서드
+
      * @param protocol header(type:request, dataType: TLV, code: LOGOUT, dataLength:)
      *                 data:
      *                 children<
      *                 1 header(type: value, dataType: string, code: SessionId, dataLength:)
      *                 data: sessionId
      *                 >
-     * @return header(type : response, dataType : TLV, code : OK ( 실패시 에러코드), dataLength :
+     * @return header(type : response, dataType : TLV(실패시 ERROR), code : OK ( 실패시 에러코드), dataLength :
      * data:
      */
     public static Protocol<?> logout(Protocol<?> protocol) {
@@ -107,13 +111,15 @@ public class AuthController implements Controller {
     }
 
     /**
+     * 세션ID 갱신 메서드(타임아웃 전 유효 시간 갱신)
+
      * @param protocol header(type:request, dataType: TLV, code: REFRESH_SESSION, dataLength:)
      *                 data:
      *                 children<
      *                 1 header(type: value, dataType: string, code: SessionId, dataLength:)
      *                 data: sessionId
      *                 >
-     * @return header(type : response, dataType : TLV, code : OK ( 실패시 에러코드), dataLength :
+     * @return header(type : response, dataType : TLV(실패 시 ERROR), code : OK ( 실패시 에러코드), dataLength :
      * data:
      **/
     public static Protocol<?> refreshSession(Protocol<?> protocol) {
@@ -136,6 +142,7 @@ public class AuthController implements Controller {
         return resProtocol;
     }
 
+    // 로그인 ID & PW 형식검증 및 회원여부 검사
     private static boolean isValidLoginCredentials(String id, String password, Header header) throws SQLException {
         try {
             // ID 형식 검증 (8자리 숫자)
@@ -156,10 +163,12 @@ public class AuthController implements Controller {
         return false;
     }
 
+    //ID 형식검증(정수 8글자)
     private static boolean isValidId(String id) {
         return id != null && id.matches("\\d{8}");
     }
 
+    //PW 형식검증(8글자 이상 20글자 미만, 영어 대소문자,숫자,특수문자 포함)
     private static boolean isValidPassword(String password) {
         if (password == null || password.length() < 8 || password.length() > 20) {
             return false;
@@ -175,6 +184,7 @@ public class AuthController implements Controller {
 
     }
 
+    //회원가입 여부 판단
     private static boolean authenticateUser(String id, String password) throws SQLException {
         UserDAO userDAO = new UserDAO();
         UserDTO userDTO = userDAO.findByUid(id);

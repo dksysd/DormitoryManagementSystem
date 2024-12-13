@@ -5,13 +5,15 @@ import server.persistence.dao.UserDAO;
 import server.persistence.dto.UserDTO;
 import shared.protocol.persistence.*;
 
-import java.sql.SQLException;
+
 
 import static server.util.ProtocolValidator.getIdBySessionId;
 
 
 public class UserController {
     /**
+     * 유저정보 조회(ID,이름,전화번호,성별,주소)
+
      * @param protocol header(type:request, dataType: TLV, code: GET_USER_INFO, dataLength:)
      *                 data:
      *                 children<
@@ -35,6 +37,9 @@ public class UserController {
      * data: 시(주소)
      * 7 header(type: value, dataType: string, code: DETAIL_ADDRESS, dataLength:)
      * data: 상세주소
+
+     * ERROR-> header(type: response, dataType: ERROR, code: ERROR, dataLength:)
+     * data:
      * >
      */
     public static Protocol<?> getUserInfo(Protocol<?> protocol) {

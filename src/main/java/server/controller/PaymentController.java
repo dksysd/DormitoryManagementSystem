@@ -2,7 +2,6 @@ package server.controller;
 
 import server.persistence.dao.*;
 import server.persistence.dto.*;
-import server.util.ProtocolValidator;
 import shared.protocol.persistence.*;
 
 import java.sql.SQLException;
@@ -16,11 +15,13 @@ import static server.util.ProtocolValidator.isStudent;
 public class PaymentController {
 
     /**
+     * 결제금액 조회 메서드
+
      * @param protocol header(type:request, dataType: TLV, code: GET_PAYMENT_AMOUNT, dataLength:)
      *                 data:
      *                 children< header(type: value, dataType: string, code: sessionId, dataLength:)
      *                 data:세션아이디 >
-     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength:
+     * @return header(type : Response, dataType : TLV(실패 시 ERROR), code : OK ( 틀리면 에러, 데이터 없음) dataLength:
      * data:
      * children < header(type: value, dataType: int, code: PAYMENT_AMOUNT, dataLength:), data : 결제금액 >
      */
@@ -63,11 +64,13 @@ public class PaymentController {
 
 
     /**
+     * 결제상태 조회 메서드
+
      * @param protocol header(type:request, dataType: TLV, code: getPaymentStatus, dataLength:)
      *                 data:
      *                 children< header(type: value, dataType: string, code: sessionId, dataLength:,
      *                 data:세션아이디 >
-     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength:
+     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러, 데이터 없음 ) dataLength:
      * data:
      * children< header(type: value, dataType: String, code: PAYMENT_STATUS, dataLength:,
      * data : 결제상태 >
@@ -109,6 +112,8 @@ public class PaymentController {
 
 
     /**
+     * 계좌이체 메서드
+
      * @param protocol header(type:request, dataType: TLV, code: BANK_TRANSFER, dataLength:)
      *                 data:
      *                 children <
@@ -125,7 +130,7 @@ public class PaymentController {
      *                 6 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 ),
      *                 >
-     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
+     * @return header(type : Response, dataType : ERROR, code : OK ( 틀리면 에러) dataLength: 0)
      * data: null
      */
     public static Protocol<?> payByBankTransfer(Protocol<?> protocol) throws SQLException {
@@ -149,7 +154,8 @@ public class PaymentController {
         return resProtocol;
     }
 
-    /**
+    /**카드결제 메서드
+
      * @param protocol header(type:request, dataType: TLV, code: CARD_MOVEMENT, dataLength:)
      *                 data:
      *                 children <
@@ -164,7 +170,7 @@ public class PaymentController {
      *                 5 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
-     * @return header(type : Response, dataType : TLV, code : OK ( 틀리면 에러) dataLength: 0)
+     * @return header(type : Response, dataType : ERROR, code : OK (틀리면 에러) dataLength: 0)
      * data: null
      */
     public static Protocol<?> payByCard(Protocol<?> protocol) {
@@ -201,6 +207,8 @@ public class PaymentController {
 
 
     /**
+     * 결제환불 메서드(퇴사 신청 시에만 신청 가능)
+
      * @param protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
      *                 data:
      *                 children <
@@ -215,11 +223,11 @@ public class PaymentController {
      *                 5 ( header(type: value, dataType: string, code:BANK_NAME, dataLength:,)
      *                 data: "은행명" ),
      *                 6 ( header(type: value, dataType: string, code:bank_code, dataLength:,)
-     *                 *                 data: "은행 코드" ),
+     *                 data: "은행 코드" ),
      *                 7 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
-     * @return protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
+     * @return protocol header(type:request, dataType: TLV(실패 시 ERROR), code: REFUND_REQUEST(실패 시 ERROR, 데이터 없음), dataLength:)
      * data:
      * children <
      * 1 ( header(type: value, dataType: string, code:REFUND_AMOUNT, dataLength:,)
@@ -272,6 +280,8 @@ public class PaymentController {
 
 
     /**
+     * 환불상태 조회 메서드
+
      * @param protocol header(type:request, dataType: TLV, code: REFUND_REQUEST, dataLength:)
      *                 data:
      *                 children <
@@ -280,7 +290,7 @@ public class PaymentController {
      *                 >
      * @return header(type : response, dataType : TLV, code : OK, dataLength :)
      * children<
-     * header(type: value, dataType: string, code: REFUND_STATUS,dataLength:)
+     * header(type: value, dataType: string(실패 시 ERROR), code: REFUND_STATUS(실패 시 ERROR,데이터 없음),dataLength:)
      * data: 환불 상태)
      * >
      */
