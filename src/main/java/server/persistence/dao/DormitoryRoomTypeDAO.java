@@ -152,7 +152,7 @@ public class DormitoryRoomTypeDAO implements DormitoryRoomTypeDAOI {
 
     private DormitoryRoomTypeDTO mapRowToDormitoryRoomTypeDTO(ResultSet resultSet) throws SQLException {
         RoomTypeDAO dao1 = new RoomTypeDAO();
-        RoomTypeDTO roomTypeDTO = dao1.findById(resultSet.getInt("room_type_name"));
+        RoomTypeDTO roomTypeDTO = dao1.findById(resultSet.getInt("room_type_id"));
 
         DormitoryDAO dao2 = new DormitoryDAO();
         DormitoryDTO dormitoryDTO = dao2.findById(resultSet.getInt("dormitory_id"));

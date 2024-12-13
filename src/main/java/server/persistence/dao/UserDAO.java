@@ -89,8 +89,8 @@ public class UserDAO implements UserDAOI {
     public List<String> findAllOfSelection() throws SQLException {
         List<String> users = new ArrayList<>();
         String query = "SELECT u.uid AS uid FROM users u " +
-                "INNER JOIN selection_applications sa ON sa.user_id = u.id " +
-                "INNER JOIN selection_application_statuses sas ON sas.id = sa.selection_application_status_id " +
+                "LEFT JOIN selection_applications sa ON sa.user_id = u.id " +
+                "LEFT JOIN selection_application_statuses sas ON sas.id = sa.selection_application_status_id " +
                 "WHERE sas.id = 3";
         try(Connection connection = DatabaseConnectionPool.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -99,7 +99,7 @@ public class UserDAO implements UserDAOI {
             while (resultSet.next()) {
                 users.add(resultSet.getString(1));
             }
-            System.out.println("Valid Check"); //FIXME delete
+//            System.out.println("Valid Check"); //FIXME delete
         }
 
         return users;
@@ -229,18 +229,18 @@ public class UserDAO implements UserDAOI {
     }
 
     private UserDTO mapRowToUserDTO(ResultSet resultSet) throws SQLException {
-        System.out.println("Valid Check"); //FIXME delete
+//        System.out.println("Valid Check"); //FIXME delete
         UserTypeDAO dao1 = new UserTypeDAO();
         UserTypeDTO userTypeDTO = dao1.findById(resultSet.getInt("user_type_id"));
 
-        System.out.println("Valid Check"); //FIXME delete
+//        System.out.println("Valid Check"); //FIXME delete
         GenderCodeDAO dao2 = new GenderCodeDAO();
         GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code"));
 
-        System.out.println("Valid Check"); //FIXME delete
+//        System.out.println("Valid Check"); //FIXME delete
         AddressDAO dao3 = new AddressDAO();
         AddressDTO addressDTO = dao3.findById(resultSet.getInt("address_id"));
-        System.out.println("Valid Check"); //FIXME delete
+//        System.out.println("Valid Check"); //FIXME delete
 
 //        System.out.println("Valid Check"); //FIXME delete
 //        ImageDAO dao4 = new ImageDAO();
