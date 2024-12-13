@@ -13,6 +13,7 @@ import static server.util.ProtocolValidator.*;
 
 public class DormitoryUserController {
     /**
+     * 선발 일정에 있는 모든 값을 가져와서 프로토콜에 다시 전송하는 메서드이다.
      * @param protocol header(type:request, dataType: TLV, code: selection_schedule, dataLength:)
      *                 data:
      *                 children <
@@ -61,6 +62,31 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * 선발 신청을 받아와서 그것을 토대로 선발 테이블에 새 데이터를 추가하는 메서드이다.
+     * @param protocol header(type:request, dataType: TLV, code: select_priority_application, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: ID, dataLength:,)
+     *                 data: 학번
+     *                 2 ( header(type: value, dataType: boolean, code: sleep_hablit, dataLength:,)
+     *                 data: 잠버릇
+     *                 3 ( header(type: value, dataType: boolean, code: is_year, dataLength:,)
+     *                 data: 일년입사
+     *                 4 ( header(type: value, dataType: string, code: room_type, dataLength:,)
+     *                 data: 생활관
+     *                 5 ( header(type: value, dataType: string, code: meal_plan, dataLength:,)
+     *                 data: 식사형식
+     *                 6 ( header(type: value, dataType: string, code: ID, dataLength:,)
+     *                 data: 룸메이트
+     *                 7 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data : null
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> application(Protocol<?> protocol) throws SQLException {
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
         Protocol<?> result = new Protocol<>();
@@ -102,6 +128,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 모든 식사계획을 참조하여 프로톸ㄹ에 보내는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: get_meal_plan, dataLength:)
      *                 data:
      *                 children <
@@ -152,6 +180,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 모든 기숙사 생활관을 가져와서 프로토콜로 보내는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: get_dormitory_room_type, dataLength:)
      *                 data:
      *                 children <
@@ -199,11 +229,13 @@ public class DormitoryUserController {
     }
 
     /**
+     * 사용자로부터 우선순위를 받아온 뒤, UPDATE 하는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: select_priority_application, dataLength:)
      *                 data:
      *                 children <
      *                 1( header(type: value, dataType: string, code: preference, dataLength:,)
-     *                 data: 세션아이디
+     *                 data: 선호도
      *                 2 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
      *                 data: 세션아이디 )
      *                 >
@@ -234,6 +266,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 룸메이트 정보를 사용자로부터 받아온 뒤, 그 학번에 해당하는 id를 가져와 UPDATE하는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: apply_roommate, dataLength:)
      *                 data:
      *                 children <
@@ -269,6 +303,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 식사정보를 사용자로부터 받아온 뒤 이를 UPDATE하는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: apply_meal, dataLength:)
      *                 data:
      *                 children <
@@ -302,6 +338,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 생활관 정보를 받아온 뒤, UPDATE하는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: apply_room, dataLength:)
      *                 data:
      *                 children <
@@ -335,6 +373,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 선발 상태를 DB에서 가져온 뒤, 프로토콜로 실어 보내는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: get_selection_result, dataLength:)
      *                 data:
      *                 children <
@@ -415,6 +455,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 상벌점 내역을 가져와서 프로토콜에 실어 보내는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: get_merit_and_demerit_point, dataLength:)
      *                 data:
      *                 children <
@@ -460,6 +502,23 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * 퇴사 정보를 가져오는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: get_merit_and_demerit_point, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : check_move_out, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> checkMoveOut(Protocol<?> protocol) throws SQLException {
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
@@ -488,6 +547,25 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * 결핵 진단서 이미지 파일을 받아와서 DB에 UPLOAD하는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: get_merit_and_demerit_point, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: raw, code: tuber_image, dataLength:,)
+     *                 data: 이미지 )
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : upload_tuber, dataLength :, ))
+     * 2 ...(이렇게 끝까지 반복되서 옴)
+     * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
+     * data: null
+     */
     public static Protocol<?> uploadTuberReport(Protocol<?> protocol) throws SQLException {
         SelectionDAO dao = new SelectionDAO();
         Protocol<?> result = new Protocol<>();
@@ -515,6 +593,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 증거 파일을 가져오는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: get_merit_and_demerit_point, dataLength:)
      *                 data:
      *                 children <
@@ -524,7 +604,7 @@ public class DormitoryUserController {
      * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
      *data :
      *children <
-     *1 ( header ( type : value, dataType : string, code : demerit_point, dataLength :, ))
+     *1 ( header ( type : value, dataType : string, code : get_proof, dataLength :, ))
      * 2 ...(이렇게 끝까지 반복되서 옴)
      * @return (에러의 경우) header(type : Response, dataType : TLV, code : Error dataLength: 0)
      * data: null
@@ -555,6 +635,26 @@ public class DormitoryUserController {
         return result;
     }
 
+    /**
+     * 결핵 진단서 이미지 파일을 받아와서 DB에 UPLOAD하는 메서드이다.
+     *
+     * @param protocol header(type:request, dataType: TLV, code: get_merit_and_demerit_point, dataLength:)
+     *                 data:
+     *                 children <
+     *                 1 ( header(type: value, dataType: raw, code: proof_image, dataLength:,)
+     *                 data: 이미지 )
+     *                 1 ( header(type: value, dataType: string, code: sessionId, dataLength:,)
+     *                 data: 세션아이디 )
+     *                 >
+     * @return header(type : Response, dataType : TLV, code : OK, dataLength : 아래 갯수에 따라 다름.
+     *data :
+     *children <
+     *1 ( header ( type : value, dataType : string, code : demerit_point, dataLength :, ))
+     * @return (에러의 경우) header(type : Error, dataType : TLV, code : Error dataLength: 0)
+     * 정상 -> header(type : Response, dataType : TLV, code : OK dataLength: 0)
+     * data: null
+     */
+
     public static Protocol<?> uploadFileForProof(Protocol<?> protocol) throws SQLException {
         SelectionDAO dao = new SelectionDAO();
         Protocol<?> result = new Protocol<>();
@@ -578,6 +678,8 @@ public class DormitoryUserController {
     }
 
     /**
+     * 퇴사신청을 진행하는 메서드이다.
+     *
      * @param protocol header(type:request, dataType: TLV, code: MOVE_OUT, dataLength:)
      *                 data:
      *                 children <
