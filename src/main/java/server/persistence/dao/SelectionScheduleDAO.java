@@ -43,6 +43,7 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
     // DB의 모든 항목들을 가져와서 List<String>로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<String> findAllTitleIntoString() throws SQLException {
+        //todo 일반 선발 2024-07-15 00:00:00 2024-07-25 00:00:00 이 형태로 전달되는데, 일반 선발 2024-07-15 2024-07-25 이렇게 변경 부탁해요~
         List<String> selectionSchedules = new ArrayList<>();
         String query = "SELECT id, title, created_at, started_at, ended_at FROM selection_schedules";
         try (Connection connection = DatabaseConnectionPool.getConnection();
