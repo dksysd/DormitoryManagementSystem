@@ -136,12 +136,11 @@ public class BankDAO implements BankDAOI{
 
     // 정해진 데이터 형태로 다시 매핑하는 메서드이다.
     private BankDTO mapRowToBank(ResultSet rs) throws SQLException {
-        BankDTO bankDTO = BankDTO.builder()
+
+        return BankDTO.builder()
                 .id(rs.getInt("id"))
                 .bankName(rs.getString("bank_name"))
                 .bankCode(rs.getString("bank_code"))
                 .build();
-
-        return bankDTO;
     }
 }

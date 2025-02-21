@@ -149,14 +149,12 @@ public class BankTransferPaymentDAO implements BankTransferPaymentDAOI {
         BankDAO dao3 = new BankDAO();
         BankDTO bank = dao3.findById(resultSet.getInt("bank_id"));
 
-        BankTransferPaymentDTO bankTransferPaymentDTO = BankTransferPaymentDTO.builder()
+        return BankTransferPaymentDTO.builder()
                 .accountHolderName(resultSet.getString("account_holder_name"))
                 .bankDTO(bank)
                 .paymentDTO(payment)
                 .createdAt(resultSet.getTimestamp("created_at").toLocalDateTime())
                 .accountNumber(resultSet.getString("account_number"))
                 .build();
-
-        return bankTransferPaymentDTO;
     }
 }
