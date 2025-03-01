@@ -45,7 +45,7 @@ public class SelectionScheduleDAO implements SelectionScheduleDAOI {
     @Override
     public List<String> findAllTitleIntoString() throws SQLException {
         //todo 일반 선발 2024-07-15 00:00:00 2024-07-25 00:00:00 이 형태로 전달되는데, 일반 선발 2024-07-15 2024-07-25 이렇게 변경 부탁해요~
-        // 이거 LocalDateTime이 이런거라서 출력 부분에서 전환하셔야 해요
+        // 이거 LocalDateTime의 형식이라서 출력 부분에서 전환하셔야 해요
         List<String> selectionSchedules = new ArrayList<>();
         String query = "SELECT id, title, created_at, started_at, ended_at FROM selection_schedules";
         try (Connection connection = DatabaseConnectionPool.getConnection();
