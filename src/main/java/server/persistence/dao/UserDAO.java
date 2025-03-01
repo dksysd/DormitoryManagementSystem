@@ -103,7 +103,6 @@ public class UserDAO implements UserDAOI {
             while (resultSet.next()) {
                 users.add(resultSet.getString(1));
             }
-//            System.out.println("Valid Check"); //FIXME delete
         }
 
         return users;

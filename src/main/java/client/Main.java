@@ -19,7 +19,7 @@ public class Main {
      * @throws InterruptedException 현재 스레드가 작업 실행 중 인터럽트될 경우
      */
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        String host = "172.30.126.66"; // 서버 호스트 주소
+        String host = "localhost"; // 서버 호스트 주소
         int port = 4_000; // 서버 포트 번호
 
         // 기본 페이지 실행
