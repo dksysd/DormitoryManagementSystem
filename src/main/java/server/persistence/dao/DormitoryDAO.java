@@ -24,6 +24,22 @@ public class DormitoryDAO implements DormitoryDAOI {
         return null; // ID에 해당하는 데이터가 없으면 null 반환
     }
 
+    @Override
+    public DormitoryDTO findByName(String name) throws SQLException {
+        String query = "SELECT id, name, description FROM dormitories WHERE name = ?";
+        try (Connection connection = DatabaseConnectionPool.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1,name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return mapRowToDormitoryDTO(resultSet);
+            }
+        }
+
+        return null;
+    }
+
     // DB의 모든 항목들을 가져와서 List로 만든 뒤, 반환하는 메서드이다.
     @Override
     public List<DormitoryDTO> findAll() throws SQLException {

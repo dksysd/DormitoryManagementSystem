@@ -89,27 +89,33 @@ public class DormitoryUserController {
      */
     public static Protocol<?> application(Protocol<?> protocol) throws SQLException {
         SelectionApplicationDAO dao = new SelectionApplicationDAO();
+        UserDAO userDAO = new UserDAO();
         Protocol<?> result = new Protocol<>();
         Header resultHeader = new Header();
         String sessionId = (String) protocol.getChildren().getLast().getData();
         if (verifySessionId(sessionId)&&isStudent(sessionId)) {
             RoomTypeDAO roomTypeDAO = new RoomTypeDAO();
+            DormitoryDAO dormitoryDAO = new DormitoryDAO();
             DormitoryRoomTypeDTO dormitoryRoomTypeDTO = DormitoryRoomTypeDTO.builder()
-                    .roomTypeDTO(roomTypeDAO.findByName((String) protocol.getChildren().get(3).getData()))
+                    .dormitoryDTO(dormitoryDAO.findByName((String) protocol.getChildren().get(3).getData()))
                     .build();
             MealPlanTypeDAO mealPlanTypeDAO = new MealPlanTypeDAO();
             MealPlanDTO mealPlanDTO = MealPlanDTO.builder()
                     .mealPlanTypeDTO(mealPlanTypeDAO.findByName((String) protocol.getChildren().get(4).getData()))
                     .build();
 
-            SelectionApplicationDTO selectionApplicationDTO = dao.findByUid(getIdBySessionId(sessionId));
+
+            // TODO : 현재 기간이 일반선발인지, 우선선발인지 판단하는 기능 필요. 이후 DTO에 새로 추가 바람.
+            SelectionApplicationDTO selectionApplicationDTO = new SelectionApplicationDTO();
+            selectionApplicationDTO.setUserDTO(userDAO.findByUid(getIdBySessionId(sessionId)));
             selectionApplicationDTO.setPreference((int) protocol.getChildren().getFirst().getData());
             selectionApplicationDTO.setHasSleepHabit((boolean) protocol.getChildren().get(1).getData());
             selectionApplicationDTO.setYear((boolean) protocol.getChildren().get(2).getData());
+            selectionApplicationDTO.setCreatedAt(LocalDateTime.now());
+            selectionApplicationDTO.setUpdatedAt(LocalDateTime.now());
             selectionApplicationDTO.setDormitoryRoomTypeDTO(dormitoryRoomTypeDTO);
             selectionApplicationDTO.setMealPlanDTO(mealPlanDTO);
             if (protocol.getHeader().getDataLength() >= 7) {
-                UserDAO userDAO = new UserDAO();
                 UserDTO userDTO = userDAO.findByUid((String) protocol.getChildren().get(5).getData());
                 selectionApplicationDTO.setRoommateUserDTO(userDTO);
             }

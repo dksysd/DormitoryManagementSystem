@@ -29,6 +29,7 @@ public interface DormitoryDAOI {
      */
     List<DormitoryDTO> findAll() throws SQLException;
 
+    DormitoryDTO findByName(String name) throws SQLException;
     /**
      * 모든 기숙사 데이터를 문자열 형식으로 반환합니다.
      *

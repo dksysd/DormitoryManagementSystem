@@ -113,17 +113,18 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
+            // -1 = null
             preparedStatement.setInt(1, selectionApplicationDTO.getPreference());
             preparedStatement.setBoolean(2, selectionApplicationDTO.isHasSleepHabit());
             preparedStatement.setBoolean(3, selectionApplicationDTO.isYear());
             preparedStatement.setTimestamp(4, Timestamp.valueOf(selectionApplicationDTO.getCreatedAt()));
             preparedStatement.setTimestamp(5, Timestamp.valueOf(selectionApplicationDTO.getUpdatedAt()));
-            preparedStatement.setInt(6, selectionApplicationDTO.getSelectionApplicationStatusDTO() != null ? selectionApplicationDTO.getSelectionApplicationStatusDTO().getId() : null);
-            preparedStatement.setInt(7, selectionApplicationDTO.getSelectionScheduleDTO() != null ? selectionApplicationDTO.getSelectionScheduleDTO().getId() : null);
-            preparedStatement.setInt(8, selectionApplicationDTO.getDormitoryRoomTypeDTO() != null ? selectionApplicationDTO.getDormitoryRoomTypeDTO().getId() : null);
-            preparedStatement.setInt(9, selectionApplicationDTO.getMealPlanDTO() != null ? selectionApplicationDTO.getMealPlanDTO().getId() : null);
-            preparedStatement.setInt(10, selectionApplicationDTO.getRoommateUserDTO() != null ? selectionApplicationDTO.getRoommateUserDTO().getId() : null);
-            preparedStatement.setInt(11, selectionApplicationDTO.getUserDTO() != null ? selectionApplicationDTO.getUserDTO().getId() : null);
+            preparedStatement.setInt(6, selectionApplicationDTO.getSelectionApplicationStatusDTO() != null ? selectionApplicationDTO.getSelectionApplicationStatusDTO().getId() : -1);
+            preparedStatement.setInt(7, selectionApplicationDTO.getSelectionScheduleDTO() != null ? selectionApplicationDTO.getSelectionScheduleDTO().getId() : -1);
+            preparedStatement.setInt(8, selectionApplicationDTO.getDormitoryRoomTypeDTO() != null ? selectionApplicationDTO.getDormitoryRoomTypeDTO().getId() : -1);
+            preparedStatement.setInt(9, selectionApplicationDTO.getMealPlanDTO() != null ? selectionApplicationDTO.getMealPlanDTO().getId() : -1);
+            preparedStatement.setInt(10, selectionApplicationDTO.getRoommateUserDTO() != null ? selectionApplicationDTO.getRoommateUserDTO().getId() : -1);
+            preparedStatement.setInt(11, selectionApplicationDTO.getUserDTO() != null ? selectionApplicationDTO.getUserDTO().getId() : -1);
             preparedStatement.executeUpdate();
         }
     }
