@@ -745,6 +745,6 @@ public class ApplicantPage {
      */
     private void printSchedule(String string) {
         String[] s = string.split(" ");
-        System.out.println(s[0] + " 선발 시작일: " + s[1] + " 선발 종료일: " + s[2]);
+        System.out.println(s[0] + " 선발 시작일: " + s[1] + " 선발 종료일: " + s[3]);
     }
 }
