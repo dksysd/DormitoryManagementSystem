@@ -2,8 +2,6 @@ package server.persistence.dao;
 
 import server.persistence.dto.*;
 import server.config.DatabaseConnectionPool;
-import server.persistence.dto.*;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +15,9 @@ public class UserDAO implements UserDAOI {
                 "ut.type_name AS user_type_name, gc.code_name AS gender_code, a.detail_address AS user_address " +
                 ",a.postal_name AS postal_code, a.do AS address_do, a.si AS address_si, a.detail_address AS detail_address " +
                 "FROM users u " +
-                "INNER JOIN user_types ut ON u.user_type_id = ut.id " +
-                "INNER JOIN gender_codes gc ON u.gender_code_id = gc.id " +
-                "INNER JOIN addresses a ON u.address_id = a.id " +
+                "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
+                "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
+                "LEFT JOIN addresses a ON u.address_id = a.id " +
                 "WHERE u.id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -38,14 +36,14 @@ public class UserDAO implements UserDAOI {
     public UserDTO findByUid(String uid) throws SQLException {
         String query = "SELECT u.id AS id, u.uid AS uid, u.login_password AS login_password, u.user_name AS user_name, " +
                 "u.phone_number AS phone_number, u.created_at AS created_at, u.updated_at AS updated_at, " +
-                "u.user_type_id AS user_type_id, u.gender_code_id AS gender_code, u.address_id AS address_id" +
+                "u.user_type_id AS user_type_id, u.gender_code_id AS gender_code_id, u.address_id AS address_id" +
                 ", u.profile_image AS profile_image, " +
                 "ut.type_name AS user_type_name, gc.code_name AS code_name, a.detail_address AS user_address, " +
                 "a.postal_name AS postal_code, a.do AS address_do, a.si AS address_si, a.detail_address AS detail_address " +
                 "FROM users u " +
-                "INNER JOIN user_types ut ON u.user_type_id = ut.id " +
-                "INNER JOIN gender_codes gc ON u.gender_code_id = gc.id " +
-                "INNER JOIN addresses a ON u.address_id = a.id " +
+                "LEFT JOIN user_types ut ON u.user_type_id = ut.id " +
+                "LEFT JOIN gender_codes gc ON u.gender_code_id = gc.id " +
+                "LEFT JOIN addresses a ON u.address_id = a.id " +
                 "WHERE u.uid = ?";
 
         try (Connection connection = DatabaseConnectionPool.getConnection();
@@ -182,7 +180,7 @@ public class UserDAO implements UserDAOI {
     @Override
     public void updateRoommate(String uid, String roommate) throws SQLException {
         String query = "SELECT sa.id AS id, u.id AS userId, sa.roommate_user_id AS roommate_id FROM users u " +
-                "INNER JOIN selection_applications sa ON u.id = sa.user_id " +
+                "LEFT JOIN selection_applications sa ON u.id = sa.user_id " +
                 "WHERE u.uid = ?";
         int id;
         int userId;
@@ -243,7 +241,7 @@ public class UserDAO implements UserDAOI {
         UserTypeDTO userTypeDTO = dao1.findById(resultSet.getInt("user_type_id"));
 
         GenderCodeDAO dao2 = new GenderCodeDAO();
-        GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code"));
+        GenderCodeDTO genderCodeDTO = dao2.findById(resultSet.getInt("gender_code_id"));
 
         AddressDAO dao3 = new AddressDAO();
         AddressDTO addressDTO = dao3.findById(resultSet.getInt("address_id"));

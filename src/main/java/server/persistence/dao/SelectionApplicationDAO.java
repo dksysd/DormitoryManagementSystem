@@ -55,12 +55,12 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
                 "mp.id AS meal_plan_id, mp.meal_plan_type_id, " +
                 "u.id AS user_id, ru.user_name AS roommate_user_name " +
                 "FROM selection_applications sa " +
-                "LEFT JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
-                "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
-                "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
-                "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
-                "LEFT JOIN users ru ON sa.roommate_user_id = ru.id " +
-                "LEFT JOIN users u ON sa.user_id = u.id " +
+                "JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
+                "JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
+                "JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
+                "JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
+                "JOIN users ru ON sa.roommate_user_id = ru.id " +
+                "JOIN users u ON sa.user_id = u.id " +
                 "WHERE u.uid = ?";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -87,12 +87,12 @@ public class SelectionApplicationDAO implements SelectionApplicationDAOI {
                 "mp.id AS meal_plan_id, mp.meal_plan_type_id, " +
                 "u.id AS user_id, u.user_name " +
                 "FROM selection_applications sa " +
-                "LEFT JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
-                "LEFT JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
-                "LEFT JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
-                "LEFT JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
-                "LEFT JOIN users ru ON sa.roommate_user_id = ru.id " +
-                "LEFT JOIN users u ON sa.user_id = u.id";
+                "JOIN selection_application_statuses sas ON sa.selection_application_status_id = sas.id " +
+                "JOIN selection_schedules ss ON sa.selection_schedule_id = ss.id " +
+                "JOIN dormitory_room_types drt ON sa.dormitory_room_type_id = drt.id " +
+                "JOIN meal_plans mp ON sa.meal_plan_id = mp.id " +
+                "JOIN users ru ON sa.roommate_user_id = ru.id " +
+                "JOIN users u ON sa.user_id = u.id";
         try (Connection connection = DatabaseConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
